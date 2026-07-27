@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IT Workspace | Complete Edition</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body id="pageBody">
+    <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ PHONG CÁCH FACEBOOK -->
+    <div id="loginOverlay" class="login-overlay">
+      <div class="fb-login-wrapper">
+        <div class="fb-left-intro">
+          <h1 class="fb-logo-text">itworkspace</h1>
+          <p class="fb-intro-desc">
+            Kết nối và làm việc cùng bạn bè, chia sẻ không gian lập trình của
+            riêng bạn.
+          </p>
+        </div>
+
+        <div class="fb-card card" id="authBox">
+          <h2 id="authTitle" style="display: none">ĐĂNG NHẬP</h2>
+
+          <div style="text-align: center; margin-bottom: 20px">
+            <label
+              for="avatarUploadInput"
+              class="fb-avatar-picker-label"
+              title="Chọn ảnh đại diện"
+            >
+              <div id="avatarPreviewBox" class="fb-avatar-preview">👤</div>
+              <span
+                style="
+                  font-size: 11px;
+                  color: var(--accent);
+                  display: block;
+                  margin-top: 6px;
+                "
+                >Chọn ảnh đại diện</span
+              >
+            </label>
+            <input
+              type="file"
+              id="avatarUploadInput"
+              accept="image/*"
+              style="display: none"
+              onchange="previewAvatar(event)"
+            />
+          </div>
+
+          <form
+            onsubmit="
+              event.preventDefault();
+              handleAuth();
+            "
+          >
+            <input
+              type="text"
+              id="authUsername"
+              placeholder="Tên tài khoản..."
+              class="fb-input"
+              autocomplete="username"
+              style="margin-bottom: 12px"
+              required
+            />
+            <input
+              type="password"
+              id="authPassword"
+              placeholder="Mật khẩu..."
+              class="fb-input"
+              autocomplete="current-password"
+              style="margin-bottom: 15px"
+              required
+            />
+
+            <button type="submit" class="fb-btn-submit" id="authBtn">
+              Đăng Nhập
+            </button>
+          </form>
+
+          <p
+            id="authError"
+            style="
+              color: #ff453a;
+              font-size: 13px;
+              text-align: center;
+              margin-top: 12px;
+              display: none;
+            "
+          ></p>
+
+          <div class="fb-divider"></div>
+
+          <div style="text-align: center">
+            <button
+              class="fb-btn-create"
+              id="authSwitchBtn"
+              type="button"
+              onclick="toggleAuthMode()"
+            >
+              Tạo tài khoản mới
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <div class="wrap">
+      <header>
+        <div class="brand">
+          <div class="logo-icon"><span class="dot"></span></div>
+          <div>
+            <h1>IT WORKSPACE</h1>
+            <span class="sub">Full Complete Platform</span>
+          </div>
+        </div>
+
+        <!-- WIDGET HIỂN THỊ TÀI KHOẢN & AVATAR ĐỒNG BỘ -->
+        <div
+          class="user-account-widget"
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--apple-glass-border);
+            backdrop-filter: blur(20px);
+          "
+        >
+          <div id="headerAvatarDisplay" class="fb-header-avatar">👤</div>
+          <div style="text-align: left">
+            <div
+              style="font-size: 13px; font-weight: 600; color: var(--text-main)"
+              id="displayAccountName"
+            >
+              👤 --
+            </div>
+            <div style="font-size: 11px; color: #30d158" id="displayUsageTime">
+              ⏱️ Tổng: 0 phút
+            </div>
+          </div>
+          <button
+            class="btn-secondary"
+            style="font-size: 11px; padding: 6px 10px; margin-left: 10px"
+            onclick="switchAccount()"
+          >
+            Đăng xuất
+          </button>
+        </div>
+
+        <div class="clock" style="text-align: right">
+          <div class="time" id="clockTime">--:--:--</div>
+          <div class="date" id="clockDate">--</div>
+        </div>
+      </header>
+
+      <nav class="nav-container">
+        <div class="pill-indicator"></div>
+        <button class="tab-btn active" data-tab="it">Lập Trình & IDE</button>
+        <button class="tab-btn" data-tab="entertainment">YouTube & MU</button>
+        <button class="tab-btn" data-tab="tools">Tiện Ích</button>
+        <button class="tab-btn" data-tab="chat">💬 Messenger</button>
+        <button class="tab-btn" data-tab="settings">⚙️ Cài đặt</button>
+      </nav>
+
+      <!-- TAB 1: LẬP TRÌNH & IDE -->
+      <section class="panel active" id="panel-it">
+        <div class="grid-2">
+          <div class="card text-center">
+            <h2>Đồng hồ Đếm ngược</h2>
+            <div class="pomodoro-display" id="pomoTime">25:00</div>
+            <div
+              style="
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+              "
+            >
+              <label style="color: var(--text-muted); font-size: 14px"
+                >Thời gian (phút):</label
+              >
+              <input
+                type="number"
+                id="pomoInput"
+                value="25"
+                min="1"
+                max="120"
+                onchange="applyPomoTime()"
+                style="width: 70px; text-align: center"
+              />
+            </div>
+            <div
+              class="btn-group"
+              style="justify-content: center; display: flex; gap: 10px"
+            >
+              <button class="btn-primary" onclick="startPomodoro()">
+                Bắt đầu
+              </button>
+              <button class="btn-secondary" onclick="pausePomodoro()">
+                Tạm dừng
+              </button>
+              <button class="btn-secondary" onclick="resetPomodoro()">
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Quản lý Task / Đồ án</h2>
+            <div class="video-controls" style="margin-bottom: 0">
+              <input
+                type="text"
+                id="todoInput"
+                placeholder="Thêm task mới rồi Enter..."
+              />
+            </div>
+            <ul class="todo-list" id="todoList"></ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Tra cứu Thông tin & Lỗi Code (StackOverflow)</h2>
+          <div class="video-controls">
+            <input
+              type="text"
+              id="devInput"
+              placeholder="Nhập từ khóa / lỗi code..."
+            />
+            <button class="btn-primary" onclick="searchDev()">
+              Tra cứu Code
+            </button>
+          </div>
+          <div
+            id="codeResult"
+            class="dict-result"
+            style="display: none; max-height: 350px; overflow-y: auto"
+          ></div>
+        </div>
+
+        <!-- MỤC CODE ĐÃ ĐƯỢC THAY THẾ BẰNG IDE THỰC TẾ -->
+        <div class="card">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 15px;
+              flex-wrap: wrap;
+              gap: 10px;
+            "
+          >
+            <h2 style="margin: 0">IDE Lập Trình (Chạy Code Thực Tế)</h2>
+            <div style="display: flex; gap: 8px; align-items: center">
+              <label style="font-size: 13px; color: var(--text-muted)"
+                >Ngôn ngữ:</label
+              >
+              <select
+                id="langSelect"
+                onchange="switchCompilerLanguage()"
+                style="
+                  width: auto;
+                  background: rgba(0, 0, 0, 0.5);
+                  padding: 8px;
+                  border-radius: 8px;
+                  color: white;
+                  border: 1px solid var(--apple-glass-border);
+                "
+              >
+                <option value="cpp">C++</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="nodejs" selected>JavaScript (Node.js)</option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            style="
+              border-radius: 12px;
+              overflow: hidden;
+              border: 1px solid var(--apple-glass-border);
+              height: 500px;
+              background: #000;
+            "
+          >
+            <iframe
+              id="compilerIframe"
+              src="https://onecompiler.com/embed/nodejs?theme=dark"
+              width="100%"
+              height="100%"
+              frameborder="0"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: GIẢI TRÍ -->
+      <section class="panel" id="panel-entertainment">
+        <div class="card">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 20px;
+              flex-wrap: wrap;
+              gap: 10px;
+            "
+          >
+            <h2 style="margin: 0">YouTube Workspace</h2>
+            <button
+              class="btn-secondary"
+              id="googleAuthBtn"
+              onclick="loginGoogleAccount()"
+              style="font-size: 13px; padding: 8px 14px"
+            >
+              🌐 Đăng nhập Tài khoản Google
+            </button>
+          </div>
+
+          <div class="video-controls">
+            <input
+              type="text"
+              id="ytInput"
+              placeholder="Nhập tên bài hát hoặc dán link YouTube..."
+              onkeydown="if (event.key === 'Enter') handleYouTubeAction();"
+            />
+            <button class="btn-primary" onclick="handleYouTubeAction()">
+              Tìm / Phát
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-bottom: 12px">
+            <button class="btn-secondary" style="flex: 1" onclick="prevTrack()">
+              ⏮ Bài trước
+            </button>
+            <button class="btn-secondary" style="flex: 1" onclick="nextTrack()">
+              Bài tiếp theo ⏭
+            </button>
+          </div>
+
+          <div
+            id="searchResults"
+            class="search-results"
+            style="display: none"
+          ></div>
+
+          <div
+            class="player"
+            id="playerBox"
+            style="
+              position: relative;
+              width: 100%;
+              aspect-ratio: 16/9;
+              background: #000;
+              border-radius: 18px;
+              overflow: hidden;
+              border: 1px solid var(--apple-glass-border);
+            "
+          >
+            <div
+              class="player-placeholder"
+              id="playerPlaceholder"
+              style="
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                  135deg,
+                  rgba(0, 0, 0, 0.75),
+                  rgba(30, 27, 75, 0.65)
+                );
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+              "
+            >
+              <div class="overlay-text">
+                <svg
+                  width="40"
+                  height="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                  ></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                <p>Sẵn sàng phát Video</p>
+                <span
+                  >Nhập từ khóa tìm kiếm và ấn nút để hiện danh sách bài
+                  hát</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="card"
+          style="
+            background: rgba(26, 11, 12, 0.45);
+            border: 1px solid rgba(218, 41, 28, 0.3);
+          "
+        >
+          <h2 style="color: #ff453a">Manchester United Zone</h2>
+          <div
+            style="
+              border-radius: 14px;
+              overflow: hidden;
+              height: 500px;
+              border: 1px solid var(--apple-glass-border);
+              margin-top: 15px;
+            "
+          >
+            <iframe
+              src="https://www.fctables.com/teams/manchester-united-195973/iframe/?type=team-recent-matches&lang=en&past=4&future=4&title=Manchester+United"
+              width="100%"
+              height="100%"
+              frameborder="0"
+              scrolling="yes"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: TIỆN ÍCH -->
+      <section class="panel" id="panel-tools">
+        <div class="grid-2">
+          <div class="card" style="grid-column: 1 / -1">
+            <h2>Dịch Thuật & Giải Thích Chi Tiết</h2>
+            <div class="video-controls" style="margin-bottom: 15px">
+              <input
+                type="text"
+                id="dictInput"
+                placeholder="Nhập từ vựng cần tra cứu và dịch..."
+                onkeydown="if (event.key === 'Enter') searchDict();"
+              />
+              <button class="btn-primary" onclick="searchDict()">
+                Tra cứu chi tiết
+              </button>
+            </div>
+            <div
+              id="dictResult"
+              class="dict-result"
+              style="display: none; max-height: 400px; overflow-y: auto"
+            ></div>
+          </div>
+
+          <div class="card">
+            <h2>Tra cứu Học tập (Wikipedia)</h2>
+            <div class="video-controls" style="margin-bottom: 12px">
+              <input
+                type="text"
+                id="studyInput"
+                placeholder="Nhập chủ đề học tập..."
+                onkeydown="if (event.key === 'Enter') searchStudyInfo();"
+              />
+              <button class="btn-primary" onclick="searchStudyInfo()">
+                Tra cứu
+              </button>
+            </div>
+            <div
+              id="studyResult"
+              class="dict-result"
+              style="display: none; max-height: 240px; overflow-y: auto"
+            ></div>
+          </div>
+
+          <div class="card">
+            <h2>Ghi chú Nhanh (Tự động lưu)</h2>
+            <textarea
+              id="scratchNote"
+              style="height: 140px"
+              placeholder="Gõ ghi chú vào đây..."
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: MESSENGER CHAT -->
+      <section class="panel" id="panel-chat">
+        <div class="messenger-container">
+          <div class="messenger-sidebar card">
+            <div class="messenger-sidebar-header">
+              <h2>Đoạn chat</h2>
+            </div>
+            <div style="padding: 0 16px 12px 16px">
+              <input
+                type="text"
+                id="searchFriendInput"
+                placeholder="Tìm kiếm bạn bè..."
+                oninput="searchUser()"
+              />
+            </div>
+            <div
+              id="searchResultBox"
+              style="padding: 0 16px; margin-bottom: 8px; font-size: 13px"
+            ></div>
+
+            <div class="messenger-conversations" id="friendList">
+              <!-- Danh sách đoạn chat -->
+            </div>
+          </div>
+
+          <div class="messenger-chat-box card">
+            <div id="chatHeader" class="messenger-chat-header">
+              <div id="chatPeerAvatar" class="messenger-avatar-placeholder">
+                💬
+              </div>
+              <div>
+                <div
+                  id="chatPeerName"
+                  style="font-weight: 600; font-size: 15px"
+                >
+                  Chọn đoạn chat
+                </div>
+                <div
+                  id="chatPeerStatus"
+                  style="font-size: 11px; color: #30d158"
+                >
+                  Đang hoạt động
+                </div>
+              </div>
+            </div>
+
+            <div id="chatMessagesArea" class="messenger-messages-area">
+              <div
+                style="
+                  color: var(--text-muted);
+                  text-align: center;
+                  margin: auto;
+                "
+              >
+                Chọn một người bạn từ danh sách bên trái để bắt đầu nhắn tin
+              </div>
+            </div>
+
+            <div class="messenger-input-area">
+              <input
+                type="text"
+                id="chatInput"
+                placeholder="Aa Nhắn tin..."
+                disabled
+                onkeydown="if (event.key === 'Enter') sendChatMessage();"
+              />
+              <button
+                class="btn-primary"
+                id="sendChatBtn"
+                disabled
+                onclick="sendChatMessage()"
+              >
+                Gửi
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: CÀI ĐẶT CÁ NHÂN HÓA -->
+      <section class="panel" id="panel-settings">
+        <div class="card">
+          <h2>⚙️ Cài đặt Cá nhân hóa Tài khoản</h2>
+          <p
+            style="
+              color: var(--text-muted);
+              font-size: 13px;
+              margin-bottom: 20px;
+            "
+          >
+            Tùy chỉnh giao diện, phong cách hiển thị và màu chữ riêng cho tài
+            khoản của bạn.
+          </p>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-bottom: 20px;
+            "
+          >
+            <div>
+              <label
+                style="
+                  font-size: 13px;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 8px;
+                "
+                >🎨 Tùy chỉnh Màu chữ (Text Color):</label
+              >
+              <input
+                type="color"
+                id="settingTextColor"
+                value="#f5f5f7"
+                onchange="saveUserSettings()"
+                style="height: 45px; padding: 4px; cursor: pointer"
+              />
+            </div>
+
+            <div>
+              <label
+                style="
+                  font-size: 13px;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 8px;
+                "
+                >🎨 Phong cách Giao diện (Style):</label
+              >
+              <select
+                id="settingStyle"
+                onchange="saveUserSettings()"
+                style="
+                  width: 100%;
+                  background: rgba(0, 0, 0, 0.5);
+                  padding: 8px;
+                  border-radius: 8px;
+                  color: var(--text-main);
+                  border: 1px solid var(--apple-glass-border);
+                "
+              >
+                <option value="apple">🍏 Apple Liquid Glass (Mặc định)</option>
+                <option value="blur">🌫️ Heavy Blur Glass</option>
+                <option value="rgb">🎮 RGB Gaming Neon</option>
+                <option value="basic">🌚 Basic Clean Dark</option>
+                <option value="cyberpunk">🟨 Cyberpunk 2077</option>
+                <option value="matrix">💻 Matrix Hacker</option>
+              </select>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-bottom: 20px;
+            "
+          >
+            <div>
+              <label
+                style="
+                  font-size: 13px;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 8px;
+                "
+                >🎨 Tùy chỉnh Màu chủ đạo (Accent Color):</label
+              >
+              <input
+                type="color"
+                id="settingAccent"
+                value="#0a84ff"
+                onchange="saveUserSettings()"
+                style="height: 45px; padding: 4px; cursor: pointer"
+              />
+            </div>
+
+            <div>
+              <label
+                style="
+                  font-size: 13px;
+                  color: var(--text-muted);
+                  display: block;
+                  margin-bottom: 8px;
+                "
+                >🖼️ Ảnh nền tùy chỉnh (Dán URL hình ảnh):</label
+              >
+              <input
+                type="text"
+                id="settingBgUrl"
+                placeholder="https://example.com/image.jpg"
+                oninput="saveUserSettings()"
+              />
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 15px">
+            <button
+              class="btn-primary"
+              onclick="alert('Đã lưu toàn bộ cài đặt cho tài khoản!')"
+            >
+              Lưu Cài Đặt
+            </button>
+            <button class="btn-secondary" onclick="resetUserSettings()">
+              Khôi phục Mặc định
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <footer>IT Workspace • Full Complete Edition</footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
