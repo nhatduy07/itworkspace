@@ -3,49 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IT Workspace | Complete Edition</title>
+    <title>IT Workspace | Professional Edition</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body id="pageBody">
-    <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ PHONG CÁCH FACEBOOK -->
+    <!-- KHUNG THÔNG BÁO TOAST (TOÀN CỤC) -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ CHUYÊN NGHIỆP -->
     <div id="loginOverlay" class="login-overlay">
       <div class="fb-login-wrapper">
         <div class="fb-left-intro">
           <h1 class="fb-logo-text">itworkspace</h1>
           <p class="fb-intro-desc">
-            Kết nối và làm việc cùng bạn bè, chia sẻ không gian lập trình của
-            riêng bạn.
+            Không gian làm việc và lập trình đẳng cấp, kết nối mượt mà cùng đồng
+            nghiệp.
           </p>
         </div>
 
         <div class="fb-card card" id="authBox">
-          <h2 id="authTitle" style="display: none">ĐĂNG NHẬP</h2>
-
-          <div style="text-align: center; margin-bottom: 20px">
-            <label
-              for="avatarUploadInput"
-              class="fb-avatar-picker-label"
-              title="Chọn ảnh đại diện"
-            >
-              <div id="avatarPreviewBox" class="fb-avatar-preview">👤</div>
-              <span
-                style="
-                  font-size: 11px;
-                  color: var(--accent);
-                  display: block;
-                  margin-top: 6px;
-                "
-                >Chọn ảnh đại diện</span
-              >
-            </label>
-            <input
-              type="file"
-              id="avatarUploadInput"
-              accept="image/*"
-              style="display: none"
-              onchange="previewAvatar(event)"
-            />
-          </div>
+          <h2
+            id="authTitle"
+            style="
+              text-align: center;
+              margin-bottom: 20px;
+              font-weight: 700;
+              display: none;
+            "
+          >
+            ĐĂNG KÝ TÀI KHOẢN MỚI
+          </h2>
 
           <form
             onsubmit="
@@ -56,7 +43,7 @@
             <input
               type="text"
               id="authUsername"
-              placeholder="Tên tài khoản..."
+              placeholder="Tên tài khoản (Duy nhất)..."
               class="fb-input"
               autocomplete="username"
               style="margin-bottom: 12px"
@@ -65,7 +52,7 @@
             <input
               type="password"
               id="authPassword"
-              placeholder="Mật khẩu..."
+              placeholder="Mật khẩu bảo mật..."
               class="fb-input"
               autocomplete="current-password"
               style="margin-bottom: 15px"
@@ -84,6 +71,7 @@
               font-size: 13px;
               text-align: center;
               margin-top: 12px;
+              font-weight: 500;
               display: none;
             "
           ></p>
@@ -97,7 +85,7 @@
               type="button"
               onclick="toggleAuthMode()"
             >
-              Tạo tài khoản mới
+              Đăng ký tài khoản mới
             </button>
           </div>
         </div>
@@ -113,7 +101,7 @@
           <div class="logo-icon"><span class="dot"></span></div>
           <div>
             <h1>IT WORKSPACE</h1>
-            <span class="sub">Full Complete Platform</span>
+            <span class="sub">Professional Suite</span>
           </div>
         </div>
 
@@ -160,11 +148,13 @@
 
       <nav class="nav-container">
         <div class="pill-indicator"></div>
-        <button class="tab-btn active" data-tab="it">Lập Trình & IDE</button>
-        <button class="tab-btn" data-tab="entertainment">YouTube & MU</button>
-        <button class="tab-btn" data-tab="tools">Tiện Ích</button>
+        <button class="tab-btn active" data-tab="it">💻 Lập Trình & IDE</button>
+        <button class="tab-btn" data-tab="entertainment">
+          🎵 Spotify & Giải Trí
+        </button>
+        <button class="tab-btn" data-tab="tools">🛠️ Tiện Ích</button>
         <button class="tab-btn" data-tab="chat">💬 Messenger</button>
-        <button class="tab-btn" data-tab="settings">⚙️ Cài đặt</button>
+        <button class="tab-btn" data-tab="settings">⚙️ Cài Đặt</button>
       </nav>
 
       <!-- TAB 1: LẬP TRÌNH & IDE -->
@@ -212,16 +202,282 @@
           </div>
 
           <div class="card">
-            <h2>Quản lý Task / Đồ án</h2>
+            <h2>Tạo Task nhanh</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 12px;
+              "
+            >
+              Gõ tên task rồi Enter để tạo nhanh. Bấm "Chi tiết" trên thẻ task ở
+              bảng Kanban bên dưới để thêm mô tả, deadline, checklist, tag...
+            </p>
             <div class="video-controls" style="margin-bottom: 0">
               <input
                 type="text"
                 id="todoInput"
-                placeholder="Thêm task mới rồi Enter..."
+                placeholder="Tên task mới rồi Enter..."
               />
+              <button class="btn-primary" onclick="quickAddTask()">Tạo</button>
             </div>
-            <ul class="todo-list" id="todoList"></ul>
           </div>
+        </div>
+
+        <!-- BẢNG QUẢN LÝ TASK / ĐỒ ÁN (KANBAN) -->
+        <div class="card" id="taskBoardCard">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 10px;
+              margin-bottom: 20px;
+            "
+          >
+            <h2 style="margin: 0">📋 Bảng Quản lý Task / Đồ án</h2>
+            <button class="btn-primary" onclick="openTaskModal()">
+              + Task Mới
+            </button>
+          </div>
+
+          <!-- THỐNG KÊ NHANH -->
+          <div class="task-stats-row" id="taskStatsRow"></div>
+
+          <!-- BIỂU ĐỒ THỐNG KÊ -->
+          <div class="task-charts-row">
+            <div class="chart-box">
+              <h3>Trạng thái Task</h3>
+              <svg id="statusDonutChart" viewBox="0 0 160 160"></svg>
+              <div id="donutLegend" class="chart-legend"></div>
+            </div>
+            <div class="chart-box">
+              <h3>Task theo Độ ưu tiên</h3>
+              <svg id="priorityBarChart" viewBox="0 0 260 160"></svg>
+            </div>
+          </div>
+
+          <!-- 4 CỘT KANBAN -->
+          <div class="kanban-board" id="kanbanBoard">
+            <div class="kanban-column" data-status="todo">
+              <div class="kanban-col-header">
+                <span>📝 Cần làm</span>
+                <span class="kanban-count" id="count-todo">0</span>
+              </div>
+              <div
+                class="kanban-col-body"
+                id="col-todo"
+                ondragover="handleColDragOver(event)"
+                ondrop="handleColDrop(event, 'todo')"
+              ></div>
+            </div>
+            <div class="kanban-column" data-status="doing">
+              <div class="kanban-col-header">
+                <span>⚙️ Đang làm</span>
+                <span class="kanban-count" id="count-doing">0</span>
+              </div>
+              <div
+                class="kanban-col-body"
+                id="col-doing"
+                ondragover="handleColDragOver(event)"
+                ondrop="handleColDrop(event, 'doing')"
+              ></div>
+            </div>
+            <div class="kanban-column" data-status="review">
+              <div class="kanban-col-header">
+                <span>🔍 Review</span>
+                <span class="kanban-count" id="count-review">0</span>
+              </div>
+              <div
+                class="kanban-col-body"
+                id="col-review"
+                ondragover="handleColDragOver(event)"
+                ondrop="handleColDrop(event, 'review')"
+              ></div>
+            </div>
+            <div class="kanban-column" data-status="done">
+              <div class="kanban-col-header">
+                <span>✅ Hoàn thành</span>
+                <span class="kanban-count" id="count-done">0</span>
+              </div>
+              <div
+                class="kanban-col-body"
+                id="col-done"
+                ondragover="handleColDragOver(event)"
+                ondrop="handleColDrop(event, 'done')"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL TẠO / SỬA TASK -->
+        <div class="modal-overlay" id="taskModalOverlay">
+          <div class="card modal-box">
+            <div class="modal-header">
+              <h2 id="taskModalTitle">Task Mới</h2>
+              <span class="modal-close" onclick="closeTaskModal()">✕</span>
+            </div>
+            <input type="hidden" id="taskFormId" />
+
+            <div class="grid-2">
+              <div>
+                <label class="field-label">Tên task</label>
+                <input
+                  type="text"
+                  id="taskFormName"
+                  placeholder="Ví dụ: Làm giao diện Login"
+                />
+              </div>
+              <div>
+                <label class="field-label">Môn học</label>
+                <input
+                  type="text"
+                  id="taskFormSubject"
+                  placeholder="Ví dụ: Lập trình Web"
+                />
+              </div>
+            </div>
+
+            <label class="field-label" style="margin-top: 14px">Mô tả</label>
+            <textarea
+              id="taskFormDesc"
+              style="height: 70px"
+              placeholder="Mô tả ngắn gọn nội dung task..."
+            ></textarea>
+
+            <div class="grid-2" style="margin-top: 14px">
+              <div>
+                <label class="field-label">Deadline</label>
+                <input type="datetime-local" id="taskFormDeadline" />
+              </div>
+              <div>
+                <label class="field-label">Mức độ ưu tiên</label>
+                <select id="taskFormPriority">
+                  <option value="Low">🟢 Low</option>
+                  <option value="Medium" selected>🟡 Medium</option>
+                  <option value="High">🟠 High</option>
+                  <option value="Critical">🔴 Critical</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 14px">
+              <div>
+                <label class="field-label">Màu riêng</label>
+                <input
+                  type="color"
+                  id="taskFormColor"
+                  value="#0a84ff"
+                  style="height: 45px; padding: 4px; cursor: pointer"
+                />
+              </div>
+              <div>
+                <label class="field-label">Icon riêng</label>
+                <input
+                  type="text"
+                  id="taskFormIcon"
+                  placeholder="Emoji, ví dụ 💻"
+                  maxlength="4"
+                  value="📌"
+                />
+              </div>
+            </div>
+
+            <label class="field-label" style="margin-top: 14px; display: block"
+              >Tag</label
+            >
+            <div class="tag-picker" id="tagPicker">
+              <label><input type="checkbox" value="HTML" /> HTML</label>
+              <label><input type="checkbox" value="CSS" /> CSS</label>
+              <label
+                ><input type="checkbox" value="JavaScript" /> JavaScript</label
+              >
+              <label><input type="checkbox" value="C++" /> C++</label>
+              <label><input type="checkbox" value="Python" /> Python</label>
+              <label><input type="checkbox" value="Java" /> Java</label>
+              <label><input type="checkbox" value="SQL" /> SQL</label>
+              <label><input type="checkbox" value="AI" /> AI</label>
+              <label><input type="checkbox" value="Web" /> Web</label>
+              <label><input type="checkbox" value="Backend" /> Backend</label>
+              <label><input type="checkbox" value="Frontend" /> Frontend</label>
+              <label><input type="checkbox" value="Database" /> Database</label>
+            </div>
+
+            <label class="field-label" style="margin-top: 14px; display: block"
+              >Checklist</label
+            >
+            <div class="video-controls" style="margin-bottom: 8px">
+              <input
+                type="text"
+                id="checklistItemInput"
+                placeholder="Thêm mục checklist rồi Enter..."
+                onkeydown="
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    addChecklistItemToForm();
+                  }
+                "
+              />
+              <button
+                type="button"
+                class="btn-secondary"
+                onclick="addChecklistItemToForm()"
+              >
+                Thêm
+              </button>
+            </div>
+            <ul class="checklist-list" id="taskFormChecklist"></ul>
+
+            <div class="grid-2" style="margin-top: 14px">
+              <div>
+                <label class="field-label">Link GitHub</label>
+                <input
+                  type="text"
+                  id="taskFormGithub"
+                  placeholder="https://github.com/..."
+                />
+              </div>
+              <div>
+                <label class="field-label">Link Figma</label>
+                <input
+                  type="text"
+                  id="taskFormFigma"
+                  placeholder="https://figma.com/..."
+                />
+              </div>
+            </div>
+
+            <label class="field-label" style="margin-top: 14px"
+              >Link Docs</label
+            >
+            <input
+              type="text"
+              id="taskFormDocs"
+              placeholder="https://docs.google.com/..."
+            />
+
+            <label class="field-label" style="margin-top: 14px">Ghi chú</label>
+            <textarea
+              id="taskFormNotes"
+              style="height: 60px"
+              placeholder="Ghi chú thêm..."
+            ></textarea>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px">
+              <button class="btn-primary" onclick="saveTaskFromModal()">
+                Lưu Task
+              </button>
+              <button class="btn-secondary" onclick="closeTaskModal()">
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODAL CHI TIẾT TASK -->
+        <div class="modal-overlay" id="taskDetailOverlay">
+          <div class="card modal-box" id="taskDetailBox"></div>
         </div>
 
         <div class="card">
@@ -243,7 +499,6 @@
           ></div>
         </div>
 
-        <!-- MỤC CODE ĐÃ ĐƯỢC THAY THẾ BẰNG IDE THỰC TẾ -->
         <div class="card">
           <div
             style="
@@ -302,6 +557,65 @@
 
       <!-- TAB 2: GIẢI TRÍ -->
       <section class="panel" id="panel-entertainment">
+        <!-- SPOTIFY PLAYER -->
+        <div
+          class="card"
+          style="
+            background: rgba(20, 20, 20, 0.75);
+            border: 1px solid rgba(29, 185, 84, 0.35);
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 15px;
+            "
+          >
+            <h2 style="margin: 0; color: #1db954">🎧 Spotify Music & Chill</h2>
+          </div>
+
+          <div class="video-controls" style="margin-bottom: 15px">
+            <input
+              type="text"
+              id="spotifySearchInput"
+              placeholder="Dán link bài hát/playlist Spotify hoặc gõ để phát lofi..."
+              onkeydown="if (event.key === 'Enter') searchSpotifyMusic();"
+            />
+            <button
+              class="btn-primary"
+              onclick="searchSpotifyMusic()"
+              style="
+                background-color: #1db954;
+                box-shadow: 0 10px 30px rgba(29, 185, 84, 0.45);
+              "
+            >
+              Phát Nhạc
+            </button>
+          </div>
+
+          <div id="spotifyFrameContainer">
+            <iframe
+              id="spotifyIframe"
+              style="border-radius: 12px"
+              src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0"
+              width="100%"
+              height="352"
+              frameborder="0"
+              allowfullscreen=""
+              allow="
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                fullscreen;
+                picture-in-picture;
+              "
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+
         <div class="card">
           <div
             style="
@@ -313,7 +627,7 @@
               gap: 10px;
             "
           >
-            <h2 style="margin: 0">YouTube Workspace</h2>
+            <h2 style="margin: 0">📺 YouTube Video</h2>
             <button
               class="btn-secondary"
               id="googleAuthBtn"
@@ -328,7 +642,7 @@
             <input
               type="text"
               id="ytInput"
-              placeholder="Nhập tên bài hát hoặc dán link YouTube..."
+              placeholder="Nhập từ khóa tìm kiếm hoặc dán link YouTube..."
               onkeydown="if (event.key === 'Enter') handleYouTubeAction();"
             />
             <button class="btn-primary" onclick="handleYouTubeAction()">
@@ -583,9 +897,52 @@
               margin-bottom: 20px;
             "
           >
-            Tùy chỉnh giao diện, phong cách hiển thị và màu chữ riêng cho tài
-            khoản của bạn.
+            Tùy chỉnh ảnh đại diện, giao diện, phong cách hiển thị và màu chữ
+            riêng cho tài khoản của bạn.
           </p>
+
+          <!-- KHUNG TÙY CHỈNH AVATAR TRONG SETTING -->
+          <div
+            style="
+              margin-bottom: 25px;
+              display: flex;
+              align-items: center;
+              gap: 20px;
+              background: rgba(255, 255, 255, 0.03);
+              padding: 16px;
+              border-radius: 16px;
+              border: 1px solid var(--apple-glass-border);
+            "
+          >
+            <label
+              for="settingsAvatarInput"
+              style="cursor: pointer"
+              title="Đổi ảnh đại diện"
+            >
+              <div
+                id="settingsAvatarPreview"
+                class="fb-header-avatar"
+                style="width: 64px; height: 64px; font-size: 26px"
+              >
+                👤
+              </div>
+            </label>
+            <input
+              type="file"
+              id="settingsAvatarInput"
+              accept="image/*"
+              style="display: none"
+              onchange="handleSettingsAvatarChange(event)"
+            />
+            <div>
+              <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 4px">
+                Ảnh đại diện cá nhân
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted)">
+                Bấm vào hình tròn để tải lên hoặc thay đổi ảnh đại diện mới.
+              </p>
+            </div>
+          </div>
 
           <div
             style="
@@ -692,6 +1049,38 @@
             </div>
           </div>
 
+          <div
+            style="
+              margin-bottom: 20px;
+              background: rgba(255, 255, 255, 0.03);
+              padding: 16px;
+              border-radius: 16px;
+              border: 1px solid var(--apple-glass-border);
+            "
+          >
+            <label class="field-label"
+              >🔑 YouTube API Key (chỉ lưu trên trình duyệt của bạn):</label
+            >
+            <input
+              type="password"
+              id="settingYtApiKey"
+              placeholder="Dán API Key cá nhân của bạn tại đây..."
+              oninput="saveYtApiKey()"
+            />
+            <p
+              style="font-size: 11px; color: var(--text-muted); margin-top: 8px"
+            >
+              Key được lưu cục bộ (localStorage) trên máy bạn, không nằm trong
+              mã nguồn nên sẽ không lộ ra khi chia sẻ code. Lấy key miễn phí tại
+              <a
+                href="https://console.cloud.google.com/apis/credentials"
+                target="_blank"
+                style="color: var(--accent)"
+                >Google Cloud Console</a
+              >.
+            </p>
+          </div>
+
           <div style="display: flex; gap: 10px; margin-top: 15px">
             <button
               class="btn-primary"
@@ -706,7 +1095,7 @@
         </div>
       </section>
 
-      <footer>IT Workspace • Full Complete Edition</footer>
+      <footer>IT Workspace • Professional Edition</footer>
     </div>
 
     <script src="script.js"></script>
