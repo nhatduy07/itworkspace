@@ -715,7 +715,10 @@ function handleAuth() {
         localStorage.setItem(totalTimeKey, 0);
         const accData = { avatar: "" };
         localStorage.setItem(dataKey, JSON.stringify(accData));
-        showToast("Đăng ký tài khoản thành công! Hãy đăng nhập ngay.", "success");
+        showToast(
+          "Đăng ký tài khoản thành công! Hãy đăng nhập ngay.",
+          "success",
+        );
         toggleAuthMode();
       }
       setAuthLoading(false);
@@ -1093,7 +1096,8 @@ function formatViewCount(numStr) {
   const n = parseInt(numStr || "0");
   if (n >= 1000000)
     return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "Tr lượt xem";
-  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "N lượt xem";
+  if (n >= 1000)
+    return (n / 1000).toFixed(1).replace(/\.0$/, "") + "N lượt xem";
   return n + " lượt xem";
 }
 
@@ -1482,9 +1486,7 @@ function openTaskModal(taskId = null) {
     document.getElementById("taskFormFigma").value = task.figma || "";
     document.getElementById("taskFormDocs").value = task.docs || "";
     document.getElementById("taskFormNotes").value = task.notes || "";
-    taskFormChecklistItems = JSON.parse(
-      JSON.stringify(task.checklist || []),
-    );
+    taskFormChecklistItems = JSON.parse(JSON.stringify(task.checklist || []));
     document
       .querySelectorAll("#tagPicker input[type=checkbox]")
       .forEach((cb) => {
@@ -1753,9 +1755,13 @@ function openTaskDetail(id) {
 
   const links = [];
   if (task.github)
-    links.push(`<div><a href="${task.github}" target="_blank">🔗 GitHub</a></div>`);
+    links.push(
+      `<div><a href="${task.github}" target="_blank">🔗 GitHub</a></div>`,
+    );
   if (task.figma)
-    links.push(`<div><a href="${task.figma}" target="_blank">🎨 Figma</a></div>`);
+    links.push(
+      `<div><a href="${task.figma}" target="_blank">🎨 Figma</a></div>`,
+    );
   if (task.docs)
     links.push(`<div><a href="${task.docs}" target="_blank">📄 Docs</a></div>`);
   const linksHtml =
@@ -1808,10 +1814,7 @@ function toggleChecklistItem(taskId, itemId) {
   const progress = computeTaskProgress(task);
   if (progress === 100 && task.status !== "done") {
     task.status = "done";
-    showToast(
-      "Checklist hoàn tất, task đã chuyển sang Hoàn thành!",
-      "success",
-    );
+    showToast("Checklist hoàn tất, task đã chuyển sang Hoàn thành!", "success");
   }
 
   saveTasks(tasks);
@@ -2061,7 +2064,9 @@ function switchCsSubject(subject) {
   document
     .querySelectorAll(".cs-subject-card")
     .forEach((c) => c.classList.remove("active"));
-  const card = document.querySelector(`.cs-subject-card[data-subject="${subject}"]`);
+  const card = document.querySelector(
+    `.cs-subject-card[data-subject="${subject}"]`,
+  );
   if (card) card.classList.add("active");
 
   document
@@ -2336,4 +2341,31 @@ window.addEventListener("DOMContentLoaded", () => {
     renderMatrixGrid("B");
     switchLinalgOp("add");
   }
+});
+
+// ==========================================
+// [UPDATE] RESPONSIVE MOBILE MENU LOGIC
+// ==========================================
+function toggleMobileMenu() {
+  const nav = document.querySelector(".nav-container");
+  const overlay = document.getElementById("mobileNavOverlay");
+  if (nav && overlay) {
+    nav.classList.toggle("open");
+    overlay.classList.toggle("show");
+  }
+}
+
+// Tự động đóng menu trên Mobile khi bấm chuyển Tab
+window.addEventListener("DOMContentLoaded", () => {
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (window.innerWidth < 992) {
+        const nav = document.querySelector(".nav-container");
+        if (nav && nav.classList.contains("open")) {
+          toggleMobileMenu();
+        }
+      }
+    });
+  });
 });
