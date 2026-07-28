@@ -98,7 +98,10 @@
               </label>
               <a
                 href="#"
-                onclick="handleForgotPassword(); return false;"
+                onclick="
+                  handleForgotPassword();
+                  return false;
+                "
                 style="color: var(--accent); text-decoration: none"
                 >Quên mật khẩu?</a
               >
@@ -162,10 +165,7 @@
 
         <!-- WIDGET HIỂN THỊ TÀI KHOẢN & AVATAR ĐỒNG BỘ -->
         <div class="user-account-widget" id="userAccountWidget">
-          <div
-            class="account-widget-trigger"
-            onclick="toggleAccountDropdown()"
-          >
+          <div class="account-widget-trigger" onclick="toggleAccountDropdown()">
             <div id="headerAvatarDisplay" class="fb-header-avatar">👤</div>
             <div style="text-align: left">
               <div class="account-name-row" id="displayAccountName">
@@ -210,7 +210,10 @@
 
         <!-- MODAL CẮT ẢNH ĐẠI DIỆN (Section 5) -->
         <div class="modal-overlay" id="avatarCropOverlay">
-          <div class="card modal-box" style="max-width: 360px; text-align: center">
+          <div
+            class="card modal-box"
+            style="max-width: 360px; text-align: center"
+          >
             <div class="modal-header">
               <h2>✂️ Cắt ảnh đại diện</h2>
               <span class="modal-close" onclick="closeAvatarCropper()">✕</span>
@@ -304,9 +307,15 @@
 
           <div class="card">
             <h2>Tạo Task nhanh</h2>
-            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px">
-              Gõ tên task rồi Enter để tạo nhanh. Bấm "Chi tiết" trên thẻ task
-              ở bảng Kanban bên dưới để thêm mô tả, deadline, checklist, tag...
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 12px;
+              "
+            >
+              Gõ tên task rồi Enter để tạo nhanh. Bấm "Chi tiết" trên thẻ task ở
+              bảng Kanban bên dưới để thêm mô tả, deadline, checklist, tag...
             </p>
             <div class="video-controls" style="margin-bottom: 0">
               <input
@@ -314,9 +323,7 @@
                 id="todoInput"
                 placeholder="Tên task mới rồi Enter..."
               />
-              <button class="btn-primary" onclick="quickAddTask()">
-                Tạo
-              </button>
+              <button class="btn-primary" onclick="quickAddTask()">Tạo</button>
             </div>
           </div>
         </div>
@@ -481,17 +488,14 @@
               </div>
             </div>
 
-            <label
-              class="field-label"
-              style="margin-top: 14px; display: block"
+            <label class="field-label" style="margin-top: 14px; display: block"
               >Tag</label
             >
             <div class="tag-picker" id="tagPicker">
               <label><input type="checkbox" value="HTML" /> HTML</label>
               <label><input type="checkbox" value="CSS" /> CSS</label>
               <label
-                ><input type="checkbox" value="JavaScript" />
-                JavaScript</label
+                ><input type="checkbox" value="JavaScript" /> JavaScript</label
               >
               <label><input type="checkbox" value="C++" /> C++</label>
               <label><input type="checkbox" value="Python" /> Python</label>
@@ -499,20 +503,12 @@
               <label><input type="checkbox" value="SQL" /> SQL</label>
               <label><input type="checkbox" value="AI" /> AI</label>
               <label><input type="checkbox" value="Web" /> Web</label>
-              <label
-                ><input type="checkbox" value="Backend" /> Backend</label
-              >
-              <label
-                ><input type="checkbox" value="Frontend" /> Frontend</label
-              >
-              <label
-                ><input type="checkbox" value="Database" /> Database</label
-              >
+              <label><input type="checkbox" value="Backend" /> Backend</label>
+              <label><input type="checkbox" value="Frontend" /> Frontend</label>
+              <label><input type="checkbox" value="Database" /> Database</label>
             </div>
 
-            <label
-              class="field-label"
-              style="margin-top: 14px; display: block"
+            <label class="field-label" style="margin-top: 14px; display: block"
               >Checklist</label
             >
             <div class="video-controls" style="margin-bottom: 8px">
@@ -520,7 +516,12 @@
                 type="text"
                 id="checklistItemInput"
                 placeholder="Thêm mục checklist rồi Enter..."
-                onkeydown="if (event.key === 'Enter') { event.preventDefault(); addChecklistItemToForm(); }"
+                onkeydown="
+                  if (event.key === 'Enter') {
+                    event.preventDefault();
+                    addChecklistItemToForm();
+                  }
+                "
               />
               <button
                 type="button"
@@ -560,9 +561,7 @@
               placeholder="https://docs.google.com/..."
             />
 
-            <label class="field-label" style="margin-top: 14px"
-              >Ghi chú</label
-            >
+            <label class="field-label" style="margin-top: 14px">Ghi chú</label>
             <textarea
               id="taskFormNotes"
               style="height: 60px"
@@ -664,11 +663,16 @@
       <section class="panel" id="panel-cs">
         <div class="card">
           <h2>📚 Học Tập Computer Science</h2>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px">
-            Chọn một môn học bên dưới. Môn <b>Đại số tuyến tính</b> đã có đầy
-            đủ lý thuyết, công thức, ví dụ, bài tập và máy tính tương tác; các
-            môn còn lại đang được xây dựng dần trong các bản cập nhật tiếp
-            theo.
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 16px;
+            "
+          >
+            Chọn một môn học bên dưới. Môn <b>Đại số tuyến tính</b> đã có đầy đủ
+            lý thuyết, công thức, ví dụ, bài tập và máy tính tương tác; các môn
+            còn lại đang được xây dựng dần trong các bản cập nhật tiếp theo.
           </p>
           <div class="cs-subject-grid">
             <div
@@ -686,7 +690,9 @@
               onclick="switchCsSubject('dsa')"
             >
               <div class="cs-subject-icon">🌳</div>
-              <div class="cs-subject-name">Cấu trúc dữ liệu &amp; Giải thuật</div>
+              <div class="cs-subject-name">
+                Cấu trúc dữ liệu &amp; Giải thuật
+              </div>
               <div class="cs-subject-status">🔜 Sắp ra mắt</div>
             </div>
             <div
@@ -774,26 +780,30 @@
               <div class="cs-topic-body">
                 <p>
                   <b>Lý thuyết:</b> Ma trận là một bảng số chữ nhật gồm m dòng
-                  và n cột, ký hiệu A = [aᵢⱼ] kích thước m×n. Các loại đặc
-                  biệt: ma trận vuông (m=n), ma trận không, ma trận đơn vị I
-                  (đường chéo chính là 1, còn lại 0), ma trận chuyển vị Aᵀ
-                  (đổi dòng thành cột).
+                  và n cột, ký hiệu A = [aᵢⱼ] kích thước m×n. Các loại đặc biệt:
+                  ma trận vuông (m=n), ma trận không, ma trận đơn vị I (đường
+                  chéo chính là 1, còn lại 0), ma trận chuyển vị Aᵀ (đổi dòng
+                  thành cột).
                 </p>
-                <p><b>Công thức:</b> <span class="cs-formula">(Aᵀ)ᵢⱼ = Aⱼᵢ</span></p>
+                <p>
+                  <b>Công thức:</b> <span class="cs-formula">(Aᵀ)ᵢⱼ = Aⱼᵢ</span>
+                </p>
                 <p>
                   <b>Ví dụ minh họa:</b> Với A =
-                  <span class="cs-formula">[[1,2,3],[4,5,6]]</span> (2×3), ta
-                  có Aᵀ = <span class="cs-formula">[[1,4],[2,5],[3,6]]</span>
+                  <span class="cs-formula">[[1,2,3],[4,5,6]]</span> (2×3), ta có
+                  Aᵀ = <span class="cs-formula">[[1,4],[2,5],[3,6]]</span>
                   (3×2).
                 </p>
-                <p><b>Bài tập mẫu:</b> Tìm chuyển vị của B = [[2,0],[1,3],[5,7]].</p>
+                <p>
+                  <b>Bài tập mẫu:</b> Tìm chuyển vị của B = [[2,0],[1,3],[5,7]].
+                </p>
                 <details class="cs-answer">
                   <summary>Xem đáp án</summary>
                   <p>Bᵀ = [[2,1,5],[0,3,7]]</p>
                 </details>
                 <p>
-                  <b>Bài tập tự luyện:</b> Cho ma trận C = [[3,1],[2,4]]. Tìm
-                  Cᵀ và cho biết C có phải ma trận vuông không?
+                  <b>Bài tập tự luyện:</b> Cho ma trận C = [[3,1],[2,4]]. Tìm Cᵀ
+                  và cho biết C có phải ma trận vuông không?
                 </p>
               </div>
             </details>
@@ -802,9 +812,8 @@
               <summary>2️⃣ Định thức (Determinant)</summary>
               <div class="cs-topic-body">
                 <p>
-                  <b>Lý thuyết:</b> Định thức chỉ tồn tại với ma trận vuông,
-                  cho biết ma trận có khả nghịch hay không (det ≠ 0 thì khả
-                  nghịch).
+                  <b>Lý thuyết:</b> Định thức chỉ tồn tại với ma trận vuông, cho
+                  biết ma trận có khả nghịch hay không (det ≠ 0 thì khả nghịch).
                 </p>
                 <p>
                   <b>Công thức 2×2:</b>
@@ -818,8 +827,8 @@
                   với ma trận [[a,b,c],[d,e,f],[g,h,i]]
                 </p>
                 <p>
-                  <b>Ví dụ minh họa:</b> A = [[2,1],[3,4]] ⟹ det(A) = 2×4 −
-                  1×3 = 5.
+                  <b>Ví dụ minh họa:</b> A = [[2,1],[3,4]] ⟹ det(A) = 2×4 − 1×3
+                  = 5.
                 </p>
                 <p><b>Bài tập mẫu:</b> Tính det([[1,2],[3,4]]).</p>
                 <details class="cs-answer">
@@ -828,8 +837,8 @@
                 </details>
                 <p>
                   <b>Bài tập tự luyện:</b> Tính det([[2,0,1],[1,3,2],[0,1,4]])
-                  bằng quy tắc Sarrus (hoặc dùng máy tính bên dưới để kiểm
-                  tra kết quả).
+                  bằng quy tắc Sarrus (hoặc dùng máy tính bên dưới để kiểm tra
+                  kết quả).
                 </p>
               </div>
             </details>
@@ -868,23 +877,21 @@
               <summary>4️⃣ Hệ phương trình tuyến tính</summary>
               <div class="cs-topic-body">
                 <p>
-                  <b>Lý thuyết:</b> Hệ phương trình tuyến tính có thể viết
-                  dưới dạng ma trận Ax = b. Giải bằng phương pháp khử Gauss
-                  (đưa về dạng tam giác trên) hoặc quy tắc Cramer (dùng định
-                  thức, chỉ áp dụng khi det(A) ≠ 0).
+                  <b>Lý thuyết:</b> Hệ phương trình tuyến tính có thể viết dưới
+                  dạng ma trận Ax = b. Giải bằng phương pháp khử Gauss (đưa về
+                  dạng tam giác trên) hoặc quy tắc Cramer (dùng định thức, chỉ
+                  áp dụng khi det(A) ≠ 0).
                 </p>
                 <p>
                   <b>Công thức Cramer:</b>
-                  <span class="cs-formula">xᵢ = det(Aᵢ) / det(A)</span>, với
-                  Aᵢ là A thay cột i bằng b.
+                  <span class="cs-formula">xᵢ = det(Aᵢ) / det(A)</span>, với Aᵢ
+                  là A thay cột i bằng b.
                 </p>
                 <p>
                   <b>Ví dụ minh họa:</b> Hệ 2x + y = 5 và x + 3y = 10 ⟹ A =
                   [[2,1],[1,3]], b = [5,10]. Giải Gauss cho x = 1, y = 3.
                 </p>
-                <p>
-                  <b>Bài tập mẫu:</b> Giải hệ: x + y = 4 và 2x − y = 2.
-                </p>
+                <p><b>Bài tập mẫu:</b> Giải hệ: x + y = 4 và 2x − y = 2.</p>
                 <details class="cs-answer">
                   <summary>Xem đáp án</summary>
                   <p>Cộng 2 phương trình: 3x = 6 ⟹ x = 2, y = 2</p>
@@ -900,8 +907,8 @@
               <summary>5️⃣ Vector</summary>
               <div class="cs-topic-body">
                 <p>
-                  <b>Lý thuyết:</b> Vector là đại lượng có hướng và độ lớn,
-                  biểu diễn dưới dạng bộ số (v₁, v₂, ..., vₙ).
+                  <b>Lý thuyết:</b> Vector là đại lượng có hướng và độ lớn, biểu
+                  diễn dưới dạng bộ số (v₁, v₂, ..., vₙ).
                 </p>
                 <p>
                   <b>Công thức độ dài:</b>
@@ -911,8 +918,8 @@
                   <span class="cs-formula">u·v = u₁v₁ + u₂v₂ + ... + uₙvₙ</span>
                 </p>
                 <p>
-                  <b>Ví dụ minh họa:</b> v = (3, 4) ⟹ |v| = √(9+16) = 5. Với u
-                  = (1,2), v = (3,4) ⟹ u·v = 1×3 + 2×4 = 11.
+                  <b>Ví dụ minh họa:</b> v = (3, 4) ⟹ |v| = √(9+16) = 5. Với u =
+                  (1,2), v = (3,4) ⟹ u·v = 1×3 + 2×4 = 11.
                 </p>
                 <p><b>Bài tập mẫu:</b> Tính độ dài của vector (6, 8).</p>
                 <details class="cs-answer">
@@ -920,8 +927,8 @@
                   <p>√(36+64) = √100 = 10</p>
                 </details>
                 <p>
-                  <b>Bài tập tự luyện:</b> Tính tích vô hướng của u=(2,−1,3)
-                  và v=(4,0,−2). Hai vector này có vuông góc không?
+                  <b>Bài tập tự luyện:</b> Tính tích vô hướng của u=(2,−1,3) và
+                  v=(4,0,−2). Hai vector này có vuông góc không?
                 </p>
               </div>
             </details>
@@ -931,28 +938,27 @@
               <div class="cs-topic-body">
                 <p>
                   <b>Lý thuyết:</b> Không gian vector V là tập hợp các vector
-                  đóng kín với phép cộng và phép nhân vô hướng, thỏa 8 tiên
-                  đề (giao hoán, kết hợp, phần tử trung hòa, phần tử đối,
-                  phân phối...). Một <b>cơ sở (basis)</b> là tập vector độc
-                  lập tuyến tính sinh ra toàn bộ không gian; số vector trong
-                  cơ sở là <b>số chiều (dimension)</b>.
+                  đóng kín với phép cộng và phép nhân vô hướng, thỏa 8 tiên đề
+                  (giao hoán, kết hợp, phần tử trung hòa, phần tử đối, phân
+                  phối...). Một <b>cơ sở (basis)</b> là tập vector độc lập tuyến
+                  tính sinh ra toàn bộ không gian; số vector trong cơ sở là
+                  <b>số chiều (dimension)</b>.
                 </p>
                 <p>
-                  <b>Ví dụ minh họa:</b> Không gian R² có cơ sở chuẩn
-                  {(1,0), (0,1)} ⟹ dim(R²) = 2. Mọi vector (x,y) đều viết
-                  được thành x(1,0) + y(0,1).
+                  <b>Ví dụ minh họa:</b> Không gian R² có cơ sở chuẩn {(1,0),
+                  (0,1)} ⟹ dim(R²) = 2. Mọi vector (x,y) đều viết được thành
+                  x(1,0) + y(0,1).
                 </p>
                 <p>
-                  <b>Bài tập mẫu:</b> Cơ sở chuẩn của R³ gồm những vector
-                  nào?
+                  <b>Bài tập mẫu:</b> Cơ sở chuẩn của R³ gồm những vector nào?
                 </p>
                 <details class="cs-answer">
                   <summary>Xem đáp án</summary>
                   <p>{(1,0,0), (0,1,0), (0,0,1)} — dim(R³) = 3</p>
                 </details>
                 <p>
-                  <b>Bài tập tự luyện:</b> Hai vector (1,2) và (2,4) có độc
-                  lập tuyến tính không? Vì sao?
+                  <b>Bài tập tự luyện:</b> Hai vector (1,2) và (2,4) có độc lập
+                  tuyến tính không? Vì sao?
                 </p>
               </div>
             </details>
@@ -961,8 +967,8 @@
               <summary>7️⃣ Trị riêng (Eigenvalues)</summary>
               <div class="cs-topic-body">
                 <p>
-                  <b>Lý thuyết:</b> Trị riêng λ của ma trận vuông A thỏa
-                  phương trình đặc trưng det(A − λI) = 0.
+                  <b>Lý thuyết:</b> Trị riêng λ của ma trận vuông A thỏa phương
+                  trình đặc trưng det(A − λI) = 0.
                 </p>
                 <p>
                   <b>Công thức 2×2:</b> Với A=[[a,b],[c,d]], phương trình đặc
@@ -970,17 +976,15 @@
                   <span class="cs-formula">λ² − (a+d)λ + (ad−bc) = 0</span>.
                 </p>
                 <p>
-                  <b>Ví dụ minh họa:</b> A = [[4,1],[2,3]] ⟹ λ² − 7λ + 10 = 0
-                  ⟹ λ = 5 hoặc λ = 2.
+                  <b>Ví dụ minh họa:</b> A = [[4,1],[2,3]] ⟹ λ² − 7λ + 10 = 0 ⟹
+                  λ = 5 hoặc λ = 2.
                 </p>
                 <p><b>Bài tập mẫu:</b> Tìm trị riêng của [[2,0],[0,3]].</p>
                 <details class="cs-answer">
                   <summary>Xem đáp án</summary>
                   <p>Ma trận đường chéo ⟹ λ₁ = 2, λ₂ = 3</p>
                 </details>
-                <p>
-                  <b>Bài tập tự luyện:</b> Tìm trị riêng của [[1,2],[2,1]].
-                </p>
+                <p><b>Bài tập tự luyện:</b> Tìm trị riêng của [[1,2],[2,1]].</p>
               </div>
             </details>
 
@@ -992,12 +996,12 @@
                   (v≠0) thỏa (A − λI)v = 0.
                 </p>
                 <p>
-                  <b>Ví dụ minh họa:</b> Với A=[[4,1],[2,3]], λ=5 ⟹
-                  (A−5I)v=0 ⟹ [[−1,1],[2,−2]]v=0 ⟹ v = (1,1) (hoặc bội số).
+                  <b>Ví dụ minh họa:</b> Với A=[[4,1],[2,3]], λ=5 ⟹ (A−5I)v=0 ⟹
+                  [[−1,1],[2,−2]]v=0 ⟹ v = (1,1) (hoặc bội số).
                 </p>
                 <p>
-                  <b>Bài tập mẫu:</b> Với A=[[4,1],[2,3]], λ=2, tìm vector
-                  riêng tương ứng.
+                  <b>Bài tập mẫu:</b> Với A=[[4,1],[2,3]], λ=2, tìm vector riêng
+                  tương ứng.
                 </p>
                 <details class="cs-answer">
                   <summary>Xem đáp án</summary>
@@ -1155,12 +1159,12 @@
             <div class="cs-coming-soon-icon">🌳</div>
             <h2>Cấu trúc dữ liệu &amp; Giải thuật</h2>
             <p>
-              Sẽ có: Array, Linked List, Stack, Queue, Tree, BST, Heap,
-              Graph, Hash Table — mỗi cấu trúc kèm định nghĩa, hình minh họa
-              SVG, độ phức tạp Big O, code C++/Java/Python và ví dụ thực tế.
-              Cùng các thuật toán Bubble/Selection/Insertion/Merge/Quick
-              Sort, BFS, DFS, Dijkstra, Binary Search với bảng Big O tốt
-              nhất/trung bình/tệ nhất.
+              Sẽ có: Array, Linked List, Stack, Queue, Tree, BST, Heap, Graph,
+              Hash Table — mỗi cấu trúc kèm định nghĩa, hình minh họa SVG, độ
+              phức tạp Big O, code C++/Java/Python và ví dụ thực tế. Cùng các
+              thuật toán Bubble/Selection/Insertion/Merge/Quick Sort, BFS, DFS,
+              Dijkstra, Binary Search với bảng Big O tốt nhất/trung bình/tệ
+              nhất.
             </p>
           </div>
         </div>
@@ -1170,10 +1174,10 @@
             <h2>Ứng dụng Web</h2>
             <p>
               Sẽ có thư viện học HTML (Form, Table, Semantic, SEO), CSS
-              (Flexbox, Grid, Animation, Responsive), JavaScript (DOM,
-              Events, Fetch API, Async/Await, LocalStorage) và NodeJS
-              (Express, REST API, JWT) — mỗi chủ đề kèm lý thuyết, ví dụ và
-              demo chạy trực tiếp.
+              (Flexbox, Grid, Animation, Responsive), JavaScript (DOM, Events,
+              Fetch API, Async/Await, LocalStorage) và NodeJS (Express, REST
+              API, JWT) — mỗi chủ đề kèm lý thuyết, ví dụ và demo chạy trực
+              tiếp.
             </p>
           </div>
         </div>
@@ -1192,42 +1196,54 @@
           <div class="card cs-coming-soon">
             <div class="cs-coming-soon-icon">🗄️</div>
             <h2>Cơ sở dữ liệu</h2>
-            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+            <p>
+              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
+            </p>
           </div>
         </div>
         <div id="cs-oop" class="cs-subject-panel">
           <div class="card cs-coming-soon">
             <div class="cs-coming-soon-icon">🧩</div>
             <h2>Lập trình hướng đối tượng</h2>
-            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+            <p>
+              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
+            </p>
           </div>
         </div>
         <div id="cs-discrete" class="cs-subject-panel">
           <div class="card cs-coming-soon">
             <div class="cs-coming-soon-icon">🔢</div>
             <h2>Toán rời rạc</h2>
-            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+            <p>
+              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
+            </p>
           </div>
         </div>
         <div id="cs-os" class="cs-subject-panel">
           <div class="card cs-coming-soon">
             <div class="cs-coming-soon-icon">🖥️</div>
             <h2>Hệ điều hành</h2>
-            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+            <p>
+              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
+            </p>
           </div>
         </div>
         <div id="cs-architecture" class="cs-subject-panel">
           <div class="card cs-coming-soon">
             <div class="cs-coming-soon-icon">⚙️</div>
             <h2>Kiến trúc máy tính</h2>
-            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+            <p>
+              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
+            </p>
           </div>
         </div>
         <div id="cs-ai" class="cs-subject-panel">
           <div class="card cs-coming-soon">
             <div class="cs-coming-soon-icon">🤖</div>
             <h2>Trí tuệ nhân tạo</h2>
-            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+            <p>
+              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
+            </p>
           </div>
         </div>
       </section>
@@ -1302,7 +1318,11 @@
 
           <div style="margin-top: 16px">
             <div
-              style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px"
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 6px;
+              "
             >
               🕘 Đã nghe gần đây
             </div>
@@ -1311,7 +1331,11 @@
 
           <div style="margin-top: 16px">
             <div
-              style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px"
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 6px;
+              "
             >
               ⭐ Yêu thích
             </div>
@@ -1398,7 +1422,11 @@
             class="search-results"
             style="display: none"
           ></div>
-          <div class="yt-video-list" id="ytHistoryList" style="display: none"></div>
+          <div
+            class="yt-video-list"
+            id="ytHistoryList"
+            style="display: none"
+          ></div>
           <div
             class="yt-video-list"
             id="ytFavoritesList"
@@ -1813,15 +1841,10 @@
               oninput="saveYtApiKey()"
             />
             <p
-              style="
-                font-size: 11px;
-                color: var(--text-muted);
-                margin-top: 8px;
-              "
+              style="font-size: 11px; color: var(--text-muted); margin-top: 8px"
             >
-              Key được lưu cục bộ (localStorage) trên máy bạn, không nằm
-              trong mã nguồn nên sẽ không lộ ra khi chia sẻ code. Lấy key
-              miễn phí tại
+              Key được lưu cục bộ (localStorage) trên máy bạn, không nằm trong
+              mã nguồn nên sẽ không lộ ra khi chia sẻ code. Lấy key miễn phí tại
               <a
                 href="https://console.cloud.google.com/apis/credentials"
                 target="_blank"
