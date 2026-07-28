@@ -118,37 +118,21 @@ function resetUserSettings() {
 }
 
 // ==========================================
-// XỬ LÝ ĐỔI AVATAR TRONG PHẦN SETTING
+// XỬ LÝ ĐỔI AVATAR TRONG PHẦN SETTING (mở popup cắt ảnh, xem thêm bên dưới)
 // ==========================================
 function handleSettingsAvatarChange(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const currentUser = sessionStorage.getItem("currentUser");
-  if (!currentUser) return;
-
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const newAvatarBase64 = e.target.result;
-    const dataKey = "accountData_" + currentUser;
-    let accData = JSON.parse(localStorage.getItem(dataKey)) || {};
-    accData.avatar = newAvatarBase64;
-    localStorage.setItem(dataKey, JSON.stringify(accData));
-
-    // Cập nhật giao diện ngay lập tức
-    loadUserHeaderProfile();
-    loadUserSettings();
-    loadMessengerConversations();
-  };
-  reader.readAsDataURL(file);
+  handleAvatarFileSelected(event);
 }
 
-// Đồng bộ hiển thị Avatar và Tên tài khoản ra giao diện chính & Messenger
 function loadUserHeaderProfile() {
   const currentUser = sessionStorage.getItem("currentUser");
   if (!currentUser) return;
 
-  document.getElementById("displayAccountName").textContent = currentUser;
+  const nameRow = document.getElementById("displayAccountName");
+  if (nameRow) {
+    const nameSpan = nameRow.querySelector("span");
+    if (nameSpan) nameSpan.textContent = currentUser;
+  }
 
   let accData = JSON.parse(
     localStorage.getItem("accountData_" + currentUser),
@@ -161,6 +145,183 @@ function loadUserHeaderProfile() {
     headerAvatar.innerHTML = currentUser.charAt(0).toUpperCase();
     headerAvatar.style.fontWeight = "bold";
   }
+}
+
+// ==========================================
+// DROPDOWN MENU TÀI KHOẢN (Section 2)
+// ==========================================
+function toggleAccountDropdown() {
+  const dropdown = document.getElementById("accountDropdown");
+  if (dropdown) dropdown.classList.toggle("active");
+}
+function closeAccountDropdown() {
+  const dropdown = document.getElementById("accountDropdown");
+  if (dropdown) dropdown.classList.remove("active");
+}
+document.addEventListener("click", (e) => {
+  const widget = document.getElementById("userAccountWidget");
+  if (widget && !widget.contains(e.target)) {
+    closeAccountDropdown();
+  }
+});
+function triggerHeaderAvatarChange() {
+  closeAccountDropdown();
+  const input = document.getElementById("headerAvatarInput");
+  if (input) input.click();
+}
+
+// ==========================================
+// CẮT ẢNH ĐẠI DIỆN (AVATAR CROPPER) - Section 5
+// ==========================================
+const cropState = {
+  naturalW: 0,
+  naturalH: 0,
+  zoom: 1,
+  dx: 0,
+  dy: 0,
+  dragging: false,
+  startX: 0,
+  startY: 0,
+  startDx: 0,
+  startDy: 0,
+  containerSize: 260,
+};
+
+// Nhận ảnh từ ô chọn file (header hoặc settings) rồi mở popup cắt ảnh
+function handleAvatarFileSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => openAvatarCropper(e.target.result);
+  reader.readAsDataURL(file);
+  event.target.value = "";
+}
+
+function openAvatarCropper(dataUrl) {
+  cropState.zoom = 1;
+  cropState.dx = 0;
+  cropState.dy = 0;
+  document.getElementById("cropZoomRange").value = 100;
+
+  const img = document.getElementById("cropImage");
+  img.onload = () => {
+    cropState.naturalW = img.naturalWidth;
+    cropState.naturalH = img.naturalHeight;
+    cropState.dx = 0;
+    cropState.dy = 0;
+    updateCropTransform();
+  };
+  img.src = dataUrl;
+
+  document.getElementById("avatarCropOverlay").classList.add("active");
+  attachCropDragHandlers();
+}
+
+function closeAvatarCropper() {
+  document.getElementById("avatarCropOverlay").classList.remove("active");
+}
+
+function getCropBaseScale() {
+  return Math.max(
+    cropState.containerSize / cropState.naturalW,
+    cropState.containerSize / cropState.naturalH,
+  );
+}
+
+function updateCropTransform() {
+  cropState.zoom = document.getElementById("cropZoomRange").value / 100;
+  const scale = getCropBaseScale() * cropState.zoom;
+  const dispW = cropState.naturalW * scale;
+  const dispH = cropState.naturalH * scale;
+
+  const minDx = cropState.containerSize - dispW;
+  const minDy = cropState.containerSize - dispH;
+  cropState.dx = Math.min(0, Math.max(minDx, cropState.dx));
+  cropState.dy = Math.min(0, Math.max(minDy, cropState.dy));
+
+  const img = document.getElementById("cropImage");
+  img.style.width = dispW + "px";
+  img.style.height = dispH + "px";
+  img.style.transform = `translate(${cropState.dx}px, ${cropState.dy}px)`;
+}
+
+function attachCropDragHandlers() {
+  const container = document.getElementById("cropContainer");
+  if (container.dataset.bound === "true") return;
+  container.dataset.bound = "true";
+
+  const start = (clientX, clientY) => {
+    cropState.dragging = true;
+    cropState.startX = clientX;
+    cropState.startY = clientY;
+    cropState.startDx = cropState.dx;
+    cropState.startDy = cropState.dy;
+    container.style.cursor = "grabbing";
+  };
+  const move = (clientX, clientY) => {
+    if (!cropState.dragging) return;
+    cropState.dx = cropState.startDx + (clientX - cropState.startX);
+    cropState.dy = cropState.startDy + (clientY - cropState.startY);
+    updateCropTransform();
+  };
+  const end = () => {
+    cropState.dragging = false;
+    container.style.cursor = "grab";
+  };
+
+  container.addEventListener("mousedown", (e) => start(e.clientX, e.clientY));
+  window.addEventListener("mousemove", (e) => move(e.clientX, e.clientY));
+  window.addEventListener("mouseup", end);
+
+  container.addEventListener(
+    "touchstart",
+    (e) => {
+      const t = e.touches[0];
+      start(t.clientX, t.clientY);
+    },
+    { passive: true },
+  );
+  container.addEventListener(
+    "touchmove",
+    (e) => {
+      const t = e.touches[0];
+      move(t.clientX, t.clientY);
+      e.preventDefault();
+    },
+    { passive: false },
+  );
+  container.addEventListener("touchend", end);
+}
+
+function saveCroppedAvatar() {
+  const scale = getCropBaseScale() * cropState.zoom;
+  const sx = -cropState.dx / scale;
+  const sy = -cropState.dy / scale;
+  const sSize = cropState.containerSize / scale;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 300;
+  canvas.height = 300;
+  const ctx = canvas.getContext("2d");
+  const img = document.getElementById("cropImage");
+  ctx.drawImage(img, sx, sy, sSize, sSize, 0, 0, 300, 300);
+
+  persistUserAvatar(canvas.toDataURL("image/jpeg", 0.9));
+  closeAvatarCropper();
+  showToast("Đã cập nhật ảnh đại diện!", "success");
+}
+
+function persistUserAvatar(dataUrl) {
+  const currentUser = sessionStorage.getItem("currentUser");
+  if (!currentUser) return;
+  const dataKey = "accountData_" + currentUser;
+  let accData = JSON.parse(localStorage.getItem(dataKey)) || {};
+  accData.avatar = dataUrl;
+  localStorage.setItem(dataKey, JSON.stringify(accData));
+
+  loadUserHeaderProfile();
+  loadUserSettings();
+  loadMessengerConversations();
 }
 
 // ==========================================
@@ -361,6 +522,15 @@ window.addEventListener("DOMContentLoaded", () => {
     loadUserHeaderProfile();
     loadMessengerConversations();
     renderTaskBoard();
+    renderYtLists();
+    renderSpotifyLists();
+  } else {
+    // "Ghi nhớ đăng nhập": điền sẵn tên tài khoản lần đăng nhập trước
+    const remembered = localStorage.getItem("rememberedUsername");
+    if (remembered) {
+      document.getElementById("authUsername").value = remembered;
+      document.getElementById("rememberMeCheckbox").checked = true;
+    }
   }
 });
 
@@ -383,13 +553,106 @@ function toggleAuthMode() {
   }
 }
 
+// Kiểm tra hợp lệ theo thời gian thực khi người dùng đang gõ
+function validateAuthForm() {
+  const user = document.getElementById("authUsername").value.trim();
+  const pass = document.getElementById("authPassword").value.trim();
+  const userErr = document.getElementById("usernameError");
+  const passErr = document.getElementById("passwordError");
+  let valid = true;
+
+  if (user.length > 0 && user.length < 3) {
+    userErr.textContent = "Tên tài khoản cần ít nhất 3 ký tự";
+    valid = false;
+  } else {
+    userErr.textContent = "";
+  }
+
+  if (pass.length > 0 && pass.length < 4) {
+    passErr.textContent = "Mật khẩu cần ít nhất 4 ký tự";
+    valid = false;
+  } else {
+    passErr.textContent = "";
+  }
+  return valid;
+}
+
+function togglePasswordVisibility() {
+  const pwInput = document.getElementById("authPassword");
+  const icon = document.getElementById("pwToggleIcon");
+  if (pwInput.type === "password") {
+    pwInput.type = "text";
+    icon.textContent = "🙈";
+  } else {
+    pwInput.type = "password";
+    icon.textContent = "👁️";
+  }
+}
+
+// Hiệu ứng Ripple khi bấm nút đăng nhập/đăng ký
+function createRipple(event) {
+  const button = event.currentTarget;
+  const oldRipple = button.querySelector(".ripple");
+  if (oldRipple) oldRipple.remove();
+
+  const diameter = Math.max(button.clientWidth, button.clientHeight);
+  const rect = button.getBoundingClientRect();
+  const circle = document.createElement("span");
+  circle.className = "ripple";
+  circle.style.width = circle.style.height = diameter + "px";
+  circle.style.left = event.clientX - rect.left - diameter / 2 + "px";
+  circle.style.top = event.clientY - rect.top - diameter / 2 + "px";
+  button.appendChild(circle);
+}
+
+function setAuthLoading(isLoading) {
+  const btn = document.getElementById("authBtn");
+  const btnText = document.getElementById("authBtnText");
+  const spinner = document.getElementById("authBtnSpinner");
+  if (!btn) return;
+  btn.disabled = isLoading;
+  if (spinner) spinner.style.display = isLoading ? "inline-block" : "none";
+  if (btnText) {
+    btnText.style.opacity = isLoading ? "0.6" : "1";
+  }
+}
+
+// Quên mật khẩu: vì ứng dụng không có backend/email, cho phép đặt lại
+// mật khẩu trực tiếp ngay trên trình duyệt (dữ liệu vẫn chỉ lưu local).
+function handleForgotPassword() {
+  const user = prompt("Nhập tên tài khoản cần khôi phục mật khẩu:");
+  if (!user) return;
+
+  const userKey = "account_" + user.trim();
+  if (!localStorage.getItem(userKey)) {
+    alert("Không tìm thấy tài khoản này!");
+    return;
+  }
+
+  const newPass = prompt("Nhập mật khẩu mới cho tài khoản '" + user + "':");
+  if (!newPass || newPass.trim().length < 4) {
+    alert("Mật khẩu mới cần ít nhất 4 ký tự!");
+    return;
+  }
+
+  localStorage.setItem(userKey, newPass.trim());
+  alert("Đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.");
+}
+
 function handleAuth() {
   const user = document.getElementById("authUsername").value.trim();
   const pass = document.getElementById("authPassword").value.trim();
   const errorMsg = document.getElementById("authError");
+  const rememberMe = document.getElementById("rememberMeCheckbox").checked;
 
   if (!user || !pass) {
     errorMsg.textContent = "Vui lòng nhập đầy đủ tên tài khoản và mật khẩu!";
+    errorMsg.style.display = "block";
+    return;
+  }
+
+  if (!validateAuthForm()) {
+    errorMsg.textContent = "Vui lòng kiểm tra lại thông tin nhập!";
     errorMsg.style.display = "block";
     return;
   }
@@ -398,44 +661,66 @@ function handleAuth() {
   const dataKey = "accountData_" + user;
   const totalTimeKey = "totalUsageTime_" + user;
 
-  if (isLoginMode) {
-    const savedPass = localStorage.getItem(userKey);
-    if (savedPass && savedPass === pass) {
-      sessionStorage.setItem("itDashboardLogged", "true");
-      sessionStorage.setItem("currentUser", user);
+  setAuthLoading(true);
 
-      if (!localStorage.getItem(dataKey)) {
-        localStorage.setItem(dataKey, JSON.stringify({ avatar: "" }));
+  // Giả lập thời gian xử lý để hiệu ứng loading hiển thị mượt mà
+  setTimeout(() => {
+    if (isLoginMode) {
+      const savedPass = localStorage.getItem(userKey);
+      if (savedPass && savedPass === pass) {
+        sessionStorage.setItem("itDashboardLogged", "true");
+        sessionStorage.setItem("currentUser", user);
+
+        if (!localStorage.getItem(dataKey)) {
+          localStorage.setItem(dataKey, JSON.stringify({ avatar: "" }));
+        }
+
+        if (rememberMe) {
+          localStorage.setItem("rememberedUsername", user);
+        } else {
+          localStorage.removeItem("rememberedUsername");
+        }
+
+        loginStartTime = Date.now();
+        sessionStorage.setItem("loginStartTime", loginStartTime);
+
+        const overlay = document.getElementById("loginOverlay");
+        overlay.classList.add("login-success-flash");
+        setTimeout(() => {
+          overlay.style.display = "none";
+          overlay.classList.remove("login-success-flash");
+        }, 400);
+
+        updateAccountHeaderUI();
+        startUsageTracking();
+        loadUserSettings();
+        loadUserHeaderProfile();
+        loadMessengerConversations();
+        renderTaskBoard();
+        renderYtLists();
+        renderSpotifyLists();
+        showToast("Đăng nhập thành công! Chào mừng " + user, "success");
+      } else {
+        errorMsg.textContent = "Tên tài khoản hoặc mật khẩu không chính xác!";
+        errorMsg.style.display = "block";
       }
-
-      loginStartTime = Date.now();
-      sessionStorage.setItem("loginStartTime", loginStartTime);
-
-      document.getElementById("loginOverlay").style.display = "none";
-      updateAccountHeaderUI();
-      startUsageTracking();
-      loadUserSettings();
-      loadUserHeaderProfile();
-      loadMessengerConversations();
-      renderTaskBoard();
+      setAuthLoading(false);
     } else {
-      errorMsg.textContent = "Tên tài khoản hoặc mật khẩu không chính xác!";
-      errorMsg.style.display = "block";
+      if (localStorage.getItem(userKey)) {
+        errorMsg.textContent =
+          "Tên tài khoản này đã được sử dụng bởi người khác. Vui lòng chọn tên khác!";
+        errorMsg.style.display = "block";
+      } else {
+        localStorage.setItem(userKey, pass);
+        localStorage.setItem(totalTimeKey, 0);
+        const accData = { avatar: "" };
+        localStorage.setItem(dataKey, JSON.stringify(accData));
+        showToast("Đăng ký tài khoản thành công! Hãy đăng nhập ngay.", "success");
+        toggleAuthMode();
+      }
+      setAuthLoading(false);
     }
-  } else {
-    if (localStorage.getItem(userKey)) {
-      errorMsg.textContent =
-        "Tên tài khoản này đã được sử dụng bởi người khác. Vui lòng chọn tên khác!";
-      errorMsg.style.display = "block";
-    } else {
-      localStorage.setItem(userKey, pass);
-      localStorage.setItem(totalTimeKey, 0);
-      const accData = { avatar: "" };
-      localStorage.setItem(dataKey, JSON.stringify(accData));
-      alert("Đăng ký tài khoản thành công! Hãy đăng nhập ngay.");
-      toggleAuthMode();
-    }
-  }
+  }, 600);
 }
 
 function saveCurrentSessionTime() {
@@ -518,32 +803,115 @@ function switchCompilerLanguage() {
 // ==========================================
 // TÍNH NĂNG SPOTIFY: TÌM KIẾM HOẶC DÁN LINK BÀI HÁT
 // ==========================================
+// ==========================================
+// TÍNH NĂNG SPOTIFY: TÌM KIẾM/PHÁT + LỊCH SỬ + YÊU THÍCH (Section 4)
+// ==========================================
+// Ghi chú: Spotify Embed công khai không cho phép điều khiển volume/shuffle/
+// repeat từ bên ngoài một cách ổn định (iFrame API chính thức của Spotify
+// từng bị lỗi và bị cộng đồng report là không đáng tin cậy). Vì vậy phần
+// dưới tập trung vào những gì Embed làm tốt và ổn định: phát nhạc, lưu lịch
+// sử nghe gần đây và danh sách yêu thích ngay trên giao diện.
+let currentSpotifyEntry = null;
+
+function spotifyStorageKey(kind) {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return `spotify${kind}_${currentUser}`;
+}
+function getSpotifyList(kind) {
+  return JSON.parse(localStorage.getItem(spotifyStorageKey(kind))) || [];
+}
+function saveSpotifyList(kind, list) {
+  localStorage.setItem(spotifyStorageKey(kind), JSON.stringify(list));
+}
+
 function searchSpotifyMusic() {
   const input = document.getElementById("spotifySearchInput").value.trim();
   if (!input) return;
 
   let spotifyUri = "";
+  let label = input;
   const match = input.match(/(playlist|track|album|artist)\/([a-zA-Z0-9]+)/);
   if (match) {
     spotifyUri = `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0`;
   } else {
     spotifyUri =
       "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0";
+    label = "Lofi mặc định";
     alert(
       "Spotify yêu cầu dán chính xác link bài hát/playlist từ ứng dụng Spotify để phát trực tiếp!",
     );
   }
 
+  currentSpotifyEntry = { uri: spotifyUri, label };
+  renderSpotifyFrame(spotifyUri);
+
+  let history = getSpotifyList("History").filter((h) => h.uri !== spotifyUri);
+  history.unshift(currentSpotifyEntry);
+  history = history.slice(0, 15);
+  saveSpotifyList("History", history);
+  renderSpotifyLists();
+}
+
+function renderSpotifyFrame(uri) {
   document.getElementById("spotifyFrameContainer").innerHTML = `
-    <iframe id="spotifyIframe" style="border-radius:12px" src="${spotifyUri}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    <iframe id="spotifyIframe" style="border-radius:12px" src="${uri}" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   `;
 }
 
+function playSpotifyEntry(uri, label) {
+  currentSpotifyEntry = { uri, label };
+  renderSpotifyFrame(uri);
+}
+
+function toggleSpotifyFavorite() {
+  if (!currentSpotifyEntry) {
+    showToast(
+      "Hãy phát một bài hát/playlist trước khi lưu yêu thích!",
+      "warning",
+    );
+    return;
+  }
+  let favorites = getSpotifyList("Favorites");
+  const exists = favorites.find((f) => f.uri === currentSpotifyEntry.uri);
+  if (exists) {
+    favorites = favorites.filter((f) => f.uri !== currentSpotifyEntry.uri);
+    showToast("Đã bỏ yêu thích", "info");
+  } else {
+    favorites.unshift(currentSpotifyEntry);
+    showToast("Đã lưu vào yêu thích", "success");
+  }
+  saveSpotifyList("Favorites", favorites);
+  renderSpotifyLists();
+}
+
+function spotifyChipHtml(entry) {
+  const safeLabel = (entry.label || "Spotify").slice(0, 28).replace(/'/g, "");
+  const safeUri = entry.uri.replace(/'/g, "");
+  return `<button class="spotify-chip" onclick="playSpotifyEntry('${safeUri}', '${safeLabel}')">🎵 ${safeLabel}</button>`;
+}
+
+function renderSpotifyLists() {
+  const historyEl = document.getElementById("spotifyHistoryChips");
+  const favEl = document.getElementById("spotifyFavoriteChips");
+  if (!historyEl || !favEl) return;
+
+  const history = getSpotifyList("History");
+  historyEl.innerHTML = history.length
+    ? history.map(spotifyChipHtml).join("")
+    : `<span class="yt-empty" style="padding: 0;">Chưa có lịch sử nghe.</span>`;
+
+  const favorites = getSpotifyList("Favorites");
+  favEl.innerHTML = favorites.length
+    ? favorites.map(spotifyChipHtml).join("")
+    : `<span class="yt-empty" style="padding: 0;">Chưa có mục yêu thích.</span>`;
+}
+
 // ==========================================
-// YOUTUBE: TÌM KIẾM, ẨN DANH SÁCH & ĐIỀU HƯỚNG NEXT/PREV
+// YOUTUBE: TÌM KIẾM, LỊCH SỬ, YÊU THÍCH, PLAYLIST CÁ NHÂN (Section 3)
 // ==========================================
 let currentPlaylist = [];
 let currentPlaylistIndex = 0;
+let videoMetaCache = {};
 
 function loginGoogleAccount() {
   let isGoogleLogged = localStorage.getItem("googleLoggedIn") === "true";
@@ -569,6 +937,167 @@ function loginGoogleAccount() {
   }
 }
 
+// ---------- Lưu trữ: lịch sử / yêu thích / playlist cá nhân ----------
+function ytStorageKey(kind) {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return `yt${kind}_${currentUser}`;
+}
+function getYtList(kind) {
+  return JSON.parse(localStorage.getItem(ytStorageKey(kind))) || [];
+}
+function saveYtList(kind, list) {
+  localStorage.setItem(ytStorageKey(kind), JSON.stringify(list));
+}
+function cacheVideoMeta(video) {
+  videoMetaCache[video.id] = video;
+}
+function getVideoMeta(id) {
+  return (
+    videoMetaCache[id] || {
+      id,
+      title: "Video đã lưu",
+      channel: "",
+      thumb: `https://i.ytimg.com/vi/${id}/mqdefault.jpg`,
+    }
+  );
+}
+
+function addToYtHistory(video) {
+  let list = getYtList("History").filter((v) => v.id !== video.id);
+  list.unshift({ ...video, viewedAt: Date.now() });
+  list = list.slice(0, 30);
+  saveYtList("History", list);
+  renderYtLists();
+}
+
+function isYtFavorite(id) {
+  return getYtList("Favorites").some((v) => v.id === id);
+}
+function toggleYtFavorite(id) {
+  const video = getVideoMeta(id);
+  let list = getYtList("Favorites");
+  if (list.find((v) => v.id === id)) {
+    list = list.filter((v) => v.id !== id);
+    showToast("Đã bỏ yêu thích", "info");
+  } else {
+    list.unshift(video);
+    showToast("Đã thêm vào yêu thích", "success");
+  }
+  saveYtList("Favorites", list);
+  renderYtLists();
+}
+
+function isInYtPlaylist(id) {
+  return getYtList("Playlist").some((v) => v.id === id);
+}
+function toggleYtPlaylist(id) {
+  const video = getVideoMeta(id);
+  let list = getYtList("Playlist");
+  if (list.find((v) => v.id === id)) {
+    list = list.filter((v) => v.id !== id);
+    showToast("Đã xóa khỏi playlist", "info");
+  } else {
+    list.push(video);
+    showToast("Đã thêm vào playlist cá nhân", "success");
+  }
+  saveYtList("Playlist", list);
+  renderYtLists();
+}
+
+function removeFromYtHistory(id) {
+  saveYtList(
+    "History",
+    getYtList("History").filter((v) => v.id !== id),
+  );
+  renderYtLists();
+}
+
+// ---------- Render: hàng video dùng chung cho lịch sử/yêu thích/playlist ----------
+function renderYtVideoRow(video, kind) {
+  const fav = isYtFavorite(video.id);
+  const inPlaylist = isInYtPlaylist(video.id);
+  return `
+    <div class="yt-video-row">
+      <img src="${video.thumb}" alt="thumb" onclick="playSearchedVideo('${video.id}')">
+      <div class="yt-video-info" onclick="playSearchedVideo('${video.id}')">
+        <div class="yt-video-title" title="${video.title}">${video.title}</div>
+        <div class="yt-video-sub">${[video.channel, video.duration, video.views].filter(Boolean).join(" • ")}</div>
+      </div>
+      <div class="yt-video-actions">
+        <span class="yt-icon-btn ${fav ? "active" : ""}" onclick="toggleYtFavorite('${video.id}')" title="Yêu thích">⭐</span>
+        <span class="yt-icon-btn ${inPlaylist ? "active" : ""}" onclick="toggleYtPlaylist('${video.id}')" title="Thêm vào playlist">${inPlaylist ? "✅" : "➕"}</span>
+        ${kind === "history" ? `<span class="yt-icon-btn" onclick="removeFromYtHistory('${video.id}')" title="Xóa khỏi lịch sử">🗑</span>` : ""}
+      </div>
+    </div>`;
+}
+
+function renderYtLists() {
+  const historyEl = document.getElementById("ytHistoryList");
+  const favEl = document.getElementById("ytFavoritesList");
+  const playlistEl = document.getElementById("ytPlaylistList");
+  if (!historyEl || !favEl || !playlistEl) return;
+
+  const history = getYtList("History");
+  historyEl.innerHTML = history.length
+    ? history.map((v) => renderYtVideoRow(v, "history")).join("")
+    : `<div class="yt-empty">Chưa có lịch sử xem nào.</div>`;
+
+  const favorites = getYtList("Favorites");
+  favEl.innerHTML = favorites.length
+    ? favorites.map((v) => renderYtVideoRow(v, "favorites")).join("")
+    : `<div class="yt-empty">Chưa có video yêu thích nào.</div>`;
+
+  const playlist = getYtList("Playlist");
+  playlistEl.innerHTML = playlist.length
+    ? playlist.map((v) => renderYtVideoRow(v, "playlist")).join("")
+    : `<div class="yt-empty">Playlist cá nhân trống.</div>`;
+}
+
+// ---------- Chuyển đổi giữa Tìm kiếm / Lịch sử / Yêu thích / Playlist ----------
+function switchYtView(view) {
+  document
+    .querySelectorAll(".yt-subtab-btn")
+    .forEach((b) => b.classList.remove("active"));
+  const activeBtn = document.querySelector(
+    `.yt-subtab-btn[data-ytview="${view}"]`,
+  );
+  if (activeBtn) activeBtn.classList.add("active");
+
+  const searchResults = document.getElementById("searchResults");
+  searchResults.style.display =
+    view === "search" && searchResults.innerHTML.trim() ? "grid" : "none";
+  document.getElementById("ytHistoryList").style.display =
+    view === "history" ? "flex" : "none";
+  document.getElementById("ytFavoritesList").style.display =
+    view === "favorites" ? "flex" : "none";
+  document.getElementById("ytPlaylistList").style.display =
+    view === "playlist" ? "flex" : "none";
+
+  if (view !== "search") renderYtLists();
+}
+
+// ---------- Định dạng thời lượng & lượt xem ----------
+function formatISODuration(iso) {
+  const match = (iso || "").match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return "";
+  const h = parseInt(match[1] || 0);
+  const m = parseInt(match[2] || 0);
+  const s = parseInt(match[3] || 0);
+  const parts = [];
+  if (h) parts.push(h);
+  parts.push(h ? String(m).padStart(2, "0") : String(m));
+  parts.push(String(s).padStart(2, "0"));
+  return parts.join(":");
+}
+function formatViewCount(numStr) {
+  const n = parseInt(numStr || "0");
+  if (n >= 1000000)
+    return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "Tr lượt xem";
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "N lượt xem";
+  return n + " lượt xem";
+}
+
+// ---------- Phát video + ghi lịch sử ----------
 function playVideoId(id) {
   const placeholder = document.getElementById("playerPlaceholder");
   if (placeholder) placeholder.style.display = "none";
@@ -576,10 +1105,7 @@ function playVideoId(id) {
   const box = document.getElementById("playerBox");
   box.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"></iframe>`;
 
-  const resultsDiv = document.getElementById("searchResults");
-  if (resultsDiv) {
-    resultsDiv.style.display = "none";
-  }
+  addToYtHistory(getVideoMeta(id));
 }
 
 function playSearchedVideo(id) {
@@ -615,6 +1141,8 @@ async function handleYouTubeAction() {
   const resultsDiv = document.getElementById("searchResults");
   if (!input) return;
 
+  switchYtView("search");
+
   const m = input.match(
     /(?:v=|youtu\.be\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/,
   );
@@ -649,10 +1177,29 @@ async function handleYouTubeAction() {
     }
 
     if (data.items && data.items.length > 0) {
+      const videoIds = data.items.map((item) => item.id.videoId);
+
+      // Gọi thêm videos.list để lấy thời lượng & lượt xem cho từng video
+      let detailsMap = {};
+      try {
+        const detailsRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics&id=${videoIds.join(",")}&key=${ytApiKey}`,
+        );
+        const detailsData = await detailsRes.json();
+        (detailsData.items || []).forEach((d) => {
+          detailsMap[d.id] = {
+            duration: formatISODuration(d.contentDetails.duration),
+            views: formatViewCount(d.statistics.viewCount),
+          };
+        });
+      } catch (e) {
+        // Nếu lỗi khi lấy chi tiết, vẫn hiển thị kết quả tìm kiếm cơ bản
+      }
+
       resultsDiv.style.display = "grid";
       resultsDiv.innerHTML = "";
 
-      currentPlaylist = data.items.map((item) => item.id.videoId);
+      currentPlaylist = videoIds;
       currentPlaylistIndex = 0;
 
       data.items.forEach((item) => {
@@ -660,13 +1207,34 @@ async function handleYouTubeAction() {
         const title = item.snippet.title;
         const channel = item.snippet.channelTitle;
         const thumb = item.snippet.thumbnails.medium.url;
+        const details = detailsMap[vid] || {};
+
+        const video = {
+          id: vid,
+          title,
+          channel,
+          thumb,
+          duration: details.duration || "",
+          views: details.views || "",
+        };
+        cacheVideoMeta(video);
+
+        const fav = isYtFavorite(vid);
+        const inPlaylist = isInYtPlaylist(vid);
 
         resultsDiv.innerHTML += `
-          <div class="result-item-grid" onclick="playSearchedVideo('${vid}')" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--apple-glass-border); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform 0.2s;">
-            <img src="${thumb}" alt="thumb" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
-            <div class="info" style="padding: 10px;">
-              <div class="title" style="font-size: 13px; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${title}">${title}</div>
-              <div class="channel" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${channel}</div>
+          <div class="result-item-grid" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--apple-glass-border); border-radius: 14px; overflow: hidden; transition: transform 0.2s;">
+            <div onclick="playSearchedVideo('${vid}')" style="cursor: pointer;">
+              <img src="${thumb}" alt="thumb" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+              ${details.duration ? `<span class="yt-duration-badge">${details.duration}</span>` : ""}
+              <div class="info" style="padding: 10px 10px 6px;">
+                <div class="title" style="font-size: 13px; font-weight: 500; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${title}">${title}</div>
+                <div class="channel" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">${[channel, details.views].filter(Boolean).join(" • ")}</div>
+              </div>
+            </div>
+            <div class="yt-card-actions">
+              <span class="yt-icon-btn ${fav ? "active" : ""}" onclick="toggleYtFavorite('${vid}')" title="Yêu thích">⭐</span>
+              <span class="yt-icon-btn ${inPlaylist ? "active" : ""}" onclick="toggleYtPlaylist('${vid}')" title="Thêm vào playlist">${inPlaylist ? "✅" : "➕"}</span>
             </div>
           </div>
         `;
@@ -914,7 +1482,9 @@ function openTaskModal(taskId = null) {
     document.getElementById("taskFormFigma").value = task.figma || "";
     document.getElementById("taskFormDocs").value = task.docs || "";
     document.getElementById("taskFormNotes").value = task.notes || "";
-    taskFormChecklistItems = JSON.parse(JSON.stringify(task.checklist || []));
+    taskFormChecklistItems = JSON.parse(
+      JSON.stringify(task.checklist || []),
+    );
     document
       .querySelectorAll("#tagPicker input[type=checkbox]")
       .forEach((cb) => {
@@ -1183,13 +1753,9 @@ function openTaskDetail(id) {
 
   const links = [];
   if (task.github)
-    links.push(
-      `<div><a href="${task.github}" target="_blank">🔗 GitHub</a></div>`,
-    );
+    links.push(`<div><a href="${task.github}" target="_blank">🔗 GitHub</a></div>`);
   if (task.figma)
-    links.push(
-      `<div><a href="${task.figma}" target="_blank">🎨 Figma</a></div>`,
-    );
+    links.push(`<div><a href="${task.figma}" target="_blank">🎨 Figma</a></div>`);
   if (task.docs)
     links.push(`<div><a href="${task.docs}" target="_blank">📄 Docs</a></div>`);
   const linksHtml =
@@ -1242,7 +1808,10 @@ function toggleChecklistItem(taskId, itemId) {
   const progress = computeTaskProgress(task);
   if (progress === 100 && task.status !== "done") {
     task.status = "done";
-    showToast("Checklist hoàn tất, task đã chuyển sang Hoàn thành!", "success");
+    showToast(
+      "Checklist hoàn tất, task đã chuyển sang Hoàn thành!",
+      "success",
+    );
   }
 
   saveTasks(tasks);
@@ -1484,3 +2053,287 @@ function updateClock() {
 }
 updateClock();
 setInterval(updateClock, 1000);
+
+// ==========================================
+// TAB HỌC TẬP CS - CHUYỂN MÔN HỌC (Section 2)
+// ==========================================
+function switchCsSubject(subject) {
+  document
+    .querySelectorAll(".cs-subject-card")
+    .forEach((c) => c.classList.remove("active"));
+  const card = document.querySelector(`.cs-subject-card[data-subject="${subject}"]`);
+  if (card) card.classList.add("active");
+
+  document
+    .querySelectorAll(".cs-subject-panel")
+    .forEach((p) => p.classList.remove("active"));
+  const panel = document.getElementById("cs-" + subject);
+  if (panel) panel.classList.add("active");
+}
+
+// ==========================================
+// MÁY TÍNH ĐẠI SỐ TUYẾN TÍNH (Section 3 & 7)
+// ==========================================
+let currentLinalgOp = "add";
+
+function switchLinalgOp(op) {
+  currentLinalgOp = op;
+  document
+    .querySelectorAll(".linalg-op-btn")
+    .forEach((b) => b.classList.remove("active"));
+  const btn = document.querySelector(`.linalg-op-btn[data-op="${op}"]`);
+  if (btn) btn.classList.add("active");
+
+  const needsB = op === "add" || op === "sub" || op === "mul";
+  const needsSolve = op === "solve";
+
+  document.getElementById("matBWrapper").style.display = needsB
+    ? "block"
+    : "none";
+  document.getElementById("vecBWrapper").style.display = needsSolve
+    ? "block"
+    : "none";
+
+  if (needsSolve) renderVecBGrid();
+
+  const resultBox = document.getElementById("linalgResult");
+  if (resultBox) resultBox.style.display = "none";
+}
+
+function renderMatrixGrid(name) {
+  const rows = parseInt(document.getElementById(`mat${name}Rows`).value) || 1;
+  const cols = parseInt(document.getElementById(`mat${name}Cols`).value) || 1;
+  const grid = document.getElementById(`mat${name}Grid`);
+  if (!grid) return;
+  grid.style.gridTemplateColumns = `repeat(${cols}, 60px)`;
+
+  let html = "";
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      html += `<input type="number" id="mat${name}_${r}_${c}" value="0" class="matrix-cell">`;
+    }
+  }
+  grid.innerHTML = html;
+
+  if (name === "A") renderVecBGrid();
+}
+
+function renderVecBGrid() {
+  const grid = document.getElementById("vecBGrid");
+  if (!grid) return;
+  const rows = parseInt(document.getElementById("matARows").value) || 1;
+  grid.style.gridTemplateColumns = `60px`;
+
+  let html = "";
+  for (let r = 0; r < rows; r++) {
+    html += `<input type="number" id="vecB_${r}_0" value="0" class="matrix-cell">`;
+  }
+  grid.innerHTML = html;
+}
+
+function readMatrix(name, rows, cols) {
+  const m = [];
+  for (let r = 0; r < rows; r++) {
+    const row = [];
+    for (let c = 0; c < cols; c++) {
+      const el = document.getElementById(`mat${name}_${r}_${c}`);
+      row.push(parseFloat(el.value) || 0);
+    }
+    m.push(row);
+  }
+  return m;
+}
+
+function fmtNum(n) {
+  const rounded = Math.round(n * 10000) / 10000;
+  return Object.is(rounded, -0) ? 0 : rounded;
+}
+
+function renderMatrixTable(M) {
+  return `<table style="border-collapse:collapse;margin-top:10px;">${M.map(
+    (row) =>
+      `<tr>${row
+        .map(
+          (v) =>
+            `<td style="padding:6px 12px;border:1px solid var(--apple-glass-border);text-align:center;">${fmtNum(v)}</td>`,
+        )
+        .join("")}</tr>`,
+  ).join("")}</table>`;
+}
+
+// ---------- Các phép toán ma trận cốt lõi ----------
+function matAdd(A, B) {
+  if (A.length !== B.length || A[0].length !== B[0].length) {
+    throw new Error("Hai ma trận phải cùng kích thước để cộng!");
+  }
+  return A.map((row, r) => row.map((v, c) => v + B[r][c]));
+}
+
+function matSub(A, B) {
+  if (A.length !== B.length || A[0].length !== B[0].length) {
+    throw new Error("Hai ma trận phải cùng kích thước để trừ!");
+  }
+  return A.map((row, r) => row.map((v, c) => v - B[r][c]));
+}
+
+function matMul(A, B) {
+  if (A[0].length !== B.length) {
+    throw new Error("Số cột của A phải bằng số dòng của B để nhân!");
+  }
+  const result = [];
+  for (let r = 0; r < A.length; r++) {
+    const row = [];
+    for (let c = 0; c < B[0].length; c++) {
+      let sum = 0;
+      for (let k = 0; k < B.length; k++) sum += A[r][k] * B[k][c];
+      row.push(sum);
+    }
+    result.push(row);
+  }
+  return result;
+}
+
+function matDeterminant(A) {
+  const n = A.length;
+  if (n !== A[0].length) {
+    throw new Error("Chỉ tính được định thức của ma trận vuông!");
+  }
+  const M = A.map((row) => row.slice());
+  let det = 1;
+  for (let i = 0; i < n; i++) {
+    let pivotRow = i;
+    for (let k = i + 1; k < n; k++) {
+      if (Math.abs(M[k][i]) > Math.abs(M[pivotRow][i])) pivotRow = k;
+    }
+    if (Math.abs(M[pivotRow][i]) < 1e-10) return 0;
+    if (pivotRow !== i) {
+      [M[i], M[pivotRow]] = [M[pivotRow], M[i]];
+      det *= -1;
+    }
+    det *= M[i][i];
+    for (let k = i + 1; k < n; k++) {
+      const factor = M[k][i] / M[i][i];
+      for (let j = i; j < n; j++) M[k][j] -= factor * M[i][j];
+    }
+  }
+  return det;
+}
+
+function matInverse(A) {
+  const n = A.length;
+  if (n !== A[0].length) {
+    throw new Error("Chỉ tính được nghịch đảo của ma trận vuông!");
+  }
+  const M = A.map((row, r) => [
+    ...row,
+    ...Array.from({ length: n }, (_, c) => (c === r ? 1 : 0)),
+  ]);
+
+  for (let i = 0; i < n; i++) {
+    let pivotRow = i;
+    for (let k = i + 1; k < n; k++) {
+      if (Math.abs(M[k][i]) > Math.abs(M[pivotRow][i])) pivotRow = k;
+    }
+    if (Math.abs(M[pivotRow][i]) < 1e-10) {
+      throw new Error("Ma trận suy biến (định thức = 0), không có nghịch đảo!");
+    }
+    [M[i], M[pivotRow]] = [M[pivotRow], M[i]];
+
+    const pivotVal = M[i][i];
+    for (let j = 0; j < 2 * n; j++) M[i][j] /= pivotVal;
+
+    for (let k = 0; k < n; k++) {
+      if (k === i) continue;
+      const factor = M[k][i];
+      for (let j = 0; j < 2 * n; j++) M[k][j] -= factor * M[i][j];
+    }
+  }
+  return M.map((row) => row.slice(n));
+}
+
+function solveLinearSystem(A, b) {
+  const n = A.length;
+  if (n !== A[0].length) {
+    throw new Error("Ma trận hệ số A phải là ma trận vuông!");
+  }
+  const M = A.map((row, r) => [...row, b[r][0]]);
+
+  for (let i = 0; i < n; i++) {
+    let pivotRow = i;
+    for (let k = i + 1; k < n; k++) {
+      if (Math.abs(M[k][i]) > Math.abs(M[pivotRow][i])) pivotRow = k;
+    }
+    if (Math.abs(M[pivotRow][i]) < 1e-10) {
+      throw new Error(
+        "Hệ phương trình vô nghiệm hoặc vô số nghiệm (ma trận hệ số suy biến)!",
+      );
+    }
+    [M[i], M[pivotRow]] = [M[pivotRow], M[i]];
+
+    const pivotVal = M[i][i];
+    for (let j = i; j <= n; j++) M[i][j] /= pivotVal;
+
+    for (let k = 0; k < n; k++) {
+      if (k === i) continue;
+      const factor = M[k][i];
+      for (let j = i; j <= n; j++) M[k][j] -= factor * M[i][j];
+    }
+  }
+  return M.map((row) => [row[n]]);
+}
+
+function computeLinalg() {
+  const resultBox = document.getElementById("linalgResult");
+  resultBox.style.display = "block";
+
+  try {
+    const rowsA = parseInt(document.getElementById("matARows").value);
+    const colsA = parseInt(document.getElementById("matACols").value);
+    const A = readMatrix("A", rowsA, colsA);
+    let output = "";
+
+    if (
+      currentLinalgOp === "add" ||
+      currentLinalgOp === "sub" ||
+      currentLinalgOp === "mul"
+    ) {
+      const rowsB = parseInt(document.getElementById("matBRows").value);
+      const colsB = parseInt(document.getElementById("matBCols").value);
+      const B = readMatrix("B", rowsB, colsB);
+
+      let R;
+      if (currentLinalgOp === "add") R = matAdd(A, B);
+      if (currentLinalgOp === "sub") R = matSub(A, B);
+      if (currentLinalgOp === "mul") R = matMul(A, B);
+      output = `<b>Kết quả:</b>${renderMatrixTable(R)}`;
+    } else if (currentLinalgOp === "det") {
+      const d = matDeterminant(A);
+      output = `<b>Định thức det(A) = </b><span style="font-size:20px;color:#30d158;font-weight:700;">${fmtNum(d)}</span>`;
+    } else if (currentLinalgOp === "inv") {
+      const inv = matInverse(A);
+      output = `<b>Ma trận nghịch đảo A⁻¹:</b>${renderMatrixTable(inv)}`;
+    } else if (currentLinalgOp === "solve") {
+      const b = [];
+      for (let r = 0; r < rowsA; r++) {
+        const el = document.getElementById(`vecB_${r}_0`);
+        b.push([parseFloat(el.value) || 0]);
+      }
+      const x = solveLinearSystem(A, b);
+      output = `<b>Nghiệm x:</b>${renderMatrixTable(x)}`;
+    }
+
+    resultBox.innerHTML = output;
+    showToast("Tính toán hoàn tất!", "success");
+  } catch (err) {
+    resultBox.innerHTML = `<span style="color:#ff453a;">⚠ ${err.message}</span>`;
+  }
+}
+
+// Khởi tạo lưới ma trận mặc định khi trang tải xong (không phụ thuộc đăng nhập)
+window.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("matAGrid")) {
+    renderMatrixGrid("A");
+    renderMatrixGrid("B");
+    switchLinalgOp("add");
+  }
+});

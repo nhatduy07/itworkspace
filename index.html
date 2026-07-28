@@ -46,21 +46,76 @@
               placeholder="Tên tài khoản (Duy nhất)..."
               class="fb-input"
               autocomplete="username"
-              style="margin-bottom: 12px"
+              style="margin-bottom: 4px"
+              oninput="validateAuthForm()"
               required
             />
-            <input
-              type="password"
-              id="authPassword"
-              placeholder="Mật khẩu bảo mật..."
-              class="fb-input"
-              autocomplete="current-password"
-              style="margin-bottom: 15px"
-              required
-            />
+            <div class="field-error" id="usernameError"></div>
 
-            <button type="submit" class="fb-btn-submit" id="authBtn">
-              Đăng Nhập
+            <div style="position: relative; margin-top: 8px">
+              <input
+                type="password"
+                id="authPassword"
+                placeholder="Mật khẩu bảo mật..."
+                class="fb-input"
+                autocomplete="current-password"
+                oninput="validateAuthForm()"
+                required
+              />
+              <span
+                class="pw-toggle"
+                id="pwToggleIcon"
+                onclick="togglePasswordVisibility()"
+                >👁️</span
+              >
+            </div>
+            <div class="field-error" id="passwordError"></div>
+
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 8px 0 16px;
+                font-size: 12px;
+              "
+            >
+              <label
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  cursor: pointer;
+                  color: var(--text-muted);
+                "
+              >
+                <input
+                  type="checkbox"
+                  id="rememberMeCheckbox"
+                  style="width: auto"
+                />
+                Ghi nhớ đăng nhập
+              </label>
+              <a
+                href="#"
+                onclick="handleForgotPassword(); return false;"
+                style="color: var(--accent); text-decoration: none"
+                >Quên mật khẩu?</a
+              >
+            </div>
+
+            <button
+              type="submit"
+              class="fb-btn-submit ripple-btn"
+              id="authBtn"
+              onclick="createRipple(event)"
+            >
+              <span id="authBtnText">Đăng Nhập</span>
+              <span
+                id="authBtnSpinner"
+                class="btn-spinner"
+                style="display: none"
+              ></span>
             </button>
           </form>
 
@@ -106,38 +161,83 @@
         </div>
 
         <!-- WIDGET HIỂN THỊ TÀI KHOẢN & AVATAR ĐỒNG BỘ -->
-        <div
-          class="user-account-widget"
-          style="
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 8px 16px;
-            border-radius: 14px;
-            border: 1px solid var(--apple-glass-border);
-            backdrop-filter: blur(20px);
-          "
-        >
-          <div id="headerAvatarDisplay" class="fb-header-avatar">👤</div>
-          <div style="text-align: left">
-            <div
-              style="font-size: 13px; font-weight: 600; color: var(--text-main)"
-              id="displayAccountName"
-            >
-              👤 --
+        <div class="user-account-widget" id="userAccountWidget">
+          <div
+            class="account-widget-trigger"
+            onclick="toggleAccountDropdown()"
+          >
+            <div id="headerAvatarDisplay" class="fb-header-avatar">👤</div>
+            <div style="text-align: left">
+              <div class="account-name-row" id="displayAccountName">
+                <span>👤 --</span>
+                <span class="online-dot" title="Đang hoạt động"></span>
+              </div>
+              <div
+                style="font-size: 11px; color: #30d158"
+                id="displayUsageTime"
+              >
+                ⏱️ Tổng: 0 phút
+              </div>
             </div>
-            <div style="font-size: 11px; color: #30d158" id="displayUsageTime">
-              ⏱️ Tổng: 0 phút
+            <span class="dropdown-arrow">▾</span>
+          </div>
+
+          <div class="account-dropdown" id="accountDropdown">
+            <button
+              class="dropdown-item"
+              type="button"
+              onclick="triggerHeaderAvatarChange()"
+            >
+              🖼️ Đổi ảnh đại diện
+            </button>
+            <button
+              class="dropdown-item logout"
+              type="button"
+              onclick="switchAccount()"
+            >
+              🚪 Đăng xuất
+            </button>
+          </div>
+
+          <input
+            type="file"
+            id="headerAvatarInput"
+            accept="image/*"
+            style="display: none"
+            onchange="handleAvatarFileSelected(event, 'header')"
+          />
+        </div>
+
+        <!-- MODAL CẮT ẢNH ĐẠI DIỆN (Section 5) -->
+        <div class="modal-overlay" id="avatarCropOverlay">
+          <div class="card modal-box" style="max-width: 360px; text-align: center">
+            <div class="modal-header">
+              <h2>✂️ Cắt ảnh đại diện</h2>
+              <span class="modal-close" onclick="closeAvatarCropper()">✕</span>
+            </div>
+            <div class="crop-container" id="cropContainer">
+              <img id="cropImage" alt="crop preview" draggable="false" />
+            </div>
+            <div style="margin: 16px 0">
+              <label class="field-label">🔍 Thu phóng</label>
+              <input
+                type="range"
+                id="cropZoomRange"
+                min="100"
+                max="300"
+                value="100"
+                oninput="updateCropTransform()"
+              />
+            </div>
+            <div style="display: flex; gap: 10px">
+              <button class="btn-primary" onclick="saveCroppedAvatar()">
+                Lưu ảnh đại diện
+              </button>
+              <button class="btn-secondary" onclick="closeAvatarCropper()">
+                Hủy
+              </button>
             </div>
           </div>
-          <button
-            class="btn-secondary"
-            style="font-size: 11px; padding: 6px 10px; margin-left: 10px"
-            onclick="switchAccount()"
-          >
-            Đăng xuất
-          </button>
         </div>
 
         <div class="clock" style="text-align: right">
@@ -149,6 +249,7 @@
       <nav class="nav-container">
         <div class="pill-indicator"></div>
         <button class="tab-btn active" data-tab="it">💻 Lập Trình & IDE</button>
+        <button class="tab-btn" data-tab="cs">📚 Học Tập CS</button>
         <button class="tab-btn" data-tab="entertainment">
           🎵 Spotify & Giải Trí
         </button>
@@ -203,15 +304,9 @@
 
           <div class="card">
             <h2>Tạo Task nhanh</h2>
-            <p
-              style="
-                font-size: 12px;
-                color: var(--text-muted);
-                margin-bottom: 12px;
-              "
-            >
-              Gõ tên task rồi Enter để tạo nhanh. Bấm "Chi tiết" trên thẻ task ở
-              bảng Kanban bên dưới để thêm mô tả, deadline, checklist, tag...
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px">
+              Gõ tên task rồi Enter để tạo nhanh. Bấm "Chi tiết" trên thẻ task
+              ở bảng Kanban bên dưới để thêm mô tả, deadline, checklist, tag...
             </p>
             <div class="video-controls" style="margin-bottom: 0">
               <input
@@ -219,7 +314,9 @@
                 id="todoInput"
                 placeholder="Tên task mới rồi Enter..."
               />
-              <button class="btn-primary" onclick="quickAddTask()">Tạo</button>
+              <button class="btn-primary" onclick="quickAddTask()">
+                Tạo
+              </button>
             </div>
           </div>
         </div>
@@ -384,14 +481,17 @@
               </div>
             </div>
 
-            <label class="field-label" style="margin-top: 14px; display: block"
+            <label
+              class="field-label"
+              style="margin-top: 14px; display: block"
               >Tag</label
             >
             <div class="tag-picker" id="tagPicker">
               <label><input type="checkbox" value="HTML" /> HTML</label>
               <label><input type="checkbox" value="CSS" /> CSS</label>
               <label
-                ><input type="checkbox" value="JavaScript" /> JavaScript</label
+                ><input type="checkbox" value="JavaScript" />
+                JavaScript</label
               >
               <label><input type="checkbox" value="C++" /> C++</label>
               <label><input type="checkbox" value="Python" /> Python</label>
@@ -399,12 +499,20 @@
               <label><input type="checkbox" value="SQL" /> SQL</label>
               <label><input type="checkbox" value="AI" /> AI</label>
               <label><input type="checkbox" value="Web" /> Web</label>
-              <label><input type="checkbox" value="Backend" /> Backend</label>
-              <label><input type="checkbox" value="Frontend" /> Frontend</label>
-              <label><input type="checkbox" value="Database" /> Database</label>
+              <label
+                ><input type="checkbox" value="Backend" /> Backend</label
+              >
+              <label
+                ><input type="checkbox" value="Frontend" /> Frontend</label
+              >
+              <label
+                ><input type="checkbox" value="Database" /> Database</label
+              >
             </div>
 
-            <label class="field-label" style="margin-top: 14px; display: block"
+            <label
+              class="field-label"
+              style="margin-top: 14px; display: block"
               >Checklist</label
             >
             <div class="video-controls" style="margin-bottom: 8px">
@@ -412,12 +520,7 @@
                 type="text"
                 id="checklistItemInput"
                 placeholder="Thêm mục checklist rồi Enter..."
-                onkeydown="
-                  if (event.key === 'Enter') {
-                    event.preventDefault();
-                    addChecklistItemToForm();
-                  }
-                "
+                onkeydown="if (event.key === 'Enter') { event.preventDefault(); addChecklistItemToForm(); }"
               />
               <button
                 type="button"
@@ -457,7 +560,9 @@
               placeholder="https://docs.google.com/..."
             />
 
-            <label class="field-label" style="margin-top: 14px">Ghi chú</label>
+            <label class="field-label" style="margin-top: 14px"
+              >Ghi chú</label
+            >
             <textarea
               id="taskFormNotes"
               style="height: 60px"
@@ -555,6 +660,578 @@
         </div>
       </section>
 
+      <!-- TAB MỚI: HỌC TẬP CS (Section 2-3 của prompt) -->
+      <section class="panel" id="panel-cs">
+        <div class="card">
+          <h2>📚 Học Tập Computer Science</h2>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px">
+            Chọn một môn học bên dưới. Môn <b>Đại số tuyến tính</b> đã có đầy
+            đủ lý thuyết, công thức, ví dụ, bài tập và máy tính tương tác; các
+            môn còn lại đang được xây dựng dần trong các bản cập nhật tiếp
+            theo.
+          </p>
+          <div class="cs-subject-grid">
+            <div
+              class="cs-subject-card active"
+              data-subject="linalg"
+              onclick="switchCsSubject('linalg')"
+            >
+              <div class="cs-subject-icon">📐</div>
+              <div class="cs-subject-name">Đại số tuyến tính</div>
+              <div class="cs-subject-status ready">✅ Đã có nội dung</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="dsa"
+              onclick="switchCsSubject('dsa')"
+            >
+              <div class="cs-subject-icon">🌳</div>
+              <div class="cs-subject-name">Cấu trúc dữ liệu &amp; Giải thuật</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="web"
+              onclick="switchCsSubject('web')"
+            >
+              <div class="cs-subject-icon">🌐</div>
+              <div class="cs-subject-name">Ứng dụng Web</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="network"
+              onclick="switchCsSubject('network')"
+            >
+              <div class="cs-subject-icon">📡</div>
+              <div class="cs-subject-name">Mạng máy tính</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="database"
+              onclick="switchCsSubject('database')"
+            >
+              <div class="cs-subject-icon">🗄️</div>
+              <div class="cs-subject-name">Cơ sở dữ liệu</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="oop"
+              onclick="switchCsSubject('oop')"
+            >
+              <div class="cs-subject-icon">🧩</div>
+              <div class="cs-subject-name">Lập trình hướng đối tượng</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="discrete"
+              onclick="switchCsSubject('discrete')"
+            >
+              <div class="cs-subject-icon">🔢</div>
+              <div class="cs-subject-name">Toán rời rạc</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="os"
+              onclick="switchCsSubject('os')"
+            >
+              <div class="cs-subject-icon">🖥️</div>
+              <div class="cs-subject-name">Hệ điều hành</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="architecture"
+              onclick="switchCsSubject('architecture')"
+            >
+              <div class="cs-subject-icon">⚙️</div>
+              <div class="cs-subject-name">Kiến trúc máy tính</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+            <div
+              class="cs-subject-card"
+              data-subject="ai"
+              onclick="switchCsSubject('ai')"
+            >
+              <div class="cs-subject-icon">🤖</div>
+              <div class="cs-subject-name">Trí tuệ nhân tạo</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= ĐẠI SỐ TUYẾN TÍNH (đầy đủ nội dung) ================= -->
+        <div id="cs-linalg" class="cs-subject-panel active">
+          <div class="card">
+            <h2>📐 Đại số tuyến tính — Lý thuyết &amp; Bài tập</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Ma trận (Matrix)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Ma trận là một bảng số chữ nhật gồm m dòng
+                  và n cột, ký hiệu A = [aᵢⱼ] kích thước m×n. Các loại đặc
+                  biệt: ma trận vuông (m=n), ma trận không, ma trận đơn vị I
+                  (đường chéo chính là 1, còn lại 0), ma trận chuyển vị Aᵀ
+                  (đổi dòng thành cột).
+                </p>
+                <p><b>Công thức:</b> <span class="cs-formula">(Aᵀ)ᵢⱼ = Aⱼᵢ</span></p>
+                <p>
+                  <b>Ví dụ minh họa:</b> Với A =
+                  <span class="cs-formula">[[1,2,3],[4,5,6]]</span> (2×3), ta
+                  có Aᵀ = <span class="cs-formula">[[1,4],[2,5],[3,6]]</span>
+                  (3×2).
+                </p>
+                <p><b>Bài tập mẫu:</b> Tìm chuyển vị của B = [[2,0],[1,3],[5,7]].</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Bᵀ = [[2,1,5],[0,3,7]]</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Cho ma trận C = [[3,1],[2,4]]. Tìm
+                  Cᵀ và cho biết C có phải ma trận vuông không?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Định thức (Determinant)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Định thức chỉ tồn tại với ma trận vuông,
+                  cho biết ma trận có khả nghịch hay không (det ≠ 0 thì khả
+                  nghịch).
+                </p>
+                <p>
+                  <b>Công thức 2×2:</b>
+                  <span class="cs-formula">det([[a,b],[c,d]]) = ad − bc</span>
+                </p>
+                <p>
+                  <b>Công thức 3×3 (Quy tắc Sarrus):</b>
+                  <span class="cs-formula"
+                    >det = a(ei − fh) − b(di − fg) + c(dh − eg)</span
+                  >
+                  với ma trận [[a,b,c],[d,e,f],[g,h,i]]
+                </p>
+                <p>
+                  <b>Ví dụ minh họa:</b> A = [[2,1],[3,4]] ⟹ det(A) = 2×4 −
+                  1×3 = 5.
+                </p>
+                <p><b>Bài tập mẫu:</b> Tính det([[1,2],[3,4]]).</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>det = 1×4 − 2×3 = −2</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Tính det([[2,0,1],[1,3,2],[0,1,4]])
+                  bằng quy tắc Sarrus (hoặc dùng máy tính bên dưới để kiểm
+                  tra kết quả).
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Ma trận nghịch đảo (Inverse Matrix)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Ma trận vuông A khả nghịch khi det(A) ≠ 0.
+                  Ma trận nghịch đảo A⁻¹ thỏa A×A⁻¹ = I.
+                </p>
+                <p>
+                  <b>Công thức 2×2:</b>
+                  <span class="cs-formula"
+                    >A⁻¹ = 1/det(A) × [[d,−b],[−c,a]]</span
+                  >
+                  với A = [[a,b],[c,d]]
+                </p>
+                <p>
+                  <b>Ví dụ minh họa:</b> A = [[2,1],[1,1]] có det = 1 ⟹ A⁻¹ =
+                  [[1,−1],[−1,2]].
+                </p>
+                <p><b>Bài tập mẫu:</b> Tìm nghịch đảo của [[3,2],[1,1]].</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>det = 1 ⟹ Nghịch đảo = [[1,−2],[−1,3]]</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Tìm ma trận nghịch đảo của
+                  [[4,7],[2,6]] và kiểm tra lại bằng máy tính bên dưới.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Hệ phương trình tuyến tính</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Hệ phương trình tuyến tính có thể viết
+                  dưới dạng ma trận Ax = b. Giải bằng phương pháp khử Gauss
+                  (đưa về dạng tam giác trên) hoặc quy tắc Cramer (dùng định
+                  thức, chỉ áp dụng khi det(A) ≠ 0).
+                </p>
+                <p>
+                  <b>Công thức Cramer:</b>
+                  <span class="cs-formula">xᵢ = det(Aᵢ) / det(A)</span>, với
+                  Aᵢ là A thay cột i bằng b.
+                </p>
+                <p>
+                  <b>Ví dụ minh họa:</b> Hệ 2x + y = 5 và x + 3y = 10 ⟹ A =
+                  [[2,1],[1,3]], b = [5,10]. Giải Gauss cho x = 1, y = 3.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Giải hệ: x + y = 4 và 2x − y = 2.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Cộng 2 phương trình: 3x = 6 ⟹ x = 2, y = 2</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Giải hệ 3 ẩn: x+y+z=6, 2y+5z=−4,
+                  2x+5y−z=27 bằng máy tính "Giải Ax=b" bên dưới.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Vector</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Vector là đại lượng có hướng và độ lớn,
+                  biểu diễn dưới dạng bộ số (v₁, v₂, ..., vₙ).
+                </p>
+                <p>
+                  <b>Công thức độ dài:</b>
+                  <span class="cs-formula">|v| = √(v₁² + v₂² + ... + vₙ²)</span
+                  ><br />
+                  <b>Tích vô hướng:</b>
+                  <span class="cs-formula">u·v = u₁v₁ + u₂v₂ + ... + uₙvₙ</span>
+                </p>
+                <p>
+                  <b>Ví dụ minh họa:</b> v = (3, 4) ⟹ |v| = √(9+16) = 5. Với u
+                  = (1,2), v = (3,4) ⟹ u·v = 1×3 + 2×4 = 11.
+                </p>
+                <p><b>Bài tập mẫu:</b> Tính độ dài của vector (6, 8).</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>√(36+64) = √100 = 10</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Tính tích vô hướng của u=(2,−1,3)
+                  và v=(4,0,−2). Hai vector này có vuông góc không?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Không gian vector (Vector Space)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Không gian vector V là tập hợp các vector
+                  đóng kín với phép cộng và phép nhân vô hướng, thỏa 8 tiên
+                  đề (giao hoán, kết hợp, phần tử trung hòa, phần tử đối,
+                  phân phối...). Một <b>cơ sở (basis)</b> là tập vector độc
+                  lập tuyến tính sinh ra toàn bộ không gian; số vector trong
+                  cơ sở là <b>số chiều (dimension)</b>.
+                </p>
+                <p>
+                  <b>Ví dụ minh họa:</b> Không gian R² có cơ sở chuẩn
+                  {(1,0), (0,1)} ⟹ dim(R²) = 2. Mọi vector (x,y) đều viết
+                  được thành x(1,0) + y(0,1).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Cơ sở chuẩn của R³ gồm những vector
+                  nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>{(1,0,0), (0,1,0), (0,0,1)} — dim(R³) = 3</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Hai vector (1,2) và (2,4) có độc
+                  lập tuyến tính không? Vì sao?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>7️⃣ Trị riêng (Eigenvalues)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Trị riêng λ của ma trận vuông A thỏa
+                  phương trình đặc trưng det(A − λI) = 0.
+                </p>
+                <p>
+                  <b>Công thức 2×2:</b> Với A=[[a,b],[c,d]], phương trình đặc
+                  trưng là
+                  <span class="cs-formula">λ² − (a+d)λ + (ad−bc) = 0</span>.
+                </p>
+                <p>
+                  <b>Ví dụ minh họa:</b> A = [[4,1],[2,3]] ⟹ λ² − 7λ + 10 = 0
+                  ⟹ λ = 5 hoặc λ = 2.
+                </p>
+                <p><b>Bài tập mẫu:</b> Tìm trị riêng của [[2,0],[0,3]].</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Ma trận đường chéo ⟹ λ₁ = 2, λ₂ = 3</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Tìm trị riêng của [[1,2],[2,1]].
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>8️⃣ Vector riêng (Eigenvectors)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Ứng với mỗi trị riêng λ, vector riêng v
+                  (v≠0) thỏa (A − λI)v = 0.
+                </p>
+                <p>
+                  <b>Ví dụ minh họa:</b> Với A=[[4,1],[2,3]], λ=5 ⟹
+                  (A−5I)v=0 ⟹ [[−1,1],[2,−2]]v=0 ⟹ v = (1,1) (hoặc bội số).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Với A=[[4,1],[2,3]], λ=2, tìm vector
+                  riêng tương ứng.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>(A−2I)v=0 ⟹ [[2,1],[2,1]]v=0 ⟹ v = (1,−2)</p>
+                </details>
+                <p>
+                  <b>Bài tập tự luyện:</b> Tìm vector riêng của [[2,0],[0,3]]
+                  ứng với λ=2 và λ=3.
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <!-- MÁY TÍNH ĐẠI SỐ TUYẾN TÍNH -->
+          <div class="card">
+            <h2>🧮 Máy Tính Đại Số Tuyến Tính</h2>
+            <div class="linalg-op-tabs">
+              <button
+                class="linalg-op-btn active"
+                data-op="add"
+                onclick="switchLinalgOp('add')"
+              >
+                A + B
+              </button>
+              <button
+                class="linalg-op-btn"
+                data-op="sub"
+                onclick="switchLinalgOp('sub')"
+              >
+                A − B
+              </button>
+              <button
+                class="linalg-op-btn"
+                data-op="mul"
+                onclick="switchLinalgOp('mul')"
+              >
+                A × B
+              </button>
+              <button
+                class="linalg-op-btn"
+                data-op="det"
+                onclick="switchLinalgOp('det')"
+              >
+                det(A)
+              </button>
+              <button
+                class="linalg-op-btn"
+                data-op="inv"
+                onclick="switchLinalgOp('inv')"
+              >
+                A⁻¹
+              </button>
+              <button
+                class="linalg-op-btn"
+                data-op="solve"
+                onclick="switchLinalgOp('solve')"
+              >
+                Giải Ax = b
+              </button>
+            </div>
+
+            <div class="grid-2" style="margin-top: 18px">
+              <div>
+                <label class="field-label">Ma trận A — Kích thước</label>
+                <div
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <input
+                    type="number"
+                    id="matARows"
+                    value="2"
+                    min="1"
+                    max="6"
+                    style="width: 70px"
+                    onchange="renderMatrixGrid('A')"
+                  />
+                  <span>×</span>
+                  <input
+                    type="number"
+                    id="matACols"
+                    value="2"
+                    min="1"
+                    max="6"
+                    style="width: 70px"
+                    onchange="renderMatrixGrid('A')"
+                  />
+                </div>
+                <div id="matAGrid" class="matrix-grid"></div>
+              </div>
+
+              <div id="matBWrapper">
+                <label class="field-label">Ma trận B — Kích thước</label>
+                <div
+                  style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <input
+                    type="number"
+                    id="matBRows"
+                    value="2"
+                    min="1"
+                    max="6"
+                    style="width: 70px"
+                    onchange="renderMatrixGrid('B')"
+                  />
+                  <span>×</span>
+                  <input
+                    type="number"
+                    id="matBCols"
+                    value="2"
+                    min="1"
+                    max="6"
+                    style="width: 70px"
+                    onchange="renderMatrixGrid('B')"
+                  />
+                </div>
+                <div id="matBGrid" class="matrix-grid"></div>
+              </div>
+
+              <div id="vecBWrapper" style="display: none">
+                <label class="field-label"
+                  >Vector b (vế phải hệ phương trình, {rows(A)}×1)</label
+                >
+                <div id="vecBGrid" class="matrix-grid"></div>
+              </div>
+            </div>
+
+            <button
+              class="btn-primary"
+              style="margin-top: 18px"
+              onclick="computeLinalg()"
+            >
+              Tính
+            </button>
+            <div
+              id="linalgResult"
+              class="dict-result"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+        </div>
+
+        <!-- ================= CÁC MÔN CÒN LẠI: SẮP RA MẮT ================= -->
+        <div id="cs-dsa" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">🌳</div>
+            <h2>Cấu trúc dữ liệu &amp; Giải thuật</h2>
+            <p>
+              Sẽ có: Array, Linked List, Stack, Queue, Tree, BST, Heap,
+              Graph, Hash Table — mỗi cấu trúc kèm định nghĩa, hình minh họa
+              SVG, độ phức tạp Big O, code C++/Java/Python và ví dụ thực tế.
+              Cùng các thuật toán Bubble/Selection/Insertion/Merge/Quick
+              Sort, BFS, DFS, Dijkstra, Binary Search với bảng Big O tốt
+              nhất/trung bình/tệ nhất.
+            </p>
+          </div>
+        </div>
+        <div id="cs-web" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">🌐</div>
+            <h2>Ứng dụng Web</h2>
+            <p>
+              Sẽ có thư viện học HTML (Form, Table, Semantic, SEO), CSS
+              (Flexbox, Grid, Animation, Responsive), JavaScript (DOM,
+              Events, Fetch API, Async/Await, LocalStorage) và NodeJS
+              (Express, REST API, JWT) — mỗi chủ đề kèm lý thuyết, ví dụ và
+              demo chạy trực tiếp.
+            </p>
+          </div>
+        </div>
+        <div id="cs-network" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">📡</div>
+            <h2>Mạng máy tính</h2>
+            <p>
+              Sẽ có OSI 7 Layer, TCP/IP, IP Address, Subnet Mask, DNS, HTTP,
+              HTTPS, FTP, DHCP, Routing cùng IP/Subnet/CIDR Calculator và mô
+              phỏng gửi gói tin qua các tầng OSI, Router, Switch.
+            </p>
+          </div>
+        </div>
+        <div id="cs-database" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">🗄️</div>
+            <h2>Cơ sở dữ liệu</h2>
+            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+          </div>
+        </div>
+        <div id="cs-oop" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">🧩</div>
+            <h2>Lập trình hướng đối tượng</h2>
+            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+          </div>
+        </div>
+        <div id="cs-discrete" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">🔢</div>
+            <h2>Toán rời rạc</h2>
+            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+          </div>
+        </div>
+        <div id="cs-os" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">🖥️</div>
+            <h2>Hệ điều hành</h2>
+            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+          </div>
+        </div>
+        <div id="cs-architecture" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">⚙️</div>
+            <h2>Kiến trúc máy tính</h2>
+            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+          </div>
+        </div>
+        <div id="cs-ai" class="cs-subject-panel">
+          <div class="card cs-coming-soon">
+            <div class="cs-coming-soon-icon">🤖</div>
+            <h2>Trí tuệ nhân tạo</h2>
+            <p>Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.</p>
+          </div>
+        </div>
+      </section>
+
       <!-- TAB 2: GIẢI TRÍ -->
       <section class="panel" id="panel-entertainment">
         <!-- SPOTIFY PLAYER -->
@@ -614,6 +1291,32 @@
               loading="lazy"
             ></iframe>
           </div>
+
+          <button
+            class="btn-secondary"
+            style="margin-top: 12px; font-size: 12px"
+            onclick="toggleSpotifyFavorite()"
+          >
+            ⭐ Lưu bài đang phát vào Yêu thích
+          </button>
+
+          <div style="margin-top: 16px">
+            <div
+              style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px"
+            >
+              🕘 Đã nghe gần đây
+            </div>
+            <div class="spotify-chip-row" id="spotifyHistoryChips"></div>
+          </div>
+
+          <div style="margin-top: 16px">
+            <div
+              style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px"
+            >
+              ⭐ Yêu thích
+            </div>
+            <div class="spotify-chip-row" id="spotifyFavoriteChips"></div>
+          </div>
         </div>
 
         <div class="card">
@@ -659,9 +1362,51 @@
             </button>
           </div>
 
+          <div class="yt-subtabs">
+            <button
+              class="yt-subtab-btn active"
+              data-ytview="search"
+              onclick="switchYtView('search')"
+            >
+              🔍 Tìm kiếm
+            </button>
+            <button
+              class="yt-subtab-btn"
+              data-ytview="history"
+              onclick="switchYtView('history')"
+            >
+              🕘 Lịch sử
+            </button>
+            <button
+              class="yt-subtab-btn"
+              data-ytview="favorites"
+              onclick="switchYtView('favorites')"
+            >
+              ⭐ Yêu thích
+            </button>
+            <button
+              class="yt-subtab-btn"
+              data-ytview="playlist"
+              onclick="switchYtView('playlist')"
+            >
+              📃 Playlist của tôi
+            </button>
+          </div>
+
           <div
             id="searchResults"
             class="search-results"
+            style="display: none"
+          ></div>
+          <div class="yt-video-list" id="ytHistoryList" style="display: none"></div>
+          <div
+            class="yt-video-list"
+            id="ytFavoritesList"
+            style="display: none"
+          ></div>
+          <div
+            class="yt-video-list"
+            id="ytPlaylistList"
             style="display: none"
           ></div>
 
@@ -1068,10 +1813,15 @@
               oninput="saveYtApiKey()"
             />
             <p
-              style="font-size: 11px; color: var(--text-muted); margin-top: 8px"
+              style="
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-top: 8px;
+              "
             >
-              Key được lưu cục bộ (localStorage) trên máy bạn, không nằm trong
-              mã nguồn nên sẽ không lộ ra khi chia sẻ code. Lấy key miễn phí tại
+              Key được lưu cục bộ (localStorage) trên máy bạn, không nằm
+              trong mã nguồn nên sẽ không lộ ra khi chia sẻ code. Lấy key
+              miễn phí tại
               <a
                 href="https://console.cloud.google.com/apis/credentials"
                 target="_blank"
