@@ -155,9 +155,6 @@
 
     <div class="wrap">
       <header>
-        <!-- [UPDATE RESPONSIVE]: THÊM NÚT HAMBURGER CHO MOBILE -->
-        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-
         <div class="brand">
           <div class="logo-icon"><span class="dot"></span></div>
           <div>
@@ -251,13 +248,6 @@
           <div class="date" id="clockDate">--</div>
         </div>
       </header>
-
-      <!-- [UPDATE RESPONSIVE]: OVERLAY CHO MENU MOBILE -->
-      <div
-        class="mobile-nav-overlay"
-        id="mobileNavOverlay"
-        onclick="toggleMobileMenu()"
-      ></div>
 
       <nav class="nav-container">
         <div class="pill-indicator"></div>
@@ -703,7 +693,7 @@
               <div class="cs-subject-name">
                 Cấu trúc dữ liệu &amp; Giải thuật
               </div>
-              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+              <div class="cs-subject-status">✅ Đã có nội dung</div>
             </div>
             <div
               class="cs-subject-card"
@@ -712,7 +702,7 @@
             >
               <div class="cs-subject-icon">🌐</div>
               <div class="cs-subject-name">Ứng dụng Web</div>
-              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+              <div class="cs-subject-status">✅ Đã có nội dung</div>
             </div>
             <div
               class="cs-subject-card"
@@ -721,7 +711,7 @@
             >
               <div class="cs-subject-icon">📡</div>
               <div class="cs-subject-name">Mạng máy tính</div>
-              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
+              <div class="cs-subject-status">✅ Đã có nội dung</div>
             </div>
             <div
               class="cs-subject-card"
@@ -811,9 +801,18 @@
                   <summary>Xem đáp án</summary>
                   <p>Bᵀ = [[2,1,5],[0,3,7]]</p>
                 </details>
+                <p><b>Bài tập tự luyện:</b></p>
                 <p>
-                  <b>Bài tập tự luyện:</b> Cho ma trận C = [[3,1],[2,4]]. Tìm Cᵀ
-                  và cho biết C có phải ma trận vuông không?
+                  1. Cho ma trận C = [[3,1],[2,4]]. Tìm Cᵀ và cho biết C có phải
+                  ma trận vuông không?
+                </p>
+                <p>
+                  2. Cho D = [[1,2],[3,4],[5,6]] (3×2). Tìm Dᵀ và cho biết kích
+                  thước của Dᵀ.
+                </p>
+                <p>
+                  3. Tính A + Aᵀ với A = [[2,3],[1,4]]. Ma trận kết quả có tính
+                  chất đối xứng không?
                 </p>
               </div>
             </details>
@@ -845,10 +844,18 @@
                   <summary>Xem đáp án</summary>
                   <p>det = 1×4 − 2×3 = −2</p>
                 </details>
+                <p><b>Bài tập tự luyện:</b></p>
                 <p>
-                  <b>Bài tập tự luyện:</b> Tính det([[2,0,1],[1,3,2],[0,1,4]])
-                  bằng quy tắc Sarrus (hoặc dùng máy tính bên dưới để kiểm tra
-                  kết quả).
+                  1. Tính det([[2,0,1],[1,3,2],[0,1,4]]) bằng quy tắc Sarrus
+                  (hoặc dùng máy tính bên dưới để kiểm tra kết quả).
+                </p>
+                <p>
+                  2. Tính det([[5,2],[3,1]]) và cho biết ma trận này có khả
+                  nghịch không.
+                </p>
+                <p>
+                  3. Tính det([[1,0,0],[0,2,0],[0,0,3]]) — có nhận xét gì về
+                  định thức của ma trận đường chéo?
                 </p>
               </div>
             </details>
@@ -876,9 +883,15 @@
                   <summary>Xem đáp án</summary>
                   <p>det = 1 ⟹ Nghịch đảo = [[1,−2],[−1,3]]</p>
                 </details>
+                <p><b>Bài tập tự luyện:</b></p>
                 <p>
-                  <b>Bài tập tự luyện:</b> Tìm ma trận nghịch đảo của
-                  [[4,7],[2,6]] và kiểm tra lại bằng máy tính bên dưới.
+                  1. Tìm ma trận nghịch đảo của [[4,7],[2,6]] và kiểm tra lại
+                  bằng máy tính bên dưới.
+                </p>
+                <p>2. Ma trận [[2,4],[1,2]] có nghịch đảo không? Vì sao?</p>
+                <p>
+                  3. Tìm nghịch đảo của ma trận đơn vị I = [[1,0],[0,1]]. Kết
+                  quả có gì đặc biệt?
                 </p>
               </div>
             </details>
@@ -906,9 +919,18 @@
                   <summary>Xem đáp án</summary>
                   <p>Cộng 2 phương trình: 3x = 6 ⟹ x = 2, y = 2</p>
                 </details>
+                <p><b>Bài tập tự luyện:</b></p>
                 <p>
-                  <b>Bài tập tự luyện:</b> Giải hệ 3 ẩn: x+y+z=6, 2y+5z=−4,
-                  2x+5y−z=27 bằng máy tính "Giải Ax=b" bên dưới.
+                  1. Giải hệ 3 ẩn: x+y+z=6, 2y+5z=−4, 2x+5y−z=27 bằng máy tính
+                  "Giải Ax=b" bên dưới.
+                </p>
+                <p>
+                  2. Giải hệ: 3x + 2y = 12 và x − y = 1 bằng phương pháp thế
+                  hoặc khử Gauss.
+                </p>
+                <p>
+                  3. Hệ x + y = 2 và 2x + 2y = 4 có bao nhiêu nghiệm? Giải thích
+                  vì sao (gợi ý: 2 phương trình có tỉ lệ với nhau).
                 </p>
               </div>
             </details>
@@ -936,9 +958,15 @@
                   <summary>Xem đáp án</summary>
                   <p>√(36+64) = √100 = 10</p>
                 </details>
+                <p><b>Bài tập tự luyện:</b></p>
                 <p>
-                  <b>Bài tập tự luyện:</b> Tính tích vô hướng của u=(2,−1,3) và
-                  v=(4,0,−2). Hai vector này có vuông góc không?
+                  1. Tính tích vô hướng của u=(2,−1,3) và v=(4,0,−2). Hai vector
+                  này có vuông góc không?
+                </p>
+                <p>2. Tính độ dài của vector v=(1,2,2).</p>
+                <p>
+                  3. Cho a=(3,4) và b=(1,2). Tính a+b, a−b và độ dài của mỗi
+                  vector.
                 </p>
               </div>
             </details>
@@ -966,9 +994,18 @@
                   <summary>Xem đáp án</summary>
                   <p>{(1,0,0), (0,1,0), (0,0,1)} — dim(R³) = 3</p>
                 </details>
+                <p><b>Bài tập tự luyện:</b></p>
                 <p>
-                  <b>Bài tập tự luyện:</b> Hai vector (1,2) và (2,4) có độc lập
-                  tuyến tính không? Vì sao?
+                  1. Hai vector (1,2) và (2,4) có độc lập tuyến tính không? Vì
+                  sao?
+                </p>
+                <p>
+                  2. Ba vector (1,0), (0,1), (1,1) trong R² — có phải là một cơ
+                  sở không? Vì sao?
+                </p>
+                <p>
+                  3. Không gian sinh bởi vector (2,4,6) và (1,2,3) có số chiều
+                  bằng bao nhiêu?
                 </p>
               </div>
             </details>
@@ -994,7 +1031,14 @@
                   <summary>Xem đáp án</summary>
                   <p>Ma trận đường chéo ⟹ λ₁ = 2, λ₂ = 3</p>
                 </details>
-                <p><b>Bài tập tự luyện:</b> Tìm trị riêng của [[1,2],[2,1]].</p>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Tìm trị riêng của [[1,2],[2,1]].</p>
+                <p>
+                  2. Tìm trị riêng của [[3,0],[0,5]] và giải thích vì sao ma
+                  trận đường chéo luôn có trị riêng là các phần tử trên đường
+                  chéo.
+                </p>
+                <p>3. Tìm trị riêng của [[0,1],[−2,−3]].</p>
               </div>
             </details>
 
@@ -1017,9 +1061,15 @@
                   <summary>Xem đáp án</summary>
                   <p>(A−2I)v=0 ⟹ [[2,1],[2,1]]v=0 ⟹ v = (1,−2)</p>
                 </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Tìm vector riêng của [[2,0],[0,3]] ứng với λ=2 và λ=3.</p>
                 <p>
-                  <b>Bài tập tự luyện:</b> Tìm vector riêng của [[2,0],[0,3]]
-                  ứng với λ=2 và λ=3.
+                  2. Với A=[[1,2],[2,1]] và λ=3 (đã tìm ở bài trị riêng), tìm
+                  vector riêng tương ứng.
+                </p>
+                <p>
+                  3. Vì sao vector riêng luôn có thể nhân với một hằng số bất kỳ
+                  mà vẫn là vector riêng hợp lệ?
                 </p>
               </div>
             </details>
@@ -1165,41 +1215,3752 @@
 
         <!-- ================= CÁC MÔN CÒN LẠI: SẮP RA MẮT ================= -->
         <div id="cs-dsa" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">🌳</div>
-            <h2>Cấu trúc dữ liệu &amp; Giải thuật</h2>
-            <p>
-              Sẽ có: Array, Linked List, Stack, Queue, Tree, BST, Heap, Graph,
-              Hash Table — mỗi cấu trúc kèm định nghĩa, hình minh họa SVG, độ
-              phức tạp Big O, code C++/Java/Python và ví dụ thực tế. Cùng các
-              thuật toán Bubble/Selection/Insertion/Merge/Quick Sort, BFS, DFS,
-              Dijkstra, Binary Search với bảng Big O tốt nhất/trung bình/tệ
-              nhất.
-            </p>
+          <div class="card">
+            <h2>🌳 Cấu Trúc Dữ Liệu</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Array (Mảng)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Mảng là một dãy các phần tử cùng kiểu dữ
+                  liệu, được lưu liên tiếp trong bộ nhớ và truy cập trực tiếp
+                  qua chỉ số (index), bắt đầu từ 0.
+                </p>
+                <svg viewBox="0 0 320 90" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <rect
+                      x="10"
+                      y="20"
+                      width="60"
+                      height="40"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <rect
+                      x="70"
+                      y="20"
+                      width="60"
+                      height="40"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <rect
+                      x="130"
+                      y="20"
+                      width="60"
+                      height="40"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <rect
+                      x="190"
+                      y="20"
+                      width="60"
+                      height="40"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <rect
+                      x="250"
+                      y="20"
+                      width="60"
+                      height="40"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="40"
+                      y="45"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      12
+                    </text>
+                    <text
+                      x="100"
+                      y="45"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      7
+                    </text>
+                    <text
+                      x="160"
+                      y="45"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      9
+                    </text>
+                    <text
+                      x="220"
+                      y="45"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      4
+                    </text>
+                    <text
+                      x="280"
+                      y="45"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      21
+                    </text>
+                    <text
+                      x="40"
+                      y="75"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      [0]
+                    </text>
+                    <text
+                      x="100"
+                      y="75"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      [1]
+                    </text>
+                    <text
+                      x="160"
+                      y="75"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      [2]
+                    </text>
+                    <text
+                      x="220"
+                      y="75"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      [3]
+                    </text>
+                    <text
+                      x="280"
+                      y="75"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      [4]
+                    </text>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Truy cập</th>
+                    <th>Tìm kiếm</th>
+                    <th>Chèn</th>
+                    <th>Xóa</th>
+                  </tr>
+                  <tr>
+                    <td>Trung bình / Tệ nhất</td>
+                    <td>O(1)</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-arr-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-arr-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-arr-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-arr-cpp"
+                  ><code>int arr[5] = {12, 7, 9, 4, 21};
+for (int i = 0; i &lt; 5; i++) {
+    cout &lt;&lt; arr[i] &lt;&lt; " ";
+}</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-arr-java"
+                  ><code>int[] arr = {12, 7, 9, 4, 21};
+for (int i = 0; i &lt; arr.length; i++) {
+    System.out.print(arr[i] + " ");
+}</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-arr-py"
+                  ><code>arr = [12, 7, 9, 4, 21]
+for x in arr:
+    print(x, end=" ")</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Lưu điểm số của một lớp học, lưu pixel
+                  của một tấm ảnh, bảng xếp hạng game.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Tìm phần tử lớn nhất trong mảng [12, 7, 9,
+                  4, 21].
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Phần tử lớn nhất là 21 (tại chỉ số 4).</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết thuật toán tìm phần tử nhỏ nhất trong mảng [8, 3, 15,
+                  6, 2].
+                </p>
+                <p>2. Đảo ngược mảng [1, 2, 3, 4, 5] mà không dùng mảng phụ.</p>
+                <p>
+                  3. Tính tổng và trung bình cộng của mảng [10, 20, 30, 40].
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Linked List (Danh sách liên kết)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Gồm các node liên kết với nhau, mỗi node
+                  chứa dữ liệu và con trỏ trỏ tới node kế tiếp. Không cần vùng
+                  nhớ liên tục như mảng.
+                </p>
+                <svg viewBox="0 0 340 70" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <rect
+                      x="10"
+                      y="15"
+                      width="70"
+                      height="40"
+                      rx="8"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="45"
+                      y="40"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      5
+                    </text>
+                    <line
+                      x1="80"
+                      y1="35"
+                      x2="110"
+                      y2="35"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                      marker-end="url(#arrow)"
+                    />
+                    <rect
+                      x="115"
+                      y="15"
+                      width="70"
+                      height="40"
+                      rx="8"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="150"
+                      y="40"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      9
+                    </text>
+                    <line
+                      x1="185"
+                      y1="35"
+                      x2="215"
+                      y2="35"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                      marker-end="url(#arrow)"
+                    />
+                    <rect
+                      x="220"
+                      y="15"
+                      width="70"
+                      height="40"
+                      rx="8"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="255"
+                      y="40"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      3
+                    </text>
+                    <text x="310" y="40" fill="var(--text-muted)">→ NULL</text>
+                    <defs>
+                      <marker
+                        id="arrow"
+                        markerWidth="8"
+                        markerHeight="8"
+                        refX="6"
+                        refY="3"
+                        orient="auto"
+                      >
+                        <path
+                          d="M0,0 L6,3 L0,6 Z"
+                          style="fill: var(--text-muted)"
+                        />
+                      </marker>
+                    </defs>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Truy cập</th>
+                    <th>Tìm kiếm</th>
+                    <th>Chèn đầu</th>
+                    <th>Xóa đầu</th>
+                  </tr>
+                  <tr>
+                    <td>Trung bình / Tệ nhất</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-ll-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-ll-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-ll-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-ll-cpp"
+                  ><code>struct Node {
+    int data;
+    Node* next;
+};
+Node* head = new Node{5, nullptr};
+head = new Node{9, head}; // chèn đầu</code></pre>
+                  <pre class="code-block" id="code-ll-java"><code>class Node {
+    int data;
+    Node next;
+    Node(int d) { data = d; }
+}
+Node head = new Node(5);
+Node second = new Node(9);
+second.next = head; // chèn đầu
+head = second;</code></pre>
+                  <pre class="code-block" id="code-ll-py"><code>class Node:
+    def __init__(self, data, next=None):
+        self.data = data
+        self.next = next
+
+head = Node(5)
+head = Node(9, head)  # chèn đầu</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Lịch sử "Undo" trong trình soạn thảo,
+                  danh sách phát nhạc, quản lý bộ nhớ động.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Viết hàm chèn một node có giá trị 7 vào
+                  đầu danh sách 5→9→3.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Tạo node mới data=7, cho next trỏ tới node hiện tại là head
+                    (5), rồi cập nhật head = node mới. Kết quả: 7→5→9→3.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Viết hàm đếm số lượng node trong danh sách liên kết.</p>
+                <p>
+                  2. Viết hàm tìm giá trị lớn nhất trong danh sách liên kết
+                  4→8→2→10.
+                </p>
+                <p>3. Viết hàm đảo ngược một danh sách liên kết đơn.</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Stack (Ngăn xếp - LIFO)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Cấu trúc dữ liệu hoạt động theo nguyên tắc
+                  LIFO (Last In First Out) — phần tử vào sau ra trước. Hai thao
+                  tác chính: push (thêm) và pop (lấy ra).
+                </p>
+                <svg viewBox="0 0 140 130" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <rect
+                      x="20"
+                      y="10"
+                      width="100"
+                      height="30"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="70"
+                      y="30"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      30 ← top
+                    </text>
+                    <rect
+                      x="20"
+                      y="40"
+                      width="100"
+                      height="30"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="70"
+                      y="60"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      20
+                    </text>
+                    <rect
+                      x="20"
+                      y="70"
+                      width="100"
+                      height="30"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="70"
+                      y="90"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      10
+                    </text>
+                    <text
+                      x="70"
+                      y="115"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      Đáy ngăn xếp
+                    </text>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Push</th>
+                    <th>Pop</th>
+                    <th>Peek</th>
+                    <th>Tìm kiếm</th>
+                  </tr>
+                  <tr>
+                    <td>Trung bình / Tệ nhất</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(n)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-stack-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-stack-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-stack-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-stack-cpp"
+                  ><code>stack&lt;int&gt; s;
+s.push(10); s.push(20); s.push(30);
+cout &lt;&lt; s.top(); // 30
+s.pop();</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-stack-java"
+                  ><code>Deque&lt;Integer&gt; s = new ArrayDeque&lt;&gt;();
+s.push(10); s.push(20); s.push(30);
+System.out.println(s.peek()); // 30
+s.pop();</code></pre>
+                  <pre class="code-block" id="code-stack-py"><code>s = []
+s.append(10); s.append(20); s.append(30)
+print(s[-1])  # 30
+s.pop()</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Nút "Back" trên trình duyệt, Call Stack
+                  khi gọi hàm, kiểm tra dấu ngoặc cân bằng.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Cho chuỗi thao tác push(1), push(2),
+                  push(3), pop(), push(4). Ngăn xếp cuối cùng là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Sau pop() ngăn xếp còn [1,2], push(4) ⟹ [1,2,4] (đỉnh là 4).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết thuật toán kiểm tra chuỗi "(a+b)*(c-d)" có ngoặc cân
+                  bằng không bằng Stack.
+                </p>
+                <p>2. Dùng Stack để đảo ngược chuỗi "HELLO".</p>
+                <p>
+                  3. Mô phỏng dãy thao tác push(5), push(8), pop(), push(2),
+                  pop(), pop() — ngăn xếp còn lại gì?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Queue (Hàng đợi - FIFO)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Cấu trúc hoạt động theo nguyên tắc FIFO
+                  (First In First Out) — phần tử vào trước ra trước. Hai thao
+                  tác chính: enqueue (thêm vào cuối) và dequeue (lấy từ đầu).
+                </p>
+                <svg viewBox="0 0 340 70" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <text x="10" y="15" fill="var(--text-muted)">Front</text>
+                    <rect
+                      x="10"
+                      y="20"
+                      width="60"
+                      height="35"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="40"
+                      y="43"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      A
+                    </text>
+                    <rect
+                      x="80"
+                      y="20"
+                      width="60"
+                      height="35"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="110"
+                      y="43"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      B
+                    </text>
+                    <rect
+                      x="150"
+                      y="20"
+                      width="60"
+                      height="35"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="180"
+                      y="43"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      C
+                    </text>
+                    <text x="230" y="15" fill="var(--text-muted)">Rear</text>
+                    <line
+                      x1="220"
+                      y1="37"
+                      x2="150"
+                      y2="37"
+                      style="
+                        stroke: var(--text-muted);
+                        stroke-width: 1.5;
+                        stroke-dasharray: 4;
+                      "
+                    />
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Enqueue</th>
+                    <th>Dequeue</th>
+                    <th>Peek</th>
+                    <th>Tìm kiếm</th>
+                  </tr>
+                  <tr>
+                    <td>Trung bình / Tệ nhất</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(n)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-queue-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-queue-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-queue-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-queue-cpp"
+                  ><code>queue&lt;int&gt; q;
+q.push(1); q.push(2); q.push(3);
+cout &lt;&lt; q.front(); // 1
+q.pop();</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-queue-java"
+                  ><code>Queue&lt;Integer&gt; q = new LinkedList&lt;&gt;();
+q.offer(1); q.offer(2); q.offer(3);
+System.out.println(q.peek()); // 1
+q.poll();</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-queue-py"
+                  ><code>from collections import deque
+q = deque()
+q.append(1); q.append(2); q.append(3)
+print(q[0])  # 1
+q.popleft()</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Hàng đợi in ấn tài liệu, xử lý tác vụ
+                  theo thứ tự, thuật toán BFS.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Cho enqueue(A), enqueue(B), dequeue(),
+                  enqueue(C). Hàng đợi hiện tại là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Sau dequeue() còn [B], enqueue(C) ⟹ [B, C] (front là B).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Mô phỏng hàng đợi khách mua vé: 5 người enqueue lần lượt, 2
+                  người được phục vụ (dequeue). Ai còn lại?
+                </p>
+                <p>
+                  2. So sánh sự khác nhau giữa Stack và Queue bằng ví dụ cụ thể.
+                </p>
+                <p>3. Cài đặt Queue bằng 2 Stack (thuật toán kinh điển).</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Tree (Cây)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Cấu trúc phân cấp gồm các node, có 1 node
+                  gốc (root), mỗi node có 0 hoặc nhiều node con; node không có
+                  con gọi là lá (leaf).
+                </p>
+                <svg viewBox="0 0 220 130" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <line
+                      x1="110"
+                      y1="30"
+                      x2="60"
+                      y2="80"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="110"
+                      y1="30"
+                      x2="160"
+                      y2="80"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="60"
+                      y1="80"
+                      x2="30"
+                      y2="115"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="60"
+                      y1="80"
+                      x2="90"
+                      y2="115"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <circle
+                      cx="110"
+                      cy="25"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="110"
+                      y="30"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      A
+                    </text>
+                    <circle
+                      cx="60"
+                      cy="80"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="60"
+                      y="85"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      B
+                    </text>
+                    <circle
+                      cx="160"
+                      cy="80"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="160"
+                      y="85"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      C
+                    </text>
+                    <circle
+                      cx="30"
+                      cy="115"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="30"
+                      y="120"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      D
+                    </text>
+                    <circle
+                      cx="90"
+                      cy="115"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="90"
+                      y="120"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      E
+                    </text>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Duyệt cây</th>
+                    <th>Tìm kiếm (chưa cân bằng)</th>
+                  </tr>
+                  <tr>
+                    <td>Tệ nhất</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-tree-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-tree-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-tree-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-tree-cpp"
+                  ><code>struct Node {
+    int data;
+    Node *left, *right;
+};
+void inorder(Node* n) {
+    if (!n) return;
+    inorder(n-&gt;left);
+    cout &lt;&lt; n-&gt;data &lt;&lt; " ";
+    inorder(n-&gt;right);
+}</code></pre>
+                  <pre class="code-block" id="code-tree-java"><code>class Node {
+    int data;
+    Node left, right;
+}
+void inorder(Node n) {
+    if (n == null) return;
+    inorder(n.left);
+    System.out.print(n.data + " ");
+    inorder(n.right);
+}</code></pre>
+                  <pre class="code-block" id="code-tree-py"><code>class Node:
+    def __init__(self, data, left=None, right=None):
+        self.data, self.left, self.right = data, left, right
+
+def inorder(n):
+    if not n: return
+    inorder(n.left)
+    print(n.data, end=" ")
+    inorder(n.right)</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Cây thư mục máy tính, cấu trúc DOM của
+                  HTML, cây tổ chức công ty.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Với cây A(B(D,E), C), liệt kê thứ tự duyệt
+                  Preorder (gốc-trái-phải).
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Preorder: A, B, D, E, C</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Liệt kê thứ tự duyệt Inorder và Postorder của cây A(B(D,E),
+                  C).
+                </p>
+                <p>2. Cây trên có bao nhiêu node lá?</p>
+                <p>3. Chiều cao (height) của cây trên là bao nhiêu?</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Binary Search Tree - BST</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Cây nhị phân đặc biệt: với mọi node, giá
+                  trị cây con trái &lt; giá trị node &lt; giá trị cây con phải.
+                  Nhờ tính chất này, tìm kiếm/chèn/xóa trung bình chỉ O(log n).
+                </p>
+                <svg viewBox="0 0 220 130" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <line
+                      x1="110"
+                      y1="30"
+                      x2="60"
+                      y2="80"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="110"
+                      y1="30"
+                      x2="160"
+                      y2="80"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="60"
+                      y1="80"
+                      x2="30"
+                      y2="115"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="60"
+                      y1="80"
+                      x2="90"
+                      y2="115"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <circle
+                      cx="110"
+                      cy="25"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="110"
+                      y="30"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      8
+                    </text>
+                    <circle
+                      cx="60"
+                      cy="80"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="60"
+                      y="85"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      3
+                    </text>
+                    <circle
+                      cx="160"
+                      cy="80"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="160"
+                      y="85"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      10
+                    </text>
+                    <circle
+                      cx="30"
+                      cy="115"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="30"
+                      y="120"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      1
+                    </text>
+                    <circle
+                      cx="90"
+                      cy="115"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="90"
+                      y="120"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      6
+                    </text>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Tìm kiếm</th>
+                    <th>Chèn</th>
+                    <th>Xóa</th>
+                  </tr>
+                  <tr>
+                    <td>Trung bình (cây cân bằng)</td>
+                    <td>O(log n)</td>
+                    <td>O(log n)</td>
+                    <td>O(log n)</td>
+                  </tr>
+                  <tr>
+                    <td>Tệ nhất (cây lệch)</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-bst-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-bst-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-bst-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-bst-cpp"
+                  ><code>Node* insert(Node* root, int val) {
+    if (!root) return new Node{val, nullptr, nullptr};
+    if (val &lt; root-&gt;data) root-&gt;left = insert(root-&gt;left, val);
+    else root-&gt;right = insert(root-&gt;right, val);
+    return root;
+}</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-bst-java"
+                  ><code>Node insert(Node root, int val) {
+    if (root == null) return new Node(val);
+    if (val &lt; root.data) root.left = insert(root.left, val);
+    else root.right = insert(root.right, val);
+    return root;
+}</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-bst-py"
+                  ><code>def insert(root, val):
+    if not root: return Node(val)
+    if val &lt; root.data:
+        root.left = insert(root.left, val)
+    else:
+        root.right = insert(root.right, val)
+    return root</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Tìm kiếm nhanh trong bộ từ điển, cây
+                  quyết định (decision tree), lập chỉ mục database.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Chèn lần lượt 8, 3, 10, 1, 6 vào BST rỗng.
+                  Cây kết quả như thế nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Gốc 8; trái là 3 (có con trái 1, con phải 6); phải là 10.
+                    Đúng như hình minh họa ở trên.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Chèn thêm giá trị 4 vào BST trên, nó sẽ nằm ở vị trí nào?
+                </p>
+                <p>
+                  2. Viết mã giả (pseudocode) cho hàm tìm kiếm một giá trị trong
+                  BST.
+                </p>
+                <p>
+                  3. Tại sao BST bị lệch (skewed) lại có độ phức tạp O(n) thay
+                  vì O(log n)?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>7️⃣ Heap (Đống nhị phân)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Cây nhị phân hoàn chỉnh (complete binary
+                  tree) thỏa thuộc tính heap: Min-Heap (node cha ≤ node con)
+                  hoặc Max-Heap (node cha ≥ node con). Thường dùng cài đặt
+                  Priority Queue.
+                </p>
+                <svg viewBox="0 0 220 130" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <line
+                      x1="110"
+                      y1="30"
+                      x2="60"
+                      y2="80"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="110"
+                      y1="30"
+                      x2="160"
+                      y2="80"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <circle
+                      cx="110"
+                      cy="25"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="110"
+                      y="30"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      2
+                    </text>
+                    <circle
+                      cx="60"
+                      cy="80"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="60"
+                      y="85"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      5
+                    </text>
+                    <circle
+                      cx="160"
+                      cy="80"
+                      r="18"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="160"
+                      y="85"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      7
+                    </text>
+                    <text
+                      x="110"
+                      y="120"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                      font-size="11"
+                    >
+                      Min-Heap
+                    </text>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Chèn</th>
+                    <th>Lấy min/max</th>
+                    <th>Xem đỉnh</th>
+                  </tr>
+                  <tr>
+                    <td>Trung bình / Tệ nhất</td>
+                    <td>O(log n)</td>
+                    <td>O(log n)</td>
+                    <td>O(1)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-heap-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-heap-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-heap-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-heap-cpp"
+                  ><code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; minHeap;
+minHeap.push(5); minHeap.push(2); minHeap.push(7);
+cout &lt;&lt; minHeap.top(); // 2</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-heap-java"
+                  ><code>PriorityQueue&lt;Integer&gt; minHeap = new PriorityQueue&lt;&gt;();
+minHeap.add(5); minHeap.add(2); minHeap.add(7);
+System.out.println(minHeap.peek()); // 2</code></pre>
+                  <pre class="code-block" id="code-heap-py"><code>import heapq
+minHeap = []
+heapq.heappush(minHeap, 5)
+heapq.heappush(minHeap, 2)
+heapq.heappush(minHeap, 7)
+print(minHeap[0])  # 2</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Thuật toán Dijkstra, lập lịch tiến trình
+                  theo độ ưu tiên, Heap Sort.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Chèn lần lượt 5, 2, 7 vào Min-Heap rỗng.
+                  Giá trị ở đỉnh (root) là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Đỉnh Min-Heap luôn là giá trị nhỏ nhất ⟹ 2.</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Chèn thêm giá trị 1 vào Min-Heap [2,5,7]. Đỉnh mới là gì?
+                </p>
+                <p>
+                  2. Sự khác nhau giữa Min-Heap và Max-Heap là gì? Cho ví dụ
+                  minh họa.
+                </p>
+                <p>
+                  3. Vì sao Heap thường được cài đặt bằng mảng thay vì con trỏ
+                  như cây thường?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>8️⃣ Graph (Đồ thị)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Gồm tập đỉnh (vertices) và tập cạnh (edges)
+                  nối các đỉnh. Có thể là đồ thị vô hướng/có hướng, có trọng
+                  số/không trọng số. Thường biểu diễn bằng danh sách kề
+                  (adjacency list) hoặc ma trận kề (adjacency matrix).
+                </p>
+                <svg viewBox="0 0 220 130" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 12px">
+                    <line
+                      x1="40"
+                      y1="30"
+                      x2="110"
+                      y2="30"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="40"
+                      y1="30"
+                      x2="40"
+                      y2="100"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="110"
+                      y1="30"
+                      x2="170"
+                      y2="100"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <line
+                      x1="40"
+                      y1="100"
+                      x2="170"
+                      y2="100"
+                      style="stroke: var(--text-muted); stroke-width: 2"
+                    />
+                    <circle
+                      cx="40"
+                      cy="30"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="40"
+                      y="35"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      A
+                    </text>
+                    <circle
+                      cx="110"
+                      cy="30"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="110"
+                      y="35"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      B
+                    </text>
+                    <circle
+                      cx="40"
+                      cy="100"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="40"
+                      y="105"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      C
+                    </text>
+                    <circle
+                      cx="170"
+                      cy="100"
+                      r="16"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="170"
+                      y="105"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="11"
+                    >
+                      D
+                    </text>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Danh sách kề (không gian)</th>
+                    <th>Ma trận kề (không gian)</th>
+                  </tr>
+                  <tr>
+                    <td>Độ phức tạp</td>
+                    <td>O(V + E)</td>
+                    <td>O(V²)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-graph-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-graph-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-graph-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-graph-cpp"
+                  ><code>vector&lt;int&gt; adj[4]; // 4 đỉnh A=0,B=1,C=2,D=3
+adj[0].push_back(1); // A-B
+adj[0].push_back(2); // A-C
+adj[1].push_back(3); // B-D
+adj[2].push_back(3); // C-D</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-graph-java"
+                  ><code>List&lt;List&lt;Integer&gt;&gt; adj = new ArrayList&lt;&gt;();
+for (int i = 0; i &lt; 4; i++) adj.add(new ArrayList&lt;&gt;());
+adj.get(0).add(1); // A-B
+adj.get(0).add(2); // A-C
+adj.get(1).add(3); // B-D
+adj.get(2).add(3); // C-D</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-graph-py"
+                  ><code>adj = {0: [1, 2], 1: [3], 2: [3], 3: []}
+# 0=A, 1=B, 2=C, 3=D</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Mạng xã hội (bạn bè), bản đồ giao thông
+                  (Google Maps), mạng máy tính/Internet.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Với đồ thị A-B, A-C, B-D, C-D (như hình),
+                  đỉnh D có bậc (degree) bao nhiêu?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>D nối với B và C ⟹ bậc của D là 2.</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết danh sách kề cho đồ thị có cạnh: A-B, B-C, C-A, C-D.
+                </p>
+                <p>
+                  2. Đồ thị vô hướng 4 đỉnh, 4 cạnh như trên có bao nhiêu cạnh
+                  tối đa nếu là đồ thị đầy đủ (complete graph)?
+                </p>
+                <p>
+                  3. Phân biệt đồ thị có hướng và vô hướng bằng ví dụ thực tế.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>9️⃣ Hash Table (Bảng băm)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Định nghĩa:</b> Lưu trữ theo cặp key-value, dùng hàm băm
+                  (hash function) để ánh xạ key sang một chỉ số trong mảng. Khi
+                  2 key băm ra cùng chỉ số (đụng độ/collision), thường giải
+                  quyết bằng chaining (danh sách liên kết tại mỗi ô) hoặc open
+                  addressing.
+                </p>
+                <svg viewBox="0 0 260 100" class="ds-svg">
+                  <g style="font-family: monospace; font-size: 11px">
+                    <rect
+                      x="10"
+                      y="10"
+                      width="50"
+                      height="30"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="35"
+                      y="30"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      0
+                    </text>
+                    <rect
+                      x="60"
+                      y="10"
+                      width="50"
+                      height="30"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="85"
+                      y="30"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      1
+                    </text>
+                    <rect
+                      x="110"
+                      y="10"
+                      width="50"
+                      height="30"
+                      fill="none"
+                      style="stroke: var(--accent); stroke-width: 2"
+                    />
+                    <text
+                      x="135"
+                      y="30"
+                      text-anchor="middle"
+                      fill="var(--text-muted)"
+                    >
+                      2
+                    </text>
+                    <rect
+                      x="60"
+                      y="45"
+                      width="90"
+                      height="26"
+                      rx="6"
+                      fill="none"
+                      style="stroke: var(--text-muted); stroke-width: 1.5"
+                    />
+                    <text
+                      x="105"
+                      y="63"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                    >
+                      "an"→5
+                    </text>
+                    <line
+                      x1="85"
+                      y1="40"
+                      x2="85"
+                      y2="45"
+                      style="stroke: var(--text-muted); stroke-width: 1.5"
+                    />
+                    <rect
+                      x="160"
+                      y="76"
+                      width="90"
+                      height="24"
+                      rx="6"
+                      fill="none"
+                      style="stroke: var(--text-muted); stroke-width: 1.5"
+                    />
+                    <text
+                      x="205"
+                      y="93"
+                      text-anchor="middle"
+                      fill="var(--text-main)"
+                      font-size="10"
+                    >
+                      "vn"→2 (chain)
+                    </text>
+                  </g>
+                </svg>
+                <table class="bigo-table">
+                  <tr>
+                    <th></th>
+                    <th>Tìm kiếm</th>
+                    <th>Chèn</th>
+                    <th>Xóa</th>
+                  </tr>
+                  <tr>
+                    <td>Trung bình</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                    <td>O(1)</td>
+                  </tr>
+                  <tr>
+                    <td>Tệ nhất (nhiều đụng độ)</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                    <td>O(n)</td>
+                  </tr>
+                </table>
+                <div class="code-tabs">
+                  <div class="code-tab-buttons">
+                    <button
+                      class="code-tab-btn active"
+                      onclick="switchCodeTab(this, 'code-hash-cpp')"
+                    >
+                      C++
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-hash-java')"
+                    >
+                      Java
+                    </button>
+                    <button
+                      class="code-tab-btn"
+                      onclick="switchCodeTab(this, 'code-hash-py')"
+                    >
+                      Python
+                    </button>
+                  </div>
+                  <pre
+                    class="code-block active"
+                    id="code-hash-cpp"
+                  ><code>unordered_map&lt;string, int&gt; m;
+m["an"] = 5;
+m["vn"] = 2;
+cout &lt;&lt; m["an"]; // 5</code></pre>
+                  <pre
+                    class="code-block"
+                    id="code-hash-java"
+                  ><code>HashMap&lt;String, Integer&gt; m = new HashMap&lt;&gt;();
+m.put("an", 5);
+m.put("vn", 2);
+System.out.println(m.get("an")); // 5</code></pre>
+                  <pre class="code-block" id="code-hash-py"><code>m = {}
+m["an"] = 5
+m["vn"] = 2
+print(m["an"])  # 5</code></pre>
+                </div>
+                <p>
+                  <b>Ví dụ thực tế:</b> Bộ nhớ đệm (cache), đếm tần suất xuất
+                  hiện của từ, đánh chỉ mục (index) trong database.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Với hàm băm h(key) = độ dài(key) % 3, "an"
+                  (2 ký tự) và "vn" (2 ký tự) có đụng độ không?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    h("an") = 2%3 = 2, h("vn") = 2%3 = 2 ⟹ đụng độ (cùng ô số
+                    2), cần dùng chaining để lưu cả hai.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Với hàm băm trên, từ "toi" (3 ký tự) sẽ rơi vào ô nào?</p>
+                <p>
+                  2. Nêu 2 cách phổ biến để giải quyết đụng độ trong Hash Table.
+                </p>
+                <p>
+                  3. Tại sao Hash Table tìm kiếm trung bình O(1) nhưng tệ nhất
+                  lại là O(n)?
+                </p>
+              </div>
+            </details>
+          </div>
+          <div class="card">
+            <h2>⚡ Thuật Toán Sắp Xếp &amp; Tìm Kiếm &amp; Đồ Thị</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Bubble Sort</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Duyệt qua mảng nhiều lần, mỗi lần so sánh 2
+                  phần tử liền kề và hoán đổi nếu sai thứ tự — phần tử lớn "nổi
+                  bọt" dần về cuối mảng.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Tốt nhất</th>
+                    <th>Trung bình</th>
+                    <th>Tệ nhất</th>
+                  </tr>
+                  <tr>
+                    <td>O(n) (đã có tối ưu cờ flag)</td>
+                    <td>O(n²)</td>
+                    <td>O(n²)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>void bubbleSort(int a[], int n) {
+    for (int i = 0; i &lt; n - 1; i++) {
+        bool swapped = false;
+        for (int j = 0; j &lt; n - i - 1; j++) {
+            if (a[j] &gt; a[j + 1]) {
+                swap(a[j], a[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) break; // đã sắp xếp xong sớm
+    }
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Sắp xếp [5, 2, 4, 1] bằng Bubble Sort,
+                  liệt kê mảng sau vòng lặp đầu tiên.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    So sánh (5,2)→đổi, (5,4)→đổi, (5,1)→đổi ⟹ sau vòng 1: [2, 4,
+                    1, 5]
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Tiếp tục sắp xếp [2, 4, 1, 5] cho đến khi hoàn tất, liệt kê
+                  từng vòng lặp.
+                </p>
+                <p>
+                  2. Bubble Sort cần bao nhiêu lần so sánh tối đa với mảng 5
+                  phần tử?
+                </p>
+                <p>
+                  3. Vì sao Bubble Sort có best-case O(n) nếu thêm cờ kiểm tra
+                  "swapped"?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Selection Sort</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Ở mỗi vòng, tìm phần tử nhỏ nhất trong phần
+                  chưa sắp xếp rồi đổi chỗ với phần tử đầu tiên của phần đó.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Tốt nhất</th>
+                    <th>Trung bình</th>
+                    <th>Tệ nhất</th>
+                  </tr>
+                  <tr>
+                    <td>O(n²)</td>
+                    <td>O(n²)</td>
+                    <td>O(n²)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>void selectionSort(int a[], int n) {
+    for (int i = 0; i &lt; n - 1; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j &lt; n; j++)
+            if (a[j] &lt; a[minIdx]) minIdx = j;
+        swap(a[i], a[minIdx]);
+    }
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Sắp xếp [29, 10, 14, 37] bằng Selection
+                  Sort, cho biết mảng sau vòng lặp đầu.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Phần tử nhỏ nhất là 10, đổi với vị trí đầu ⟹ [10, 29, 14,
+                    37]
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Hoàn tất sắp xếp [10, 29, 14, 37] bằng Selection Sort.</p>
+                <p>
+                  2. Vì sao Selection Sort luôn có độ phức tạp O(n²) kể cả khi
+                  mảng đã sắp xếp sẵn?
+                </p>
+                <p>
+                  3. So sánh số lần hoán đổi (swap) giữa Bubble Sort và
+                  Selection Sort trên cùng một mảng.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Insertion Sort</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Xây dựng dần mảng đã sắp xếp bằng cách lấy
+                  từng phần tử và chèn nó vào đúng vị trí trong phần đã sắp xếp
+                  trước đó — giống cách ta sắp bài trên tay.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Tốt nhất</th>
+                    <th>Trung bình</th>
+                    <th>Tệ nhất</th>
+                  </tr>
+                  <tr>
+                    <td>O(n)</td>
+                    <td>O(n²)</td>
+                    <td>O(n²)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>void insertionSort(int a[], int n) {
+    for (int i = 1; i &lt; n; i++) {
+        int key = a[i], j = i - 1;
+        while (j &gt;= 0 &amp;&amp; a[j] &gt; key) {
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = key;
+    }
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Sắp xếp [12, 11, 13] bằng Insertion Sort,
+                  cho biết mảng sau khi chèn phần tử 13.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Sau khi chèn 11 vào [12]: [11,12]. Chèn 13 vào [11,12]: 13
+                    &gt; 12 nên giữ nguyên vị trí ⟹ [11,12,13]
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Sắp xếp [4, 3, 2, 1] bằng Insertion Sort, liệt kê từng bước
+                  chèn.
+                </p>
+                <p>
+                  2. Vì sao Insertion Sort có best-case O(n) khi mảng đã gần như
+                  sắp xếp sẵn?
+                </p>
+                <p>
+                  3. Insertion Sort có phù hợp để sắp xếp mảng rất lớn (hàng
+                  triệu phần tử) không? Vì sao?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Merge Sort</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Thuật toán chia để trị (divide &amp; conquer):
+                  chia mảng làm đôi liên tục đến khi còn 1 phần tử, rồi trộn
+                  (merge) các mảng con đã sắp xếp lại với nhau.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Tốt nhất</th>
+                    <th>Trung bình</th>
+                    <th>Tệ nhất</th>
+                  </tr>
+                  <tr>
+                    <td>O(n log n)</td>
+                    <td>O(n log n)</td>
+                    <td>O(n log n)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>void mergeSort(vector&lt;int&gt;&amp; a, int l, int r) {
+    if (l &gt;= r) return;
+    int m = (l + r) / 2;
+    mergeSort(a, l, m);
+    mergeSort(a, m + 1, r);
+    // Trộn hai nửa đã sắp xếp [l..m] và [m+1..r]
+    vector&lt;int&gt; tmp;
+    int i = l, j = m + 1;
+    while (i &lt;= m &amp;&amp; j &lt;= r)
+        tmp.push_back(a[i] &lt;= a[j] ? a[i++] : a[j++]);
+    while (i &lt;= m) tmp.push_back(a[i++]);
+    while (j &lt;= r) tmp.push_back(a[j++]);
+    for (int k = l; k &lt;= r; k++) a[k] = tmp[k - l];
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Trộn hai mảng con đã sắp xếp [1, 4, 7] và
+                  [2, 3, 8] thành một mảng.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>So sánh lần lượt hai đầu mảng: [1, 2, 3, 4, 7, 8]</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Vẽ sơ đồ chia mảng [8, 4, 2, 9, 5] thành các mảng con theo
+                  Merge Sort.
+                </p>
+                <p>
+                  2. Vì sao Merge Sort luôn có độ phức tạp O(n log n) ở mọi
+                  trường hợp, không như Quick Sort?
+                </p>
+                <p>
+                  3. Merge Sort cần thêm bao nhiêu bộ nhớ phụ (không gian) so
+                  với Bubble Sort?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Quick Sort</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Chọn 1 phần tử làm chốt (pivot), phân hoạch
+                  mảng sao cho các phần tử nhỏ hơn pivot nằm bên trái, lớn hơn
+                  nằm bên phải, rồi đệ quy sắp xếp hai phần đó.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Tốt nhất</th>
+                    <th>Trung bình</th>
+                    <th>Tệ nhất</th>
+                  </tr>
+                  <tr>
+                    <td>O(n log n)</td>
+                    <td>O(n log n)</td>
+                    <td>O(n²) (pivot chọn xấu)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>int partition(int a[], int low, int high) {
+    int pivot = a[high], i = low - 1;
+    for (int j = low; j &lt; high; j++)
+        if (a[j] &lt; pivot) swap(a[++i], a[j]);
+    swap(a[i + 1], a[high]);
+    return i + 1;
+}
+void quickSort(int a[], int low, int high) {
+    if (low &lt; high) {
+        int pi = partition(a, low, high);
+        quickSort(a, low, pi - 1);
+        quickSort(a, pi + 1, high);
+    }
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Với mảng [4, 2, 6, 1, 5] và pivot là phần
+                  tử cuối (5), phân hoạch mảng.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Các phần tử &lt; 5 là 4,2,1 chuyển về trái, 6 &gt; 5 ở phải
+                    ⟹ [4, 2, 1, 5, 6], pivot 5 ở đúng vị trí (chỉ số 3).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Tiếp tục Quick Sort cho hai mảng con [4,2,1] và [6] từ bài
+                  tập mẫu.
+                </p>
+                <p>
+                  2. Vì sao Quick Sort lại có tệ nhất O(n²) dù trung bình rất
+                  nhanh O(n log n)?
+                </p>
+                <p>
+                  3. Nêu 1 cách chọn pivot giúp giảm khả năng rơi vào trường hợp
+                  tệ nhất.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Binary Search</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Tìm kiếm trên mảng đã sắp xếp bằng cách liên
+                  tục so sánh với phần tử giữa, thu hẹp phạm vi tìm kiếm đi một
+                  nửa sau mỗi lần so sánh.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Tốt nhất</th>
+                    <th>Trung bình</th>
+                    <th>Tệ nhất</th>
+                  </tr>
+                  <tr>
+                    <td>O(1)</td>
+                    <td>O(log n)</td>
+                    <td>O(log n)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>int binarySearch(int a[], int n, int target) {
+    int lo = 0, hi = n - 1;
+    while (lo &lt;= hi) {
+        int mid = (lo + hi) / 2;
+        if (a[mid] == target) return mid;
+        else if (a[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1; // không tìm thấy
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Tìm giá trị 23 trong mảng đã sắp xếp [4,
+                  8, 15, 16, 23, 42] bằng Binary Search, liệt kê các bước.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    mid=15 (index 2) &lt; 23 ⟹ tìm bên phải [16,23,42]; mid=23
+                    (index 4) = target ⟹ tìm thấy tại chỉ số 4.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Tìm giá trị 4 trong mảng trên bằng Binary Search, liệt kê
+                  các bước.
+                </p>
+                <p>
+                  2. Tại sao Binary Search bắt buộc mảng phải được sắp xếp
+                  trước?
+                </p>
+                <p>
+                  3. Với mảng 1 triệu phần tử, Binary Search cần tối đa bao
+                  nhiêu bước so sánh?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>7️⃣ BFS - Breadth First Search</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Duyệt đồ thị theo từng lớp (level), thăm hết
+                  các đỉnh kề của đỉnh hiện tại trước khi đi xa hơn. Dùng cấu
+                  trúc <b>Queue</b> để lưu các đỉnh chờ thăm.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Độ phức tạp thời gian</th>
+                    <th>Độ phức tạp không gian</th>
+                  </tr>
+                  <tr>
+                    <td>O(V + E)</td>
+                    <td>O(V)</td>
+                  </tr>
+                </table>
+                <p style="font-size: 11px; color: var(--text-muted)">
+                  (Ghi chú: BFS/DFS/Dijkstra là thuật toán duyệt đồ thị, độ phức
+                  tạp phụ thuộc số đỉnh V và số cạnh E, không chia theo tốt
+                  nhất/trung bình/tệ nhất như thuật toán sắp xếp.)
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>void bfs(int start, vector&lt;int&gt; adj[], int n) {
+    vector&lt;bool&gt; visited(n, false);
+    queue&lt;int&gt; q;
+    q.push(start); visited[start] = true;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        cout &lt;&lt; u &lt;&lt; " ";
+        for (int v : adj[u]) {
+            if (!visited[v]) { visited[v] = true; q.push(v); }
+        }
+    }
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Với đồ thị A-B, A-C, B-D, C-D, bắt đầu BFS
+                  từ A, thứ tự thăm là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    A → thăm B, C (kề A) → rồi thăm D (kề B, C) ⟹ Thứ tự: A, B,
+                    C, D
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Với đồ thị trên, nếu bắt đầu BFS từ B thì thứ tự thăm là
+                  gì?
+                </p>
+                <p>2. Vì sao BFS dùng Queue chứ không phải Stack?</p>
+                <p>
+                  3. BFS thường được dùng để làm gì trong bài toán tìm đường đi
+                  ngắn nhất?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>8️⃣ DFS - Depth First Search</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Duyệt đồ thị bằng cách đi sâu nhất có thể theo
+                  một nhánh trước khi quay lại (backtrack). Dùng
+                  <b>Stack</b> (hoặc đệ quy) để lưu vết đường đi.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Độ phức tạp thời gian</th>
+                    <th>Độ phức tạp không gian</th>
+                  </tr>
+                  <tr>
+                    <td>O(V + E)</td>
+                    <td>O(V)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>void dfs(int u, vector&lt;int&gt; adj[], vector&lt;bool&gt;&amp; visited) {
+    visited[u] = true;
+    cout &lt;&lt; u &lt;&lt; " ";
+    for (int v : adj[u]) {
+        if (!visited[v]) dfs(v, adj, visited);
+    }
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Với đồ thị A-B, A-C, B-D, C-D, bắt đầu DFS
+                  từ A (ưu tiên thăm B trước), thứ tự thăm là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    A → B (đi sâu) → D (kề B) → quay lại vì D đã thăm hết nhánh
+                    → C (kề A, chưa thăm) ⟹ Thứ tự: A, B, D, C
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Với đồ thị trên, nếu ưu tiên thăm C trước B thì thứ tự DFS
+                  từ A là gì?
+                </p>
+                <p>
+                  2. Nêu một ứng dụng thực tế của DFS (gợi ý: giải mê cung, phát
+                  hiện chu trình).
+                </p>
+                <p>3. So sánh sự khác nhau cơ bản giữa BFS và DFS.</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>9️⃣ Dijkstra (Đường đi ngắn nhất)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Ý tưởng:</b> Tìm đường đi ngắn nhất từ 1 đỉnh nguồn đến tất
+                  cả các đỉnh khác trong đồ thị có trọng số không âm. Dùng
+                  <b>Min-Heap (Priority Queue)</b> để luôn chọn đỉnh có khoảng
+                  cách tạm thời nhỏ nhất để xử lý tiếp theo.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Độ phức tạp (dùng Min-Heap)</th>
+                  </tr>
+                  <tr>
+                    <td>O((V + E) log V)</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>vector&lt;int&gt; dijkstra(int src, vector&lt;pair&lt;int,int&gt;&gt; adj[], int n) {
+    vector&lt;int&gt; dist(n, INT_MAX);
+    priority_queue&lt;pair&lt;int,int&gt;, vector&lt;pair&lt;int,int&gt;&gt;, greater&lt;&gt;&gt; pq;
+    dist[src] = 0;
+    pq.push({0, src});
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d &gt; dist[u]) continue;
+        for (auto [v, w] : adj[u]) {
+            if (dist[u] + w &lt; dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return dist;
+}</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Đồ thị có cạnh A→B (trọng số 4), A→C (2),
+                  C→B (1). Đường đi ngắn nhất từ A đến B là bao nhiêu?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Đi trực tiếp A→B tốn 4. Đi A→C→B tốn 2+1=3 (ngắn hơn) ⟹
+                    Đường đi ngắn nhất từ A đến B là 3.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Với đồ thị trên, khoảng cách ngắn nhất từ A đến C là bao
+                  nhiêu?
+                </p>
+                <p>
+                  2. Vì sao Dijkstra không hoạt động đúng với đồ thị có cạnh
+                  trọng số âm?
+                </p>
+                <p>
+                  3. Nêu một ứng dụng thực tế của thuật toán Dijkstra (gợi ý:
+                  GPS, định tuyến mạng).
+                </p>
+              </div>
+            </details>
           </div>
         </div>
         <div id="cs-web" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">🌐</div>
-            <h2>Ứng dụng Web</h2>
-            <p>
-              Sẽ có thư viện học HTML (Form, Table, Semantic, SEO), CSS
-              (Flexbox, Grid, Animation, Responsive), JavaScript (DOM, Events,
-              Fetch API, Async/Await, LocalStorage) và NodeJS (Express, REST
-              API, JWT) — mỗi chủ đề kèm lý thuyết, ví dụ và demo chạy trực
-              tiếp.
+          <div class="card">
+            <h2>🌐 HTML — Form, Table, Semantic, SEO</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Form (Biểu mẫu)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Thẻ
+                  <span class="cs-formula">&lt;form&gt;</span> dùng để thu thập
+                  dữ liệu người dùng nhập vào, gồm các input (text, email,
+                  password, checkbox...), có thể validate ngay trên trình duyệt
+                  bằng thuộc tính <span class="cs-formula">required</span>,
+                  <span class="cs-formula">type="email"</span>,
+                  <span class="cs-formula">pattern</span>.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>&lt;form&gt;
+  &lt;input type="text" required placeholder="Họ tên"&gt;
+  &lt;input type="email" required placeholder="Email"&gt;
+  &lt;button type="submit"&gt;Gửi&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box">
+                  <input
+                    type="text"
+                    id="webFormName"
+                    placeholder="Họ tên..."
+                    oninput="validateWebDemoForm()"
+                  />
+                  <input
+                    type="email"
+                    id="webFormEmail"
+                    placeholder="Email..."
+                    oninput="validateWebDemoForm()"
+                    style="margin-top: 8px"
+                  />
+                  <div
+                    id="webFormStatus"
+                    style="
+                      font-size: 12px;
+                      margin-top: 8px;
+                      color: var(--text-muted);
+                    "
+                  >
+                    Nhập thông tin để xem validate realtime...
+                  </div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao nên dùng type="email" thay vì
+                  type="text" cho ô nhập email?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Trình duyệt tự động kiểm tra định dạng email hợp lệ (có @ và
+                    tên miền) trước khi submit, giảm code validate thủ công.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Thêm thuộc tính minlength="6" cho ô mật khẩu và giải thích
+                  tác dụng.
+                </p>
+                <p>
+                  2. Tạo một form đăng ký gồm tên, email, số điện thoại với
+                  validate realtime.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Table (Bảng)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Thẻ
+                  <span class="cs-formula">&lt;table&gt;</span> hiển thị dữ liệu
+                  dạng bảng với <span class="cs-formula">&lt;thead&gt;</span>,
+                  <span class="cs-formula">&lt;tbody&gt;</span>,
+                  <span class="cs-formula">&lt;tr&gt;</span> (dòng),
+                  <span class="cs-formula">&lt;td&gt;</span> (ô).
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>&lt;table&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Tên&lt;/th&gt;&lt;th&gt;Điểm&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;An&lt;/td&gt;&lt;td&gt;9&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+                <p><b>Demo chạy trực tiếp:</b> (bấm tiêu đề cột để sắp xếp)</p>
+                <div class="web-demo-box">
+                  <table class="bigo-table" id="webDemoTable">
+                    <tr>
+                      <th style="cursor: pointer" onclick="sortWebDemoTable(0)">
+                        Tên ▲▼
+                      </th>
+                      <th style="cursor: pointer" onclick="sortWebDemoTable(1)">
+                        Điểm ▲▼
+                      </th>
+                    </tr>
+                  </table>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Sự khác biệt giữa &lt;th&gt; và &lt;td&gt;
+                  là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    &lt;th&gt; là ô tiêu đề (in đậm, căn giữa mặc định),
+                    &lt;td&gt; là ô dữ liệu thông thường.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Thêm thuộc tính colspan để một ô tiêu đề chiếm 2 cột.</p>
+                <p>2. Tạo bảng điểm 3 môn học cho 4 sinh viên.</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Semantic HTML</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Dùng các thẻ có ý nghĩa rõ ràng thay vì toàn
+                  &lt;div&gt;: <span class="cs-formula">&lt;header&gt;</span>,
+                  <span class="cs-formula">&lt;nav&gt;</span>,
+                  <span class="cs-formula">&lt;main&gt;</span>,
+                  <span class="cs-formula">&lt;article&gt;</span>,
+                  <span class="cs-formula">&lt;footer&gt;</span> — giúp trình
+                  duyệt, công cụ đọc màn hình và SEO hiểu cấu trúc trang tốt
+                  hơn.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>&lt;header&gt;Logo, Menu&lt;/header&gt;
+&lt;main&gt;
+  &lt;article&gt;Nội dung chính&lt;/article&gt;
+&lt;/main&gt;
+&lt;footer&gt;Bản quyền&lt;/footer&gt;</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box semantic-demo">
+                  <div class="semantic-box">header</div>
+                  <div class="semantic-box">nav</div>
+                  <div class="semantic-box">main → article</div>
+                  <div class="semantic-box">footer</div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao &lt;div class="header"&gt; kém hơn
+                  &lt;header&gt;?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    &lt;div&gt; không mang ý nghĩa, máy không biết đó là header;
+                    &lt;header&gt; giúp SEO và screen reader hiểu đúng vai trò
+                    của khối đó.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết lại một trang blog dùng thẻ semantic thay vì toàn
+                  &lt;div&gt;.
+                </p>
+                <p>
+                  2. Liệt kê 5 thẻ semantic khác ngoài các thẻ đã học (gợi ý:
+                  section, aside, figure...).
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ SEO (Tối ưu công cụ tìm kiếm)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> SEO giúp trang web xếp hạng cao hơn trên
+                  Google. Các yếu tố cơ bản: thẻ
+                  <span class="cs-formula">&lt;title&gt;</span> mô tả rõ nội
+                  dung,
+                  <span class="cs-formula">&lt;meta name="description"&gt;</span
+                  >, thuộc tính <span class="cs-formula">alt</span> cho ảnh,
+                  dùng đúng thứ tự heading h1→h6.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>&lt;title&gt;Học lập trình Web - IT Workspace&lt;/title&gt;
+&lt;meta name="description" content="Học HTML, CSS, JS miễn phí"&gt;
+&lt;img src="code.png" alt="Ảnh minh họa code JavaScript"&gt;</code></pre>
+                <p><b>Demo chạy trực tiếp:</b> (Checklist SEO cơ bản)</p>
+                <div class="web-demo-box">
+                  <label style="display: block; margin-bottom: 6px"
+                    ><input type="checkbox" style="width: auto" /> Có thẻ
+                    &lt;title&gt; mô tả rõ ràng</label
+                  >
+                  <label style="display: block; margin-bottom: 6px"
+                    ><input type="checkbox" style="width: auto" /> Có meta
+                    description</label
+                  >
+                  <label style="display: block; margin-bottom: 6px"
+                    ><input type="checkbox" style="width: auto" /> Ảnh có thuộc
+                    tính alt</label
+                  >
+                  <label style="display: block"
+                    ><input type="checkbox" style="width: auto" /> Dùng đúng thứ
+                    tự h1 → h6</label
+                  >
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao thiếu thuộc tính alt lại ảnh hưởng
+                  SEO?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Google không "nhìn" được ảnh, phải dựa vào alt để hiểu nội
+                    dung ảnh và index chính xác vào kết quả tìm kiếm hình ảnh.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết thẻ title và meta description tối ưu cho một trang bán
+                  sách online.
+                </p>
+                <p>
+                  2. Giải thích vì sao nên chỉ có duy nhất một thẻ h1 trên mỗi
+                  trang.
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <div class="card">
+            <h2>🎨 CSS — Flexbox, Grid, Animation, Responsive</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Flexbox</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b>
+                  <span class="cs-formula">display: flex</span> sắp xếp phần tử
+                  theo hàng/cột linh hoạt.
+                  <span class="cs-formula">justify-content</span> canh theo trục
+                  chính, <span class="cs-formula">align-items</span> canh theo
+                  trục phụ.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box">
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      margin-bottom: 10px;
+                      flex-wrap: wrap;
+                    "
+                  >
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setFlexDemo('justify-content', 'flex-start')"
+                    >
+                      Start
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setFlexDemo('justify-content', 'center')"
+                    >
+                      Center
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setFlexDemo('justify-content', 'space-between')"
+                    >
+                      Space-between
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setFlexDemo('justify-content', 'flex-end')"
+                    >
+                      End
+                    </button>
+                  </div>
+                  <div
+                    id="flexDemoContainer"
+                    style="
+                      display: flex;
+                      justify-content: flex-start;
+                      gap: 8px;
+                      background: rgba(0, 0, 0, 0.3);
+                      border-radius: 10px;
+                      padding: 14px;
+                      min-height: 70px;
+                    "
+                  >
+                    <div class="flex-demo-box">1</div>
+                    <div class="flex-demo-box">2</div>
+                    <div class="flex-demo-box">3</div>
+                  </div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> justify-content: space-between làm gì với
+                  các phần tử?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Phân bố đều các phần tử, phần tử đầu sát trái, phần tử cuối
+                    sát phải, khoảng cách giữa chúng bằng nhau.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Thử đổi flex-direction thành column trong demo trên (sửa
+                  code) — kết quả thay đổi ra sao?
+                </p>
+                <p>
+                  2. Căn giữa hoàn toàn (cả ngang lẫn dọc) một box trong
+                  container 300x300px bằng Flexbox.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ CSS Grid</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b>
+                  <span class="cs-formula">display: grid</span> chia layout
+                  thành lưới ô hàng × cột qua
+                  <span class="cs-formula">grid-template-columns</span>.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box">
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      margin-bottom: 10px;
+                      flex-wrap: wrap;
+                    "
+                  >
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setGridDemo(2)"
+                    >
+                      2 cột
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setGridDemo(3)"
+                    >
+                      3 cột
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setGridDemo(4)"
+                    >
+                      4 cột
+                    </button>
+                  </div>
+                  <div
+                    id="gridDemoContainer"
+                    style="
+                      display: grid;
+                      grid-template-columns: repeat(3, 1fr);
+                      gap: 8px;
+                      background: rgba(0, 0, 0, 0.3);
+                      border-radius: 10px;
+                      padding: 14px;
+                    "
+                  >
+                    <div class="flex-demo-box">1</div>
+                    <div class="flex-demo-box">2</div>
+                    <div class="flex-demo-box">3</div>
+                    <div class="flex-demo-box">4</div>
+                    <div class="flex-demo-box">5</div>
+                    <div class="flex-demo-box">6</div>
+                  </div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> grid-template-columns: repeat(3, 1fr)
+                  nghĩa là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Tạo 3 cột có độ rộng bằng nhau (mỗi cột chiếm 1 phần bằng
+                    nhau của không gian còn lại).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Tạo layout grid-template-columns: 200px 1fr 1fr (một cột cố
+                  định, hai cột co giãn).
+                </p>
+                <p>2. So sánh Flexbox và Grid — khi nào nên dùng cái nào?</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Animation</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b>
+                  <span class="cs-formula">@keyframes</span> định nghĩa các bước
+                  hoạt ảnh, gán vào phần tử bằng thuộc tính
+                  <span class="cs-formula">animation</span>.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+.box { animation: bounce 0.6s ease infinite; }</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box" style="text-align: center">
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      justify-content: center;
+                      margin-bottom: 14px;
+                    "
+                  >
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="triggerCssAnim('bounce')"
+                    >
+                      Bounce
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="triggerCssAnim('spin')"
+                    >
+                      Spin
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="triggerCssAnim('fade')"
+                    >
+                      Fade
+                    </button>
+                  </div>
+                  <div
+                    id="animDemoBox"
+                    class="flex-demo-box"
+                    style="margin: 0 auto; width: 60px; height: 60px"
+                  >
+                    ✨
+                  </div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> "infinite" trong khai báo animation có
+                  nghĩa là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Hoạt ảnh sẽ lặp lại vô hạn lần, không dừng lại sau 1 chu kỳ.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết @keyframes cho hiệu ứng đổi màu nền từ xanh sang đỏ.
+                </p>
+                <p>
+                  2. Thêm animation-delay: 1s vào ví dụ bounce — hiệu ứng thay
+                  đổi thế nào?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Responsive Design</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Dùng
+                  <span class="cs-formula">@media (max-width: ...)</span> để
+                  thay đổi CSS theo kích thước màn hình, giúp trang hiển thị tốt
+                  trên cả Desktop và Mobile.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>@media (max-width: 768px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}</code></pre>
+                <p>
+                  <b>Demo chạy trực tiếp:</b> (Bấm để mô phỏng thu nhỏ khung
+                  nhìn)
+                </p>
+                <div class="web-demo-box">
+                  <div style="display: flex; gap: 8px; margin-bottom: 10px">
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setResponsiveDemo('100%')"
+                    >
+                      🖥️ Desktop
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setResponsiveDemo('420px')"
+                    >
+                      📱 Tablet
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="setResponsiveDemo('260px')"
+                    >
+                      📱 Mobile
+                    </button>
+                  </div>
+                  <div
+                    id="responsiveDemoViewport"
+                    style="
+                      width: 100%;
+                      max-width: 100%;
+                      transition: max-width 0.3s ease;
+                      background: rgba(0, 0, 0, 0.3);
+                      border-radius: 10px;
+                      padding: 14px;
+                    "
+                  >
+                    <div
+                      id="responsiveDemoContent"
+                      style="
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 8px;
+                      "
+                    >
+                      <div class="flex-demo-box">A</div>
+                      <div class="flex-demo-box">B</div>
+                      <div class="flex-demo-box">C</div>
+                    </div>
+                  </div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao trang này (IT Workspace) dùng
+                  grid-template-columns: 1fr trên mobile?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Màn hình nhỏ không đủ chỗ hiển thị nhiều cột, xếp dọc 1 cột
+                    giúp dễ đọc, dễ chạm hơn.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết media query ẩn một phần tử .sidebar khi màn hình nhỏ
+                  hơn 600px.
+                </p>
+                <p>
+                  2. Tìm 3 breakpoint phổ biến thường dùng trong thiết kế
+                  responsive.
+                </p>
+              </div>
+            </details>
+          </div>
+          <div class="card">
+            <h2>
+              ⚡ JavaScript — DOM, Events, Fetch API, Async/Await, LocalStorage
+            </h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ DOM (Document Object Model)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> DOM là cây các phần tử HTML mà JavaScript có
+                  thể đọc/sửa qua
+                  <span class="cs-formula">document.getElementById()</span>,
+                  <span class="cs-formula">.textContent</span>,
+                  <span class="cs-formula">.appendChild()</span>...
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>const box = document.getElementById("myBox");
+box.textContent = "Đã đổi nội dung!";
+box.style.color = "lime";</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box">
+                  <div
+                    id="domDemoTarget"
+                    style="
+                      padding: 12px;
+                      background: rgba(0, 0, 0, 0.3);
+                      border-radius: 10px;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    Nội dung ban đầu
+                  </div>
+                  <button
+                    class="btn-secondary"
+                    style="font-size: 11px"
+                    onclick="domDemoChangeText()"
+                  >
+                    Đổi nội dung
+                  </button>
+                  <button
+                    class="btn-secondary"
+                    style="font-size: 11px"
+                    onclick="domDemoAddItem()"
+                  >
+                    Thêm item vào danh sách
+                  </button>
+                  <ul
+                    class="checklist-list"
+                    id="domDemoList"
+                    style="margin-top: 10px"
+                  ></ul>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Viết code đổi màu nền (background) của
+                  phần tử có id="box" thành đỏ.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    <span class="cs-formula"
+                      >document.getElementById("box").style.backgroundColor =
+                      "red";</span
+                    >
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết code xóa toàn bộ nội dung của một &lt;ul&gt; (dùng
+                  innerHTML = "").
+                </p>
+                <p>
+                  2. Viết code tạo mới một thẻ &lt;li&gt; và thêm nó vào cuối
+                  một &lt;ul&gt; có sẵn.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Events (Sự kiện)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Sự kiện là hành động người dùng tương tác
+                  (click, mouseover, keyup...). Lắng nghe bằng
+                  <span class="cs-formula">addEventListener()</span> hoặc thuộc
+                  tính onclick.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>btn.addEventListener("click", () =&gt; {
+  console.log("Đã click!");
+});</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box">
+                  <div
+                    id="eventDemoBox"
+                    onmouseover="logWebEvent('mouseover')"
+                    onclick="logWebEvent('click')"
+                    style="
+                      padding: 20px;
+                      background: rgba(0, 0, 0, 0.3);
+                      border-radius: 10px;
+                      text-align: center;
+                      cursor: pointer;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    Di chuột / Bấm vào đây
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Gõ phím để xem sự kiện keyup..."
+                    oninput="logWebEvent('keyup: ' + event.target.value)"
+                  />
+                  <div
+                    id="eventLog"
+                    class="osi-log"
+                    style="margin-top: 10px; max-height: 100px"
+                  ></div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Sự khác nhau giữa onclick và onmouseover
+                  là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    onclick kích hoạt khi bấm chuột, onmouseover kích hoạt ngay
+                    khi con trỏ chuột di vào phần tử (không cần bấm).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết code lắng nghe sự kiện "submit" của một form và ngăn
+                  load lại trang (preventDefault).
+                </p>
+                <p>
+                  2. Viết code phát hiện khi người dùng nhấn phím Enter trong ô
+                  input.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Fetch API</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <span class="cs-formula">fetch()</span> gửi
+                  yêu cầu HTTP (GET/POST...) tới server và trả về Promise chứa
+                  response, thường dùng
+                  <span class="cs-formula">.json()</span> để lấy dữ liệu.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>fetch("https://api.example.com/data")
+  .then(res =&gt; res.json())
+  .then(data =&gt; console.log(data));</code></pre>
+                <p>
+                  <b>Demo chạy trực tiếp:</b> (gọi API công khai catfact.ninja
+                  thật sự)
+                </p>
+                <div class="web-demo-box">
+                  <button class="btn-secondary" onclick="fetchDemoCall()">
+                    📡 Gọi API lấy "Cat Fact" ngẫu nhiên
+                  </button>
+                  <div
+                    id="fetchDemoResult"
+                    style="
+                      margin-top: 10px;
+                      font-size: 12px;
+                      color: var(--text-muted);
+                    "
+                  ></div>
+                </div>
+                <p><b>Bài tập mẫu:</b> fetch() trả về kiểu dữ liệu gì?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Một Promise — cần dùng .then() hoặc await để lấy được dữ
+                    liệu thật bên trong.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Viết code fetch dữ liệu và xử lý lỗi bằng .catch().</p>
+                <p>
+                  2. Giải thích vì sao phải gọi .json() sau khi fetch thành
+                  công.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Async / Await</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Cú pháp giúp viết code bất đồng bộ
+                  (asynchronous) trông giống code đồng bộ, dễ đọc hơn chuỗi
+                  .then(). Hàm đánh dấu <span class="cs-formula">async</span>,
+                  dùng <span class="cs-formula">await</span> để "đợi" Promise
+                  hoàn tất.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>async function loadData() {
+  const res = await fetch("...");
+  const data = await res.json();
+  console.log(data);
+}</code></pre>
+                <p>
+                  <b>Demo chạy trực tiếp:</b> (giả lập tải dữ liệu mất 2 giây
+                  bằng await)
+                </p>
+                <div class="web-demo-box">
+                  <button class="btn-secondary" onclick="asyncAwaitDemo()">
+                    ⏳ Bắt đầu tải dữ liệu (2 giây)
+                  </button>
+                  <div
+                    id="asyncDemoResult"
+                    style="
+                      margin-top: 10px;
+                      font-size: 12px;
+                      color: var(--text-muted);
+                    "
+                  ></div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> await chỉ dùng được bên trong loại hàm
+                  nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Chỉ dùng được bên trong hàm được khai báo với từ khóa async.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết một hàm async giả lập đăng nhập, đợi 1 giây rồi trả về
+                  "Đăng nhập thành công".
+                </p>
+                <p>
+                  2. So sánh code dùng .then().then() với code dùng async/await
+                  cho cùng 1 tác vụ.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ LocalStorage</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Lưu dữ liệu dạng key-value ngay trên trình
+                  duyệt, tồn tại kể cả khi tắt/mở lại trình duyệt (khác với
+                  sessionStorage sẽ mất khi đóng tab). Toàn bộ app IT Workspace
+                  này dùng LocalStorage để lưu tài khoản, task, điểm số...
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>localStorage.setItem("ten", "An");
+console.log(localStorage.getItem("ten")); // "An"
+localStorage.removeItem("ten");</code></pre>
+                <p><b>Demo chạy trực tiếp:</b></p>
+                <div class="web-demo-box">
+                  <input
+                    type="text"
+                    id="lsDemoInput"
+                    placeholder="Nhập giá trị để lưu..."
+                  />
+                  <div style="display: flex; gap: 8px; margin-top: 8px">
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="lsDemoSave()"
+                    >
+                      💾 Lưu
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="lsDemoLoad()"
+                    >
+                      📂 Tải lại
+                    </button>
+                    <button
+                      class="btn-secondary"
+                      style="font-size: 11px"
+                      onclick="lsDemoClear()"
+                    >
+                      🗑 Xóa
+                    </button>
+                  </div>
+                  <div
+                    id="lsDemoResult"
+                    style="
+                      margin-top: 10px;
+                      font-size: 12px;
+                      color: var(--text-muted);
+                    "
+                  ></div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Dữ liệu trong LocalStorage được lưu dưới
+                  dạng kiểu gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Luôn là chuỗi (string) — muốn lưu object/array phải dùng
+                    JSON.stringify() rồi khi đọc lại dùng JSON.parse().
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Lưu một object {name: "An", age: 20} vào LocalStorage rồi
+                  đọc lại đúng dạng object.
+                </p>
+                <p>
+                  2. Viết code kiểm tra một key có tồn tại trong LocalStorage
+                  hay không trước khi đọc.
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <div class="card">
+            <h2>🟢 NodeJS — Express, REST API, JWT</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 16px;
+              "
+            >
+              ⚠️ NodeJS chạy phía server (backend), nên không thể chạy demo trực
+              tiếp ngay trong trang web tĩnh này — phần này chỉ có lý thuyết +
+              ví dụ code để tham khảo. Riêng công cụ giải mã JWT bên dưới hoạt
+              động thật 100% vì việc decode JWT diễn ra hoàn toàn ở phía client.
             </p>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Express</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Express là framework NodeJS phổ biến nhất để
+                  xây dựng server web/API, giúp định nghĩa route (đường dẫn) và
+                  xử lý request/response ngắn gọn.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>const express = require("express");
+const app = express();
+
+app.get("/", (req, res) =&gt; {
+  res.send("Xin chào từ Express!");
+});
+
+app.listen(3000, () =&gt; console.log("Server chạy ở port 3000"));</code></pre>
+                <p><b>Bài tập mẫu:</b> app.get("/") dùng để làm gì?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Định nghĩa route xử lý khi có request GET tới đường dẫn gốc
+                    "/" của server.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết route GET "/hello/:name" trả về "Xin chào " + tên lấy
+                  từ URL.
+                </p>
+                <p>
+                  2. Viết route POST "/login" nhận username/password từ
+                  req.body.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ REST API</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Kiến trúc thiết kế API dựa trên HTTP method
+                  để thao tác với tài nguyên (resource):
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Method</th>
+                    <th>Ý nghĩa</th>
+                  </tr>
+                  <tr>
+                    <td>GET</td>
+                    <td>Lấy dữ liệu</td>
+                  </tr>
+                  <tr>
+                    <td>POST</td>
+                    <td>Tạo mới dữ liệu</td>
+                  </tr>
+                  <tr>
+                    <td>PUT</td>
+                    <td>Cập nhật toàn bộ</td>
+                  </tr>
+                  <tr>
+                    <td>PATCH</td>
+                    <td>Cập nhật một phần</td>
+                  </tr>
+                  <tr>
+                    <td>DELETE</td>
+                    <td>Xóa dữ liệu</td>
+                  </tr>
+                </table>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>app.get("/api/tasks", (req, res) =&gt; res.json(tasks));
+app.post("/api/tasks", (req, res) =&gt; { tasks.push(req.body); res.status(201).json(req.body); });
+app.delete("/api/tasks/:id", (req, res) =&gt; { /* xóa task theo id */ });</code></pre>
+                <p>
+                  <b>Bài tập mẫu:</b> Muốn xóa 1 task theo id nên dùng method
+                  HTTP nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    DELETE — đúng theo quy ước REST cho hành động xóa tài
+                    nguyên.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Thiết kế các endpoint REST đầy đủ CRUD cho tài nguyên
+                  "students".
+                </p>
+                <p>2. PUT và PATCH khác nhau như thế nào?</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ JWT (JSON Web Token)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> JWT là chuỗi gồm 3 phần cách nhau bằng dấu
+                  chấm:
+                  <span class="cs-formula">header.payload.signature</span>, dùng
+                  để xác thực người dùng mà không cần lưu session trên server.
+                  Payload chứa thông tin (vd: userId) được mã hóa Base64Url —
+                  <b>không phải mã hóa bí mật</b>, ai cũng đọc được nội dung,
+                  chỉ có chữ ký (signature) là được bảo vệ bằng secret key.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>const jwt = require("jsonwebtoken");
+const token = jwt.sign({ userId: 123 }, "secretKey", { expiresIn: "1h" });
+const decoded = jwt.verify(token, "secretKey");</code></pre>
+                <p><b>Demo chạy trực tiếp — Công cụ giải mã JWT:</b></p>
+                <div class="web-demo-box">
+                  <textarea
+                    id="jwtDecodeInput"
+                    placeholder="Dán một JWT vào đây, ví dụ: eyJhbGciOi...header.eyJ1c2VySWQiOi...payload.signature"
+                    style="height: 60px"
+                  ></textarea>
+                  <button
+                    class="btn-secondary"
+                    style="margin-top: 8px; font-size: 11px"
+                    onclick="decodeJwtDemo()"
+                  >
+                    🔓 Giải mã JWT
+                  </button>
+                  <div id="jwtDecodeResult" style="margin-top: 10px"></div>
+                </div>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao không nên lưu mật khẩu trong
+                  payload của JWT?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Vì payload chỉ mã hóa Base64Url (dễ dàng giải mã ngược),
+                    không phải mã hóa bảo mật — ai lấy được token cũng đọc được
+                    nội dung payload.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Dùng công cụ trên để giải mã một JWT mẫu (tìm trên jwt.io)
+                  và xem payload chứa gì.
+                </p>
+                <p>
+                  2. Nêu sự khác nhau giữa xác thực bằng Session/Cookie truyền
+                  thống và xác thực bằng JWT.
+                </p>
+              </div>
+            </details>
           </div>
         </div>
         <div id="cs-network" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">📡</div>
-            <h2>Mạng máy tính</h2>
-            <p>
-              Sẽ có OSI 7 Layer, TCP/IP, IP Address, Subnet Mask, DNS, HTTP,
-              HTTPS, FTP, DHCP, Routing cùng IP/Subnet/CIDR Calculator và mô
-              phỏng gửi gói tin qua các tầng OSI, Router, Switch.
+          <div class="card">
+            <h2>📡 Lý Thuyết Mạng Máy Tính</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ OSI 7 Layer</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Mô hình tham chiếu 7 tầng mô tả cách dữ liệu
+                  di chuyển qua mạng: Physical, Data Link, Network, Transport,
+                  Session, Presentation, Application (từ dưới lên). Xem mô phỏng
+                  trực quan bên dưới.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Khi bạn mở một trang web, dữ liệu đi từ tầng
+                  Application (trình duyệt) xuống tận tầng Physical (tín hiệu
+                  điện/quang) rồi mới ra khỏi máy.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Tầng nào chịu trách nhiệm thêm địa chỉ MAC
+                  vào dữ liệu?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Tầng Data Link (tầng 2) — đóng gói dữ liệu thành Frame kèm
+                    địa chỉ MAC nguồn/đích.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Sắp xếp lại đúng thứ tự 7 tầng OSI từ tầng thấp nhất đến
+                  cao nhất.
+                </p>
+                <p>
+                  2. Tầng nào chịu trách nhiệm định tuyến (routing) dựa vào địa
+                  chỉ IP?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ TCP/IP</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Mô hình 4 tầng được dùng thực tế trên
+                  Internet (Network Access, Internet, Transport, Application).
+                  <b>TCP</b> đảm bảo tin cậy (bắt tay 3 bước, kiểm tra lỗi, đảm
+                  bảo thứ tự gói tin) nhưng chậm hơn; <b>UDP</b> nhanh, không
+                  đảm bảo tin cậy, phù hợp streaming/game online.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Tải file dùng TCP (không được mất dữ liệu); gọi
+                  video call dùng UDP (thà giật hình còn hơn trễ).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao game online thường dùng UDP thay vì
+                  TCP?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    UDP không cần bắt tay và xác nhận từng gói, độ trễ thấp hơn
+                    — quan trọng hơn việc mất vài gói tin trong game realtime.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Liệt kê 3 ứng dụng thực tế nên dùng TCP và 3 ứng dụng nên
+                  dùng UDP.
+                </p>
+                <p>
+                  2. TCP đảm bảo tin cậy bằng cơ chế nào? (gợi ý: bắt tay 3 bước
+                  - three-way handshake)
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ IP Address</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Địa chỉ logic 32-bit (IPv4, dạng x.x.x.x)
+                  định danh duy nhất một thiết bị trên mạng, gồm 2 phần: Network
+                  (mạng) và Host (thiết bị) — được phân chia bởi Subnet Mask.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> 192.168.1.10 — với subnet mask /24, phần mạng là
+                  192.168.1.0, phần host là .10.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> IP 10.0.0.5 thuộc lớp mạng (Class) nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Class A (octet đầu từ 1-127).</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Dùng công cụ Subnet Calculator bên dưới để tính Network
+                  Address của 172.16.5.20/20.
+                </p>
+                <p>
+                  2. Địa chỉ 192.168.1.1 là địa chỉ Private hay Public? Vì sao?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Subnet Mask</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Xác định bao nhiêu bit của địa chỉ IP thuộc
+                  phần Network. Ví dụ /24 = 255.255.255.0 nghĩa là 24 bit đầu là
+                  Network, 8 bit cuối là Host (tối đa 254 host khả dụng).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> /24 → 255.255.255.0 → 256 địa chỉ, 254 host dùng
+                  được (trừ Network và Broadcast).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Subnet mask /26 có bao nhiêu host khả
+                  dụng?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>2^(32-26) - 2 = 64 - 2 = 62 host khả dụng.</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Dùng công cụ bên dưới kiểm tra lại đáp án /26 ở trên.</p>
+                <p>
+                  2. Subnet mask /30 thường dùng để làm gì trong thực tế? (gợi
+                  ý: liên kết điểm-điểm giữa 2 router)
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ DNS (Domain Name System)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Hệ thống dịch tên miền dễ nhớ (vd:
+                  google.com) thành địa chỉ IP (vd: 142.250.x.x) mà máy tính
+                  thực sự dùng để kết nối.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Gõ "facebook.com" vào trình duyệt → DNS tra cứu
+                  → trả về địa chỉ IP của server Facebook → trình duyệt kết nối
+                  tới IP đó.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Nếu không có DNS thì người dùng phải làm
+                  gì để truy cập một trang web?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Phải nhớ và gõ trực tiếp địa chỉ IP của server thay vì tên
+                    miền dễ nhớ.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Lệnh nào trên máy tính dùng để tra cứu địa chỉ IP của một
+                  tên miền? (gợi ý: nslookup, ping)
+                </p>
+                <p>
+                  2. DNS hoạt động theo mô hình client-server hay peer-to-peer?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ HTTP</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Giao thức truyền tải siêu văn bản (HyperText
+                  Transfer Protocol), dùng cổng 80, dữ liệu truyền dưới dạng văn
+                  bản thuần (plain text) — không mã hóa.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Trình duyệt gửi HTTP GET request tới server,
+                  server trả về HTTP response chứa mã trạng thái (200 OK, 404
+                  Not Found...) và nội dung HTML.
+                </p>
+                <p><b>Bài tập mẫu:</b> Mã trạng thái HTTP 404 nghĩa là gì?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Not Found — không tìm thấy tài nguyên được yêu cầu trên
+                    server.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Liệt kê ý nghĩa của mã trạng thái 200, 301, 403, 500.</p>
+                <p>2. HTTP dùng cổng mặc định nào?</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>7️⃣ HTTPS</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> HTTP + lớp mã hóa TLS/SSL, dùng cổng 443, mã
+                  hóa toàn bộ dữ liệu truyền giữa trình duyệt và server — bảo vệ
+                  thông tin nhạy cảm (mật khẩu, thẻ ngân hàng) khỏi bị nghe lén.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Trang ngân hàng luôn dùng HTTPS (biểu tượng ổ
+                  khóa 🔒 trên thanh địa chỉ trình duyệt).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao không nên nhập mật khẩu vào trang
+                  web chỉ dùng HTTP?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Vì HTTP không mã hóa, kẻ tấn công có thể nghe lén (sniffing)
+                    và đọc được mật khẩu dạng văn bản thuần trên đường truyền.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. HTTPS dùng cổng mặc định nào?</p>
+                <p>
+                  2. Chứng chỉ SSL/TLS (SSL Certificate) có vai trò gì trong
+                  HTTPS?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>8️⃣ FTP</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> File Transfer Protocol — giao thức chuyên
+                  dùng để truyền tải file giữa client và server, thường dùng
+                  cổng 20 (dữ liệu) và 21 (điều khiển).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Lập trình viên dùng FTP để upload file website
+                  lên hosting.
+                </p>
+                <p><b>Bài tập mẫu:</b> FTP thường dùng những cổng nào?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Cổng 21 để điều khiển (lệnh), cổng 20 để truyền dữ liệu thực
+                    tế.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. SFTP khác FTP thường ở điểm nào? (gợi ý: chữ S là gì)</p>
+                <p>
+                  2. Nêu một phần mềm phổ biến dùng để kết nối FTP (gợi ý:
+                  FileZilla).
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>9️⃣ DHCP</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Dynamic Host Configuration Protocol — tự
+                  động cấp phát địa chỉ IP, subnet mask, gateway, DNS cho thiết
+                  bị khi kết nối vào mạng, không cần cấu hình thủ công.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Khi điện thoại kết nối Wi-Fi ở quán cà phê, DHCP
+                  Server (thường tích hợp trong Router) tự động cấp một IP cho
+                  điện thoại đó.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Nếu không có DHCP, người dùng phải làm gì
+                  để có IP?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Phải tự cấu hình IP tĩnh (Static IP) thủ công cho từng thiết
+                    bị.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Nêu 2 ưu điểm của DHCP so với cấu hình IP tĩnh thủ công.
+                </p>
+                <p>
+                  2. DHCP thường được tích hợp sẵn trong thiết bị mạng nào ở gia
+                  đình?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>🔟 Routing (Định tuyến)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Quá trình Router chọn đường đi tốt nhất cho
+                  gói tin dựa vào bảng định tuyến (Routing Table) và các giao
+                  thức định tuyến (RIP, OSPF, BGP...). Xem mô phỏng Router thực
+                  tế bên dưới.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Gói tin từ máy bạn tới một server ở nước ngoài
+                  có thể đi qua hàng chục Router trung gian, mỗi Router tự quyết
+                  định "chặng tiếp theo" (next hop).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Router dựa vào thông tin gì trong gói tin
+                  để quyết định đường đi?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Địa chỉ IP đích trong header của gói tin, đối chiếu với bảng
+                    định tuyến.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Lệnh nào trên máy tính giúp xem đường đi (các Router trung
+                  gian) của gói tin? (gợi ý: tracert/traceroute)
+                </p>
+                <p>
+                  2. Vì sao mạng Internet cần nhiều Router định tuyến thay vì 1
+                  Router trung tâm duy nhất?
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <div class="card">
+            <h2>🧮 Công Cụ IP / Subnet / CIDR Calculator</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              Một công cụ duy nhất thay cho cả 3 máy tính IP/Subnet/CIDR vì cả
+              ba bản chất là cùng một phép tính subnetting — nhập IP + số bit
+              CIDR là ra đầy đủ mọi thông tin cần thiết.
             </p>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                flex-wrap: wrap;
+              "
+            >
+              <input
+                type="text"
+                id="subnetIpInput"
+                placeholder="Ví dụ: 192.168.1.10"
+                style="max-width: 220px"
+              />
+              <span>/</span>
+              <input
+                type="number"
+                id="subnetPrefixInput"
+                min="0"
+                max="32"
+                value="24"
+                style="max-width: 90px"
+              />
+              <button class="btn-primary" onclick="computeSubnetTool()">
+                Tính toán
+              </button>
+            </div>
+            <div
+              id="subnetResult"
+              class="dict-result"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+
+          <div class="card">
+            <h2>📦 Mô Phỏng Gửi Gói Tin Qua 7 Tầng OSI</h2>
+            <button class="btn-primary" onclick="simulateOsiSend()">
+              🚀 Gửi gói tin
+            </button>
+            <div class="osi-layers" id="osiLayers">
+              <div class="osi-layer" data-layer="7">7. Application</div>
+              <div class="osi-layer" data-layer="6">6. Presentation</div>
+              <div class="osi-layer" data-layer="5">5. Session</div>
+              <div class="osi-layer" data-layer="4">4. Transport</div>
+              <div class="osi-layer" data-layer="3">3. Network</div>
+              <div class="osi-layer" data-layer="2">2. Data Link</div>
+              <div class="osi-layer" data-layer="1">1. Physical</div>
+            </div>
+            <div class="osi-log" id="osiLog"></div>
+          </div>
+
+          <div class="card">
+            <h2>🔀 Mô Phỏng Router &amp; Switch</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 16px;
+              "
+            >
+              So sánh cách Switch (Lớp 2 - dựa vào MAC, cùng mạng LAN) và Router
+              (Lớp 3 - dựa vào IP, khác mạng) chuyển tiếp gói tin.
+            </p>
+            <div class="network-diagram">
+              <div class="net-node" id="net-pc1">
+                💻 PC1<br /><span style="font-size: 10px">192.168.1.10</span>
+              </div>
+              <div class="net-node" id="net-switch">🔀 Switch</div>
+              <div class="net-node" id="net-pc2">
+                💻 PC2<br /><span style="font-size: 10px">192.168.1.20</span>
+              </div>
+              <div class="net-node" id="net-router">📡 Router</div>
+              <div class="net-node" id="net-internet">☁️ Internet</div>
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                margin-top: 16px;
+                flex-wrap: wrap;
+              "
+            >
+              <button class="btn-secondary" onclick="simulateSwitchSend()">
+                PC1 → PC2 (qua Switch)
+              </button>
+              <button class="btn-secondary" onclick="simulateRouterSend()">
+                PC1 → Internet (qua Router)
+              </button>
+            </div>
+            <div class="osi-log" id="networkLog" style="margin-top: 14px"></div>
           </div>
         </div>
         <div id="cs-database" class="cs-subject-panel">

@@ -2344,28 +2344,453 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================
-// [UPDATE] RESPONSIVE MOBILE MENU LOGIC
+// CHUYỂN TAB CODE (C++/Java/Python) TRONG CẤU TRÚC DỮ LIỆU (Section 4)
 // ==========================================
-function toggleMobileMenu() {
-  const nav = document.querySelector(".nav-container");
-  const overlay = document.getElementById("mobileNavOverlay");
-  if (nav && overlay) {
-    nav.classList.toggle("open");
-    overlay.classList.toggle("show");
+function switchCodeTab(btn, targetId) {
+  const wrapper = btn.closest(".code-tabs");
+  if (!wrapper) return;
+
+  wrapper
+    .querySelectorAll(".code-tab-btn")
+    .forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  wrapper
+    .querySelectorAll(".code-block")
+    .forEach((c) => c.classList.remove("active"));
+  const target = document.getElementById(targetId);
+  if (target) target.classList.add("active");
+}
+
+// ==========================================
+// ỨNG DỤNG WEB - DEMO TRỰC TIẾP (Section 5)
+// ==========================================
+
+// ---- HTML: Form validate realtime ----
+function validateWebDemoForm() {
+  const name = document.getElementById("webFormName").value.trim();
+  const email = document.getElementById("webFormEmail").value.trim();
+  const statusEl = document.getElementById("webFormStatus");
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!name && !email) {
+    statusEl.textContent = "Nhập thông tin để xem validate realtime...";
+    statusEl.style.color = "var(--text-muted)";
+    return;
+  }
+  if (name && emailValid) {
+    statusEl.textContent = "✅ Hợp lệ! Sẵn sàng submit.";
+    statusEl.style.color = "#30d158";
+  } else {
+    statusEl.textContent =
+      "⚠ " +
+      (!name ? "Chưa nhập tên. " : "") +
+      (!emailValid ? "Email chưa hợp lệ." : "");
+    statusEl.style.color = "#ff453a";
   }
 }
 
-// Tự động đóng menu trên Mobile khi bấm chuyển Tab
-window.addEventListener("DOMContentLoaded", () => {
-  const tabButtons = document.querySelectorAll(".tab-btn");
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (window.innerWidth < 992) {
-        const nav = document.querySelector(".nav-container");
-        if (nav && nav.classList.contains("open")) {
-          toggleMobileMenu();
-        }
-      }
-    });
+// ---- HTML: Table sort demo ----
+let webDemoTableData = [
+  { name: "An", score: 9 },
+  { name: "Bình", score: 7 },
+  { name: "Chi", score: 10 },
+  { name: "Dũng", score: 6 },
+];
+let webDemoSortDir = { 0: 1, 1: 1 };
+
+function renderWebDemoTable() {
+  const table = document.getElementById("webDemoTable");
+  if (!table) return;
+  Array.from(table.querySelectorAll("tr")).forEach((r, i) => {
+    if (i > 0) r.remove();
   });
+  webDemoTableData.forEach((item) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${item.name}</td><td>${item.score}</td>`;
+    table.appendChild(tr);
+  });
+}
+
+function sortWebDemoTable(colIndex) {
+  const key = colIndex === 0 ? "name" : "score";
+  webDemoSortDir[colIndex] *= -1;
+  const dir = webDemoSortDir[colIndex];
+  webDemoTableData.sort((a, b) => {
+    if (a[key] < b[key]) return -1 * dir;
+    if (a[key] > b[key]) return 1 * dir;
+    return 0;
+  });
+  renderWebDemoTable();
+}
+
+// ---- CSS: Flexbox / Grid / Animation / Responsive demo ----
+function setFlexDemo(prop, value) {
+  const el = document.getElementById("flexDemoContainer");
+  if (el) el.style.setProperty(prop, value);
+}
+
+function setGridDemo(cols) {
+  const el = document.getElementById("gridDemoContainer");
+  if (el) el.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+}
+
+function triggerCssAnim(type) {
+  const box = document.getElementById("animDemoBox");
+  if (!box) return;
+  box.classList.remove("anim-bounce", "anim-spin", "anim-fade");
+  void box.offsetWidth; // buộc reflow để hoạt ảnh chạy lại từ đầu
+  box.classList.add("anim-" + type);
+}
+
+function setResponsiveDemo(width) {
+  const viewport = document.getElementById("responsiveDemoViewport");
+  const content = document.getElementById("responsiveDemoContent");
+  if (!viewport || !content) return;
+  viewport.style.maxWidth = width;
+  if (width === "260px") content.style.gridTemplateColumns = "1fr";
+  else if (width === "420px")
+    content.style.gridTemplateColumns = "repeat(2, 1fr)";
+  else content.style.gridTemplateColumns = "repeat(3, 1fr)";
+}
+
+// ---- JavaScript: DOM / Events / Fetch / Async-Await / LocalStorage demo ----
+let domDemoCounter = 0;
+function domDemoChangeText() {
+  const el = document.getElementById("domDemoTarget");
+  if (el)
+    el.textContent =
+      "Nội dung đã được đổi lúc " + new Date().toLocaleTimeString("vi-VN");
+}
+function domDemoAddItem() {
+  domDemoCounter++;
+  const list = document.getElementById("domDemoList");
+  if (!list) return;
+  const li = document.createElement("li");
+  li.innerHTML = `<span class="task-text">Item số ${domDemoCounter}</span><span class="delete-btn" onclick="this.parentElement.remove()">✕</span>`;
+  list.appendChild(li);
+}
+
+function logWebEvent(msg) {
+  const logEl = document.getElementById("eventLog");
+  if (!logEl) return;
+  const time = new Date().toLocaleTimeString("vi-VN");
+  logEl.innerHTML += `<div>[${time}] ${msg}</div>`;
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+async function fetchDemoCall() {
+  const resultEl = document.getElementById("fetchDemoResult");
+  resultEl.textContent = "⏳ Đang gọi API...";
+  try {
+    const res = await fetch("https://catfact.ninja/fact");
+    const data = await res.json();
+    resultEl.innerHTML = `<b>🐱 Cat Fact:</b> ${data.fact}`;
+  } catch (err) {
+    resultEl.innerHTML = `<span style="color:#ff453a;">⚠ Không thể gọi API (mất mạng hoặc bị chặn). Lỗi: ${err.message}</span>`;
+  }
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+async function asyncAwaitDemo() {
+  const resultEl = document.getElementById("asyncDemoResult");
+  resultEl.textContent = "⏳ Đang tải dữ liệu...";
+  await delay(2000);
+  resultEl.innerHTML = `<span style="color:#30d158;">✅ Tải xong! Dữ liệu: {"name": "IT Workspace", "status": "success"}</span>`;
+}
+
+function lsDemoSave() {
+  const val = document.getElementById("lsDemoInput").value;
+  localStorage.setItem("webDemoLsKey", val);
+  document.getElementById("lsDemoResult").textContent =
+    "💾 Đã lưu vào LocalStorage: " + val;
+}
+function lsDemoLoad() {
+  const val = localStorage.getItem("webDemoLsKey");
+  document.getElementById("lsDemoResult").textContent =
+    val !== null
+      ? "📂 Giá trị đọc được: " + val
+      : "⚠ Chưa có dữ liệu nào được lưu.";
+}
+function lsDemoClear() {
+  localStorage.removeItem("webDemoLsKey");
+  document.getElementById("lsDemoResult").textContent =
+    "🗑 Đã xóa dữ liệu khỏi LocalStorage.";
+}
+
+// ---- NodeJS: JWT Decoder (chạy thật 100% ở client, không cần backend) ----
+function base64UrlDecode(str) {
+  str = str.replace(/-/g, "+").replace(/_/g, "/");
+  while (str.length % 4) str += "=";
+  return decodeURIComponent(
+    atob(str)
+      .split("")
+      .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+      .join(""),
+  );
+}
+
+function decodeJwtDemo() {
+  const resultEl = document.getElementById("jwtDecodeResult");
+  const token = document.getElementById("jwtDecodeInput").value.trim();
+  const parts = token.split(".");
+
+  if (parts.length !== 3) {
+    resultEl.innerHTML = `<span style="color:#ff453a;">⚠ JWT không hợp lệ! Cần đúng 3 phần cách nhau bởi dấu chấm.</span>`;
+    return;
+  }
+  try {
+    const header = JSON.parse(base64UrlDecode(parts[0]));
+    const payload = JSON.parse(base64UrlDecode(parts[1]));
+    resultEl.innerHTML = `
+      <p><b>Header:</b></p>
+      <pre class="code-block active" style="display:block;">${JSON.stringify(header, null, 2)}</pre>
+      <p><b>Payload:</b></p>
+      <pre class="code-block active" style="display:block;">${JSON.stringify(payload, null, 2)}</pre>
+      <p style="font-size:11px;color:var(--text-muted);">Signature (phần thứ 3) không giải mã được vì chỉ dùng để xác thực chữ ký, không chứa dữ liệu.</p>
+    `;
+    showToast("Đã giải mã JWT!", "success");
+  } catch (err) {
+    resultEl.innerHTML = `<span style="color:#ff453a;">⚠ Không thể giải mã — token không đúng định dạng JWT hợp lệ.</span>`;
+  }
+}
+
+// ==========================================
+// MẠNG MÁY TÍNH (Section 6)
+// ==========================================
+
+// ---- Công cụ IP / Subnet / CIDR Calculator ----
+function ipToInt(ip) {
+  const parts = ip.split(".").map(Number);
+  if (parts.length !== 4 || parts.some((p) => isNaN(p) || p < 0 || p > 255)) {
+    throw new Error("Địa chỉ IP không hợp lệ! Định dạng đúng: x.x.x.x (0-255)");
+  }
+  return (
+    ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0
+  );
+}
+function intToIp(int) {
+  return [
+    (int >>> 24) & 255,
+    (int >>> 16) & 255,
+    (int >>> 8) & 255,
+    int & 255,
+  ].join(".");
+}
+
+function computeSubnetInfo(ip, prefixRaw) {
+  const prefix = parseInt(prefixRaw);
+  if (isNaN(prefix) || prefix < 0 || prefix > 32) {
+    throw new Error("Prefix (CIDR) phải từ 0 đến 32!");
+  }
+  const ipInt = ipToInt(ip);
+  const maskInt = prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
+  const wildcardInt = ~maskInt >>> 0;
+  const networkInt = (ipInt & maskInt) >>> 0;
+  const broadcastInt = (networkInt | wildcardInt) >>> 0;
+  const totalHosts = Math.pow(2, 32 - prefix);
+
+  let usableHosts, firstHost, lastHost;
+  if (prefix >= 31) {
+    usableHosts = prefix === 32 ? 1 : 2;
+    firstHost = intToIp(networkInt);
+    lastHost = intToIp(broadcastInt);
+  } else {
+    usableHosts = totalHosts - 2;
+    firstHost = intToIp((networkInt + 1) >>> 0);
+    lastHost = intToIp((broadcastInt - 1) >>> 0);
+  }
+
+  const firstOctet = (ipInt >>> 24) & 255;
+  const secondOctet = (ipInt >>> 16) & 255;
+  let ipClass = "E (Nghiên cứu)";
+  if (firstOctet < 128) ipClass = "A";
+  else if (firstOctet < 192) ipClass = "B";
+  else if (firstOctet < 224) ipClass = "C";
+  else if (firstOctet < 240) ipClass = "D (Multicast)";
+
+  const isPrivate =
+    firstOctet === 10 ||
+    (firstOctet === 172 && secondOctet >= 16 && secondOctet <= 31) ||
+    (firstOctet === 192 && secondOctet === 168);
+
+  return {
+    networkAddress: intToIp(networkInt),
+    broadcastAddress: intToIp(broadcastInt),
+    subnetMask: intToIp(maskInt),
+    wildcardMask: intToIp(wildcardInt),
+    firstHost,
+    lastHost,
+    totalHosts,
+    usableHosts,
+    cidr: `/${prefix}`,
+    ipClass,
+    isPrivate,
+  };
+}
+
+function computeSubnetTool() {
+  const resultBox = document.getElementById("subnetResult");
+  resultBox.style.display = "block";
+  try {
+    const ip = document.getElementById("subnetIpInput").value.trim();
+    const prefix = document.getElementById("subnetPrefixInput").value;
+    const info = computeSubnetInfo(ip, prefix);
+    resultBox.innerHTML = `
+      <table class="bigo-table">
+        <tr><td>Network Address</td><td>${info.networkAddress}${info.cidr}</td></tr>
+        <tr><td>Subnet Mask</td><td>${info.subnetMask}</td></tr>
+        <tr><td>Wildcard Mask</td><td>${info.wildcardMask}</td></tr>
+        <tr><td>Broadcast Address</td><td>${info.broadcastAddress}</td></tr>
+        <tr><td>Dải Host khả dụng</td><td>${info.firstHost} — ${info.lastHost}</td></tr>
+        <tr><td>Số host khả dụng</td><td>${info.usableHosts.toLocaleString()}</td></tr>
+        <tr><td>Lớp IP (Class)</td><td>${info.ipClass}</td></tr>
+        <tr><td>Loại địa chỉ</td><td>${info.isPrivate ? "🔒 Private (mạng nội bộ)" : "🌐 Public (công cộng)"}</td></tr>
+      </table>
+    `;
+    showToast("Tính toán Subnet hoàn tất!", "success");
+  } catch (err) {
+    resultBox.innerHTML = `<span style="color:#ff453a;">⚠ ${err.message}</span>`;
+  }
+}
+
+// ---- Mô phỏng gửi gói tin qua 7 tầng OSI ----
+const osiEncapSteps = [
+  { layer: 7, text: "📨 Tầng Application: Tạo dữ liệu (HTTP request)" },
+  { layer: 6, text: "🔐 Tầng Presentation: Mã hóa/nén dữ liệu" },
+  { layer: 5, text: "🔗 Tầng Session: Thiết lập phiên làm việc" },
+  {
+    layer: 4,
+    text: "📬 Tầng Transport: Thêm TCP/UDP header (port nguồn/đích)",
+  },
+  {
+    layer: 3,
+    text: "🌐 Tầng Network: Thêm IP header (địa chỉ IP nguồn/đích) → Packet",
+  },
+  { layer: 2, text: "🔌 Tầng Data Link: Thêm MAC header → Frame" },
+  {
+    layer: 1,
+    text: "⚡ Tầng Physical: Chuyển thành tín hiệu điện/quang, truyền đi",
+  },
+];
+
+function simulateOsiSend() {
+  const logEl = document.getElementById("osiLog");
+  if (!logEl) return;
+  logEl.innerHTML = "";
+  document
+    .querySelectorAll(".osi-layer")
+    .forEach((el) => el.classList.remove("active"));
+
+  osiEncapSteps.forEach((step, idx) => {
+    setTimeout(() => {
+      document
+        .querySelectorAll(".osi-layer")
+        .forEach((el) => el.classList.remove("active"));
+      const layerEl = document.querySelector(
+        `.osi-layer[data-layer="${step.layer}"]`,
+      );
+      if (layerEl) layerEl.classList.add("active");
+      logEl.innerHTML += `<div>${step.text}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+
+      if (idx === osiEncapSteps.length - 1) {
+        setTimeout(() => {
+          document
+            .querySelectorAll(".osi-layer")
+            .forEach((el) => el.classList.remove("active"));
+          logEl.innerHTML += `<div style="color:#30d158;">✅ Gói tin đã được gửi đi, phía nhận sẽ giải mã ngược lại (decapsulation) từ tầng 1 lên tầng 7!</div>`;
+          showToast("Mô phỏng OSI hoàn tất!", "success");
+        }, 700);
+      }
+    }, idx * 700);
+  });
+}
+
+// ---- Mô phỏng Router & Switch ----
+function runNetworkSteps(steps, onDone) {
+  const logEl = document.getElementById("networkLog");
+  if (!logEl) return;
+  document
+    .querySelectorAll(".net-node")
+    .forEach((el) => el.classList.remove("active"));
+
+  steps.forEach((step, idx) => {
+    setTimeout(() => {
+      document
+        .querySelectorAll(".net-node")
+        .forEach((el) => el.classList.remove("active"));
+      const nodeEl = document.getElementById(step.node);
+      if (nodeEl) nodeEl.classList.add("active");
+      logEl.innerHTML += `<div>${step.text}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+
+      if (idx === steps.length - 1) {
+        setTimeout(() => {
+          document
+            .querySelectorAll(".net-node")
+            .forEach((el) => el.classList.remove("active"));
+          onDone();
+          showToast("Mô phỏng hoàn tất!", "success");
+        }, 700);
+      }
+    }, idx * 700);
+  });
+}
+
+function simulateSwitchSend() {
+  const logEl = document.getElementById("networkLog");
+  logEl.innerHTML = "";
+  const steps = [
+    {
+      node: "net-pc1",
+      text: "💻 PC1 muốn gửi dữ liệu tới PC2 (192.168.1.20 — cùng mạng LAN 192.168.1.0/24)",
+    },
+    {
+      node: "net-switch",
+      text: "🔀 Switch nhận Frame, tra bảng MAC Address Table để tìm cổng của PC2",
+    },
+    {
+      node: "net-pc2",
+      text: "💻 Switch chuyển tiếp Frame trực tiếp đến đúng cổng của PC2 — không cần qua Router!",
+    },
+  ];
+  runNetworkSteps(steps, () => {
+    logEl.innerHTML += `<div style="color:#30d158;">✅ Vì PC1 và PC2 cùng mạng, Switch chỉ cần dựa vào địa chỉ MAC (Lớp 2) để chuyển tiếp — rất nhanh!</div>`;
+  });
+}
+
+function simulateRouterSend() {
+  const logEl = document.getElementById("networkLog");
+  logEl.innerHTML = "";
+  const steps = [
+    {
+      node: "net-pc1",
+      text: "💻 PC1 muốn truy cập Internet (ví dụ: google.com — khác mạng)",
+    },
+    {
+      node: "net-switch",
+      text: "🔀 Switch chuyển Frame đến Router vì đích không nằm trong mạng LAN",
+    },
+    {
+      node: "net-router",
+      text: "📡 Router đọc địa chỉ IP đích, tra bảng định tuyến (Routing Table) để chọn đường đi",
+    },
+    {
+      node: "net-internet",
+      text: "☁️ Router chuyển gói tin ra Internet qua cổng WAN",
+    },
+  ];
+  runNetworkSteps(steps, () => {
+    logEl.innerHTML += `<div style="color:#30d158;">✅ Vì đích khác mạng, cần Router (Lớp 3) định tuyến dựa vào địa chỉ IP — đây là điểm khác biệt cốt lõi với Switch!</div>`;
+  });
+}
+
+// Khởi tạo bảng demo Web khi trang tải xong (không phụ thuộc đăng nhập)
+window.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("webDemoTable")) {
+    renderWebDemoTable();
+  }
 });
