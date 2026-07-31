@@ -52,11 +52,23 @@
             />
             <div class="field-error" id="usernameError"></div>
 
+            <div id="authEmailWrapper" style="display: none; margin-top: 8px">
+              <input
+                type="email"
+                id="authEmail"
+                placeholder="Email..."
+                class="fb-input"
+                autocomplete="email"
+                oninput="validateAuthForm()"
+              />
+              <div class="field-error" id="emailError"></div>
+            </div>
+
             <div style="position: relative; margin-top: 8px">
               <input
                 type="password"
                 id="authPassword"
-                placeholder="Mật khẩu bảo mật..."
+                placeholder="Mật khẩu (≥8 ký tự, hoa/thường/số/ký tự đặc biệt)..."
                 class="fb-input"
                 autocomplete="current-password"
                 oninput="validateAuthForm()"
@@ -170,7 +182,11 @@
             <div style="text-align: left">
               <div class="account-name-row" id="displayAccountName">
                 <span>👤 --</span>
-                <span class="online-dot" title="Đang hoạt động"></span>
+                <span
+                  class="online-dot"
+                  id="onlineStatusDot"
+                  title="Đang hoạt động"
+                ></span>
               </div>
               <div
                 style="font-size: 11px; color: #30d158"
@@ -183,6 +199,13 @@
           </div>
 
           <div class="account-dropdown" id="accountDropdown">
+            <button
+              class="dropdown-item"
+              type="button"
+              onclick="openProfileModal()"
+            >
+              👤 Xem hồ sơ
+            </button>
             <button
               class="dropdown-item"
               type="button"
@@ -206,6 +229,125 @@
             style="display: none"
             onchange="handleAvatarFileSelected(event, 'header')"
           />
+        </div>
+
+        <!-- MODAL OTP GIẢ LẬP KHI ĐĂNG KÝ (Section 1) -->
+        <div class="modal-overlay" id="otpModalOverlay">
+          <div
+            class="card modal-box"
+            style="max-width: 380px; text-align: center"
+          >
+            <div class="modal-header">
+              <h2>📩 Xác thực OTP</h2>
+              <span class="modal-close" onclick="closeOtpModal()">✕</span>
+            </div>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Đây là OTP <b>giả lập cho demo</b> (không có backend gửi
+              SMS/email thật) — mã đã được hiển thị ngay bên dưới để bạn tự nhập
+              lại, mô phỏng đúng luồng xác thực OTP thực tế.
+            </p>
+            <div
+              id="otpDisplayHint"
+              style="
+                font-size: 22px;
+                font-weight: 700;
+                color: var(--accent);
+                letter-spacing: 4px;
+                margin-bottom: 16px;
+              "
+            ></div>
+            <input
+              type="text"
+              id="otpInput"
+              placeholder="Nhập mã OTP 6 số..."
+              maxlength="6"
+              style="text-align: center; letter-spacing: 4px; font-size: 18px"
+            />
+            <div class="field-error" id="otpError"></div>
+            <button
+              class="btn-primary"
+              style="margin-top: 14px; width: 100%"
+              onclick="verifyOtpAndRegister()"
+            >
+              Xác nhận &amp; Hoàn tất đăng ký
+            </button>
+          </div>
+        </div>
+
+        <!-- MODAL HỒ SƠ CÁ NHÂN GIỐNG FACEBOOK (Section 1) -->
+        <div class="modal-overlay" id="profileModalOverlay">
+          <div
+            class="card modal-box"
+            style="max-width: 560px; padding: 0; overflow: hidden"
+          >
+            <div class="profile-cover" id="profileCoverDisplay">
+              <span
+                class="modal-close profile-modal-close"
+                onclick="closeProfileModal()"
+                >✕</span
+              >
+              <button
+                class="btn-secondary profile-cover-btn"
+                onclick="document.getElementById('coverPhotoInput').click()"
+              >
+                🖼️ Đổi ảnh bìa
+              </button>
+            </div>
+            <input
+              type="file"
+              id="coverPhotoInput"
+              accept="image/*"
+              style="display: none"
+              onchange="handleCoverFileSelected(event)"
+            />
+            <div style="padding: 0 28px 28px">
+              <div class="profile-avatar-row">
+                <div class="profile-avatar-large" id="profileAvatarDisplay">
+                  👤
+                </div>
+                <div>
+                  <h2 id="profileNameDisplay" style="margin-bottom: 4px">--</h2>
+                  <span class="quiz-score-chip" id="profileRankBadge"
+                    >🌱 Newbie</span
+                  >
+                </div>
+              </div>
+
+              <div
+                class="task-stats-row"
+                id="profileStatsRow"
+                style="margin-top: 20px"
+              ></div>
+
+              <h3 style="font-size: 14px; margin: 20px 0 8px">
+                📊 Tiến độ lên cấp
+              </h3>
+              <div id="profileXpProgress"></div>
+
+              <h3 style="font-size: 14px; margin: 20px 0 8px">
+                🖥️ Thiết bị đăng nhập gần nhất
+              </h3>
+              <p
+                id="profileDeviceInfo"
+                style="font-size: 12px; color: var(--text-muted)"
+              ></p>
+
+              <h3 style="font-size: 14px; margin: 20px 0 8px">
+                🕘 Lịch sử đăng nhập
+              </h3>
+              <div
+                id="profileLoginHistory"
+                class="yt-video-list"
+                style="max-height: 160px"
+              ></div>
+            </div>
+          </div>
         </div>
 
         <!-- MODAL CẮT ẢNH ĐẠI DIỆN (Section 5) -->
@@ -259,6 +401,9 @@
         <button class="tab-btn" data-tab="tools">🛠️ Tiện Ích</button>
         <button class="tab-btn" data-tab="chat">💬 Messenger</button>
         <button class="tab-btn" data-tab="settings">⚙️ Cài Đặt</button>
+        <button class="tab-btn" data-tab="calculator">🧮 CS Calculator</button>
+        <button class="tab-btn" data-tab="quiz">📝 Bài Kiểm Tra</button>
+        <button class="tab-btn" data-tab="dashboard">🎓 Dashboard SV</button>
       </nav>
 
       <!-- TAB 1: LẬP TRÌNH & IDE -->
@@ -693,7 +838,7 @@
               <div class="cs-subject-name">
                 Cấu trúc dữ liệu &amp; Giải thuật
               </div>
-              <div class="cs-subject-status">✅ Đã có nội dung</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
             </div>
             <div
               class="cs-subject-card"
@@ -702,7 +847,7 @@
             >
               <div class="cs-subject-icon">🌐</div>
               <div class="cs-subject-name">Ứng dụng Web</div>
-              <div class="cs-subject-status">✅ Đã có nội dung</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
             </div>
             <div
               class="cs-subject-card"
@@ -711,7 +856,7 @@
             >
               <div class="cs-subject-icon">📡</div>
               <div class="cs-subject-name">Mạng máy tính</div>
-              <div class="cs-subject-status">✅ Đã có nội dung</div>
+              <div class="cs-subject-status">🔜 Sắp ra mắt</div>
             </div>
             <div
               class="cs-subject-card"
@@ -4964,57 +5109,1520 @@ const decoded = jwt.verify(token, "secretKey");</code></pre>
           </div>
         </div>
         <div id="cs-database" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">🗄️</div>
-            <h2>Cơ sở dữ liệu</h2>
-            <p>
-              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
-            </p>
+          <div class="card">
+            <h2>🗄️ Cơ Sở Dữ Liệu</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Mô hình quan hệ (Relational Model)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Dữ liệu được tổ chức thành các bảng
+                  (table/relation), mỗi bảng gồm các dòng (record/tuple) và cột
+                  (field/attribute). <b>Khóa chính (Primary Key)</b> định danh
+                  duy nhất mỗi dòng; <b>khóa ngoại (Foreign Key)</b> tham chiếu
+                  đến khóa chính của bảng khác để liên kết dữ liệu.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>Bảng SinhVien           Bảng LopHoc
++----+-------+--------+  +----+---------+
+| MaSV(PK) | Ten | MaLop(FK) |  | MaLop(PK) | TenLop |
++----+-------+--------+  +----+---------+
+| 1  | An    | 101    |  | 101 | CNTT-K1 |
++----+-------+--------+  +----+---------+</code></pre>
+                <p>
+                  <b>Ví dụ:</b> MaLop trong bảng SinhVien là khóa ngoại trỏ tới
+                  MaLop (khóa chính) của bảng LopHoc — đảm bảo mỗi sinh viên
+                  thuộc một lớp có thật.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Khóa chính khác khóa ngoại ở điểm nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Khóa chính định danh duy nhất bản ghi trong chính bảng đó;
+                    khóa ngoại là cột tham chiếu đến khóa chính của một bảng
+                    khác để tạo liên kết.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Thiết kế 2 bảng "DonHang" và "KhachHang" có quan hệ khóa
+                  chính - khóa ngoại.
+                </p>
+                <p>
+                  2. Một bảng có thể có bao nhiêu khóa chính? Bao nhiêu khóa
+                  ngoại?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ SQL Cơ Bản</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> SQL (Structured Query Language) là ngôn ngữ
+                  thao tác với cơ sở dữ liệu quan hệ, gồm 4 lệnh cơ bản: SELECT
+                  (truy vấn), INSERT (thêm), UPDATE (sửa), DELETE (xóa).
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>SELECT ten, tuoi FROM SinhVien WHERE tuoi &gt; 18;
+INSERT INTO SinhVien (ten, tuoi) VALUES ('An', 20);
+UPDATE SinhVien SET tuoi = 21 WHERE ten = 'An';
+DELETE FROM SinhVien WHERE ten = 'An';</code></pre>
+                <p>
+                  <b>Ví dụ:</b> SELECT * FROM SinhVien ORDER BY tuoi DESC — lấy
+                  toàn bộ sinh viên, sắp xếp theo tuổi giảm dần.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Viết câu lệnh SQL lấy tên các sinh viên có
+                  điểm &gt;= 8.
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>SELECT ten FROM SinhVien WHERE diem &gt;= 8;</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết câu lệnh thêm một sinh viên mới tên "Bình", tuổi 19
+                  vào bảng SinhVien.
+                </p>
+                <p>2. Viết câu lệnh xóa tất cả sinh viên có tuổi nhỏ hơn 18.</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ JOIN (Kết nối bảng)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> JOIN kết hợp dữ liệu từ 2 bảng trở lên dựa
+                  vào khóa liên kết. <b>INNER JOIN</b> chỉ lấy các dòng khớp ở
+                  cả hai bảng; <b>LEFT JOIN</b> lấy toàn bộ bảng trái + dòng
+                  khớp bên phải (NULL nếu không khớp); <b>RIGHT JOIN</b> ngược
+                  lại; <b>FULL JOIN</b> lấy tất cả từ cả hai bảng.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>SELECT SinhVien.ten, LopHoc.tenlop
+FROM SinhVien
+INNER JOIN LopHoc ON SinhVien.MaLop = LopHoc.MaLop;</code></pre>
+                <p>
+                  <b>Ví dụ:</b> LEFT JOIN dùng khi muốn lấy tất cả sinh viên kể
+                  cả những em chưa có lớp (MaLop là NULL).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> INNER JOIN và LEFT JOIN khác nhau ở điểm
+                  nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    INNER JOIN chỉ trả về dòng khớp ở cả 2 bảng; LEFT JOIN trả
+                    về toàn bộ dòng của bảng bên trái dù có khớp hay không (điền
+                    NULL nếu không khớp).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết câu lệnh LEFT JOIN giữa bảng DonHang và KhachHang.
+                </p>
+                <p>2. Khi nào nên dùng FULL JOIN thay vì INNER JOIN?</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Chuẩn hóa dữ liệu (Normalization)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Quá trình tổ chức lại bảng để giảm dư thừa
+                  dữ liệu và tránh bất thường khi thêm/sửa/xóa. <b>1NF</b>: mỗi
+                  ô chỉ chứa 1 giá trị (không lặp nhóm). <b>2NF</b>: 1NF + mọi
+                  thuộc tính phụ thuộc đầy đủ vào toàn bộ khóa chính.
+                  <b>3NF</b>: 2NF + không có phụ thuộc bắc cầu (thuộc tính không
+                  khóa phụ thuộc vào thuộc tính không khóa khác).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Bảng có cột "SoDienThoai1, SoDienThoai2" vi phạm
+                  1NF (lặp nhóm) — nên tách thành bảng con "SoDienThoai" riêng.
+                </p>
+                <p><b>Bài tập mẫu:</b> Vì sao cần chuẩn hóa dữ liệu?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Giảm dư thừa dữ liệu, tránh bất thường khi cập nhật (một
+                    thông tin lặp ở nhiều nơi dễ gây sai lệch khi chỉ sửa một
+                    chỗ).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Bảng "DonHang(MaDon, TenKhachHang, DiaChiKhachHang,
+                  SanPham, Gia)" vi phạm chuẩn nào? Vì sao?
+                </p>
+                <p>2. Đề xuất cách tách bảng trên để đạt 3NF.</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Index (Chỉ mục)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Cấu trúc dữ liệu phụ (thường là B-Tree) giúp
+                  tăng tốc truy vấn SELECT/WHERE bằng cách tránh phải quét toàn
+                  bộ bảng (full table scan). Đánh đổi: tăng tốc đọc nhưng làm
+                  chậm INSERT/UPDATE/DELETE vì phải cập nhật cả index.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>CREATE INDEX idx_ten ON SinhVien(ten);</code></pre>
+                <p>
+                  <b>Ví dụ:</b> Bảng 1 triệu dòng, tìm theo "ten" không có index
+                  sẽ quét cả triệu dòng (O(n)); có index B-Tree chỉ mất khoảng
+                  O(log n).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao không nên đánh index cho mọi cột?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Mỗi index chiếm thêm bộ nhớ và làm chậm các thao tác ghi
+                    (INSERT/UPDATE/DELETE) vì phải cập nhật lại cấu trúc index
+                    đó.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Cột nào trong bảng SinhVien nên đánh index? Vì sao?</p>
+                <p>
+                  2. Index giúp ích gì cho câu lệnh SELECT... WHERE nhưng lại
+                  không giúp ích nhiều cho SELECT *?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Transaction &amp; ACID</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Transaction là một nhóm thao tác được thực
+                  hiện như một đơn vị duy nhất (tất cả thành công hoặc tất cả
+                  thất bại). Đảm bảo tính chất <b>ACID</b>: <b>A</b>tomicity
+                  (nguyên tử — tất cả hoặc không gì cả), <b>C</b>onsistency
+                  (nhất quán — dữ liệu luôn hợp lệ), <b>I</b>solation (cô lập —
+                  các transaction không ảnh hưởng lẫn nhau), <b>D</b>urability
+                  (bền vững — đã commit thì không mất dù mất điện).
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>BEGIN TRANSACTION;
+UPDATE TaiKhoan SET soDu = soDu - 100 WHERE id = 1;
+UPDATE TaiKhoan SET soDu = soDu + 100 WHERE id = 2;
+COMMIT;</code></pre>
+                <p>
+                  <b>Ví dụ:</b> Chuyển khoản ngân hàng: nếu trừ tiền tài khoản A
+                  thành công nhưng cộng tiền tài khoản B thất bại, transaction
+                  sẽ ROLLBACK để không mất tiền.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Tính "Atomicity" trong ACID có nghĩa là
+                  gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Tất cả các thao tác trong transaction phải thành công hoàn
+                    toàn hoặc không thao tác nào được thực hiện — không có trạng
+                    thái "nửa vời".
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Điều gì xảy ra nếu transaction chuyển khoản không có tính
+                  Atomicity?
+                </p>
+                <p>
+                  2. Nêu một ví dụ thực tế khác cần dùng Transaction ngoài
+                  chuyển khoản ngân hàng.
+                </p>
+              </div>
+            </details>
           </div>
         </div>
         <div id="cs-oop" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">🧩</div>
-            <h2>Lập trình hướng đối tượng</h2>
-            <p>
-              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
-            </p>
+          <div class="card">
+            <h2>🧩 Lập Trình Hướng Đối Tượng (OOP)</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Class &amp; Object</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <b>Class</b> (lớp) là bản thiết kế/khuôn mẫu
+                  định nghĩa thuộc tính (fields) và hành vi (methods).
+                  <b>Object</b> (đối tượng) là một thực thể cụ thể được tạo ra
+                  từ class đó.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>class SinhVien {
+    String ten;
+    int tuoi;
+    void gioiThieu() {
+        System.out.println("Tôi tên " + ten);
+    }
+}
+SinhVien sv1 = new SinhVien(); // object
+sv1.ten = "An";
+sv1.gioiThieu();</code></pre>
+                <p>
+                  <b>Ví dụ thực tế:</b> Class "Xe" là bản thiết kế chung; "chiếc
+                  Toyota Vios biển số 51A" là một object cụ thể được tạo từ
+                  class đó.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Class và Object khác nhau như thế nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Class là khuôn mẫu/định nghĩa trừu tượng; Object là thực thể
+                    cụ thể được khởi tạo (instance) từ class đó, có dữ liệu
+                    riêng.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết class "Sach" có thuộc tính tenSach, tacGia và phương
+                  thức hienThi().
+                </p>
+                <p>
+                  2. Từ class trên, tạo 2 object sách khác nhau và gọi hienThi()
+                  cho từng object.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Encapsulation (Đóng gói)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Ẩn dữ liệu bên trong (thường dùng private)
+                  và chỉ cho truy cập/sửa qua các phương thức public
+                  (getter/setter) — giúp kiểm soát dữ liệu hợp lệ, tránh sửa
+                  trực tiếp gây lỗi.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>class TaiKhoan {
+    private double soDu;
+    public double getSoDu() { return soDu; }
+    public void napTien(double amount) {
+        if (amount &gt; 0) soDu += amount; // kiểm soát hợp lệ
+    }
+}</code></pre>
+                <p>
+                  <b>Ví dụ thực tế:</b> Không cho phép set soDu âm trực tiếp —
+                  bắt buộc phải qua napTien()/rutTien() để kiểm tra logic.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao nên khai báo thuộc tính là private
+                  thay vì public?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Private ngăn code bên ngoài sửa trực tiếp dữ liệu, buộc phải
+                    đi qua các phương thức đã được kiểm soát logic (validate),
+                    tránh dữ liệu sai/không hợp lệ.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết class "TaiKhoan" với setter kiểm tra soDu không được
+                  âm.
+                </p>
+                <p>
+                  2. Nêu 1 tình huống thực tế nếu không đóng gói sẽ gây lỗi dữ
+                  liệu.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Inheritance (Kế thừa)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Một class con (subclass) có thể kế thừa
+                  thuộc tính/phương thức từ class cha (superclass), giúp tái sử
+                  dụng code và mở rộng chức năng riêng.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>class DongVat {
+    void an() { System.out.println("Đang ăn"); }
+}
+class Cho extends DongVat {
+    void sua() { System.out.println("Gâu gâu!"); }
+}
+Cho c = new Cho();
+c.an();  // kế thừa từ DongVat
+c.sua(); // riêng của Cho</code></pre>
+                <p>
+                  <b>Ví dụ thực tế:</b> Class "Xe" là cha, "OtoDien" và "XeMay"
+                  là con — đều kế thừa thuộc tính chung (tocDo, mauSac) nhưng có
+                  phương thức riêng.
+                </p>
+                <p><b>Bài tập mẫu:</b> extends dùng để làm gì trong Java?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Khai báo một class kế thừa từ class khác, tự động có được
+                    các thuộc tính/phương thức public và protected của class
+                    cha.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết class "Meo" kế thừa từ "DongVat" ở ví dụ trên, có thêm
+                  phương thức keu().
+                </p>
+                <p>
+                  2. Một class có thể kế thừa từ nhiều class cha cùng lúc trong
+                  Java không? (gợi ý: single inheritance)
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Polymorphism (Đa hình)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Cùng một phương thức nhưng hành vi khác nhau
+                  tùy vào object cụ thể. Có 2 loại: <b>Overriding</b> (ghi đè —
+                  class con định nghĩa lại phương thức của class cha) và
+                  <b>Overloading</b> (nạp chồng — nhiều phương thức cùng tên
+                  khác tham số).
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>class DongVat {
+    void keu() { System.out.println("..."); }
+}
+class Cho extends DongVat {
+    @Override
+    void keu() { System.out.println("Gâu gâu!"); } // overriding
+}
+class Meo extends DongVat {
+    @Override
+    void keu() { System.out.println("Meo meo!"); }
+}
+DongVat[] list = { new Cho(), new Meo() };
+for (DongVat dv : list) dv.keu(); // gọi khác nhau tùy object thật</code></pre>
+                <p>
+                  <b>Ví dụ thực tế:</b> Cùng gọi dv.keu() nhưng Cho() sủa, Meo()
+                  kêu meo — hành vi thực thi tùy vào object cụ thể tại runtime.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Overriding và Overloading khác nhau ở điểm
+                  nào?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Overriding: class con định nghĩa lại phương thức đã có ở
+                    class cha (cùng tên, cùng tham số). Overloading: nhiều
+                    phương thức cùng tên nhưng khác số lượng/kiểu tham số trong
+                    cùng 1 class.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Viết ví dụ overloading cho phương thức tinhTong(int a, int
+                  b) và tinhTong(int a, int b, int c).
+                </p>
+                <p>
+                  2. Thêm class "Ga extends DongVat" với keu() riêng vào ví dụ
+                  trên.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Abstraction (Trừu tượng hóa)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Chỉ hiển thị các đặc điểm cần thiết, ẩn đi
+                  chi tiết cài đặt phức tạp bên trong. Trong OOP thường dùng
+                  <b>abstract class</b> để định nghĩa khuôn chung nhưng để chi
+                  tiết cụ thể cho class con tự triển khai.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>abstract class HinhHoc {
+    abstract double tinhDienTich(); // chưa cài đặt cụ thể
+}
+class HinhTron extends HinhHoc {
+    double banKinh;
+    double tinhDienTich() {
+        return Math.PI * banKinh * banKinh; // cài đặt cụ thể
+    }
+}</code></pre>
+                <p>
+                  <b>Ví dụ thực tế:</b> Khi lái xe, bạn chỉ cần biết đạp
+                  ga/phanh (giao diện đơn giản), không cần biết chi tiết động cơ
+                  hoạt động ra sao (ẩn phức tạp bên trong).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Abstract class khác gì với class thông
+                  thường?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Abstract class có thể chứa phương thức chưa được cài đặt
+                    (abstract method) và không thể tạo object trực tiếp từ nó —
+                    bắt buộc phải có class con kế thừa và cài đặt đầy đủ.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Thêm class "HinhVuong extends HinhHoc" cài đặt
+                  tinhDienTich() riêng.
+                </p>
+                <p>2. Vì sao không thể viết "new HinhHoc()" trực tiếp?</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Interface vs Abstract Class</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <b>Interface</b> chỉ khai báo phương thức
+                  (không cài đặt), một class có thể "implements" nhiều interface
+                  cùng lúc. <b>Abstract class</b> có thể chứa cả phương thức đã
+                  cài đặt lẫn chưa cài đặt, nhưng một class chỉ kế thừa
+                  (extends) được 1 abstract class.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>interface CoTheBay {
+    void bay();
+}
+interface CoTheBoi {
+    void boi();
+}
+class Vit implements CoTheBay, CoTheBoi {
+    public void bay() { System.out.println("Vịt bay thấp"); }
+    public void boi() { System.out.println("Vịt bơi giỏi"); }
+}</code></pre>
+                <p>
+                  <b>Ví dụ thực tế:</b> Vịt vừa "CoTheBay" vừa "CoTheBoi" —
+                  implements nhiều interface cùng lúc, điều mà abstract class
+                  (chỉ extends 1 class) không làm được.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao Java không cho phép kế thừa nhiều
+                  abstract class nhưng lại cho implements nhiều interface?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Để tránh xung đột khi 2 class cha có phương thức trùng tên
+                    với cài đặt khác nhau (Diamond Problem); interface không có
+                    cài đặt cụ thể (trước Java 8) nên không gây xung đột này.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Tạo interface "CoTheChay" và cho class "Cho" implement thêm
+                  interface này.
+                </p>
+                <p>
+                  2. Khi nào nên dùng interface, khi nào nên dùng abstract
+                  class?
+                </p>
+              </div>
+            </details>
           </div>
         </div>
         <div id="cs-discrete" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">🔢</div>
-            <h2>Toán rời rạc</h2>
-            <p>
-              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
-            </p>
+          <div class="card">
+            <h2>🔢 Toán Rời Rạc</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Mệnh đề &amp; Logic (Propositional Logic)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Mệnh đề là câu khẳng định chỉ đúng hoặc sai.
+                  Các phép toán logic cơ bản:
+                  <span class="cs-formula">AND (∧)</span>,
+                  <span class="cs-formula">OR (∨)</span>,
+                  <span class="cs-formula">NOT (¬)</span>,
+                  <span class="cs-formula">XOR (⊕)</span>,
+                  <span class="cs-formula">kéo theo (→)</span>.
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>P</th>
+                    <th>Q</th>
+                    <th>P∧Q</th>
+                    <th>P∨Q</th>
+                    <th>P→Q</th>
+                  </tr>
+                  <tr>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>T</td>
+                    <td>T</td>
+                  </tr>
+                  <tr>
+                    <td>T</td>
+                    <td>F</td>
+                    <td>F</td>
+                    <td>T</td>
+                    <td>F</td>
+                  </tr>
+                  <tr>
+                    <td>F</td>
+                    <td>T</td>
+                    <td>F</td>
+                    <td>T</td>
+                    <td>T</td>
+                  </tr>
+                  <tr>
+                    <td>F</td>
+                    <td>F</td>
+                    <td>F</td>
+                    <td>F</td>
+                    <td>T</td>
+                  </tr>
+                </table>
+                <p>
+                  <b>Ví dụ:</b> P = "Trời mưa", Q = "Đường ướt". P→Q ("Nếu trời
+                  mưa thì đường ướt") chỉ sai khi trời mưa (P đúng) mà đường
+                  không ướt (Q sai).
+                </p>
+                <p><b>Bài tập mẫu:</b> Với P=T, Q=F, tính P∧Q và P∨Q.</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>P∧Q = F (cần cả 2 đúng), P∨Q = T (chỉ cần 1 đúng)</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Lập bảng chân trị đầy đủ cho biểu thức ¬P ∨ Q.</p>
+                <p>
+                  2. P→Q chỉ sai trong trường hợp nào? Giải thích bằng ví dụ
+                  thực tế.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Tập hợp (Set Theory)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Tập hợp là nhóm các phần tử phân biệt. Các
+                  phép toán: <b>Hợp</b> A∪B (thuộc A hoặc B), <b>Giao</b> A∩B
+                  (thuộc cả A và B), <b>Hiệu</b> A−B (thuộc A nhưng không thuộc
+                  B), <b>Phần bù</b> Aᶜ (không thuộc A).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> A={1,2,3}, B={2,3,4} ⟹ A∪B={1,2,3,4}, A∩B={2,3},
+                  A−B={1}.
+                </p>
+                <p><b>Bài tập mẫu:</b> Với A={1,2,3,4}, B={3,4,5}, tính A∩B.</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>A∩B = {3, 4} (các phần tử chung của cả 2 tập)</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Với A={1,2,3,4}, B={3,4,5}, tính A∪B và B−A.</p>
+                <p>
+                  2. Tập rỗng (∅) là tập con của mọi tập hợp — đúng hay sai?
+                  Giải thích.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Quan hệ (Relations)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Quan hệ R trên tập A là tập con của A×A. Các
+                  tính chất quan trọng: <b>Phản xạ</b> (mọi a có (a,a)∈R),
+                  <b>Đối xứng</b> ((a,b)∈R thì (b,a)∈R), <b>Bắc cầu</b> ((a,b)∈R
+                  và (b,c)∈R thì (a,c)∈R).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Quan hệ "=" trên số nguyên là phản xạ, đối xứng,
+                  bắc cầu (gọi là quan hệ tương đương). Quan hệ "≤" là phản xạ,
+                  bắc cầu nhưng không đối xứng (3≤5 nhưng 5≤3 sai).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Quan hệ "cùng họ" (VD: cùng họ Nguyễn)
+                  trên tập người có phải quan hệ đối xứng không?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>Có — nếu A cùng họ với B thì B cũng cùng họ với A.</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Quan hệ "&lt;" trên số nguyên có phải phản xạ không? Vì
+                  sao?
+                </p>
+                <p>
+                  2. Cho ví dụ về một quan hệ vừa phản xạ, vừa đối xứng, vừa bắc
+                  cầu (quan hệ tương đương) trong đời sống.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Hàm (Functions)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Hàm f: A→B ánh xạ mỗi phần tử của A tới đúng
+                  1 phần tử của B. <b>Đơn ánh (injective)</b>: không có 2 phần
+                  tử khác nhau trong A ánh xạ tới cùng 1 phần tử B.
+                  <b>Toàn ánh (surjective)</b>: mọi phần tử B đều được ánh xạ
+                  tới. <b>Song ánh (bijective)</b>: vừa đơn ánh vừa toàn ánh.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> f(x)=x² trên số thực không phải đơn ánh vì
+                  f(2)=f(-2)=4. f(x)=x+1 trên số nguyên là song ánh (mỗi số có
+                  ảnh riêng biệt và phủ hết tập đích).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Hàm f(x) = 2x trên tập số nguyên có phải
+                  đơn ánh không?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Có — mỗi số nguyên x khác nhau cho ra kết quả 2x khác nhau,
+                    không có 2 giá trị x khác nhau nào cho cùng kết quả.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Hàm f(x) = x² trên tập số tự nhiên (không âm) có phải đơn
+                  ánh không?
+                </p>
+                <p>
+                  2. Cho ví dụ một hàm song ánh giữa 2 tập hữu hạn có cùng số
+                  phần tử.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Tổ hợp (Combinatorics)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <b>Hoán vị</b> (Permutation) — sắp xếp thứ
+                  tự n phần tử: <span class="cs-formula">P(n) = n!</span>.
+                  <b>Chỉnh hợp</b> — chọn k phần tử có thứ tự từ n:
+                  <span class="cs-formula">A(n,k) = n!/(n-k)!</span>.
+                  <b>Tổ hợp</b> — chọn k phần tử không thứ tự từ n:
+                  <span class="cs-formula">C(n,k) = n!/(k!(n-k)!)</span>.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Chọn 2 bạn từ nhóm 4 bạn để làm nhóm trưởng+phó
+                  (có thứ tự) dùng chỉnh hợp A(4,2)=12; chỉ chọn 2 bạn đi họp
+                  (không thứ tự) dùng tổ hợp C(4,2)=6.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Có bao nhiêu cách sắp xếp 3 quyển sách
+                  khác nhau lên kệ?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>P(3) = 3! = 6 cách</p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Có bao nhiêu cách chọn 3 người từ nhóm 5 người để lập một
+                  đội (không phân vai trò)?
+                </p>
+                <p>
+                  2. Có bao nhiêu cách chọn đội trưởng và đội phó (khác nhau) từ
+                  nhóm 5 người?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Đồ thị (Graph Theory)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Nhánh toán học nghiên cứu đồ thị (đã học cấu
+                  trúc dữ liệu Graph ở môn DSA). Khái niệm quan trọng:
+                  <b>đường đi Euler</b> — đi qua mỗi cạnh đúng 1 lần;
+                  <b>đường đi Hamilton</b> — đi qua mỗi đỉnh đúng 1 lần.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Bài toán "7 cây cầu ở Königsberg" (Euler, 1736)
+                  — chứng minh không tồn tại đường đi qua cả 7 cầu mỗi cầu đúng
+                  1 lần, vì có nhiều hơn 2 đỉnh bậc lẻ.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Điều kiện để một đồ thị có đường đi Euler
+                  là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Đồ thị liên thông và có đúng 0 hoặc 2 đỉnh bậc lẻ (nếu 0
+                    đỉnh bậc lẻ thì có chu trình Euler, nếu 2 đỉnh bậc lẻ thì có
+                    đường đi Euler giữa 2 đỉnh đó).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Đồ thị hình vuông A-B-C-D-A (4 cạnh) có đường đi Euler
+                  không? Vì sao?
+                </p>
+                <p>
+                  2. Phân biệt đường đi Euler và đường đi Hamilton bằng lời của
+                  bạn.
+                </p>
+              </div>
+            </details>
           </div>
         </div>
         <div id="cs-os" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">🖥️</div>
-            <h2>Hệ điều hành</h2>
-            <p>
-              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
-            </p>
+          <div class="card">
+            <h2>🖥️ Hệ Điều Hành</h2>
+
+            <details class="cs-topic" open>
+              <summary>
+                1️⃣ Tiến trình &amp; Luồng (Process &amp; Thread)
+              </summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <b>Tiến trình (Process)</b> là một chương
+                  trình đang chạy, có vùng nhớ riêng biệt.
+                  <b>Luồng (Thread)</b> là đơn vị thực thi nhỏ hơn bên trong
+                  tiến trình, các luồng cùng tiến trình chia sẻ chung vùng nhớ.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Mở trình duyệt Chrome là 1 tiến trình; mỗi tab
+                  có thể là 1 luồng/tiến trình con riêng để tab lỗi không làm
+                  sập cả trình duyệt.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao các luồng chia sẻ bộ nhớ lại thực
+                  thi nhanh hơn tạo tiến trình mới?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Vì không cần cấp phát vùng nhớ riêng biệt và không cần
+                    chuyển ngữ cảnh (context switch) tốn kém như giữa các tiến
+                    trình khác nhau.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Nêu 2 điểm khác biệt cơ bản giữa Process và Thread.</p>
+                <p>
+                  2. Vì sao lỗi trong 1 thread có thể làm sập toàn bộ tiến
+                  trình?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Lập lịch CPU (CPU Scheduling)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Quyết định tiến trình nào được CPU xử lý
+                  tiếp theo. Các thuật toán phổ biến: <b>FCFS</b> (First Come
+                  First Served — ai đến trước chạy trước), <b>SJF</b> (Shortest
+                  Job First — job ngắn nhất chạy trước), <b>Round Robin</b> (mỗi
+                  tiến trình chạy 1 khoảng thời gian cố định — time slice — rồi
+                  luân phiên).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> 3 tiến trình P1(5ms), P2(3ms), P3(1ms) đến cùng
+                  lúc. FCFS: chạy theo thứ tự P1→P2→P3, thời gian chờ trung bình
+                  = (0+5+8)/3 = 4.33ms. SJF: chạy P3→P2→P1, thời gian chờ trung
+                  bình = (0+1+4)/3 = 1.67ms (tốt hơn).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Với 2 tiến trình P1(4ms) và P2(2ms) đến
+                  cùng lúc, SJF cho thời gian chờ trung bình bao nhiêu?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    SJF chạy P2 trước (0ms chờ), P1 sau (chờ 2ms) ⟹ trung bình
+                    (0+2)/2 = 1ms
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Với 2 tiến trình trên, FCFS (P1 trước) cho thời gian chờ
+                  trung bình bao nhiêu? So sánh với SJF.
+                </p>
+                <p>
+                  2. Round Robin phù hợp cho hệ thống nào hơn: hệ thống theo lô
+                  (batch) hay hệ thống chia sẻ thời gian (time-sharing)? Vì sao?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Quản lý bộ nhớ (Memory Management)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <b>Phân trang (Paging)</b>: chia bộ nhớ
+                  thành các trang (page) kích thước cố định, tránh phân mảnh
+                  ngoài. <b>Phân đoạn (Segmentation)</b>: chia theo logic chương
+                  trình (code, data, stack) kích thước không cố định.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Chương trình 10KB được chia thành các trang 4KB
+                  — trang cuối chỉ dùng hết 2KB (gây phân mảnh trong/internal
+                  fragmentation) nhưng không gây phân mảnh ngoài như
+                  segmentation.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Phân mảnh trong (internal fragmentation)
+                  là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Là phần bộ nhớ bị lãng phí bên trong một page/block đã cấp
+                    phát nhưng không dùng hết (VD: page 4KB chỉ dùng 2KB, lãng
+                    phí 2KB).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Phân biệt phân mảnh trong và phân mảnh ngoài (internal vs
+                  external fragmentation).
+                </p>
+                <p>
+                  2. Vì sao Paging tránh được phân mảnh ngoài nhưng Segmentation
+                  thì không?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Deadlock (Bế tắc)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Trạng thái các tiến trình chờ lẫn nhau vô
+                  thời hạn, không tiến trình nào chạy tiếp được. Xảy ra khi đủ 4
+                  điều kiện: <b>Loại trừ lẫn nhau</b> (tài nguyên chỉ dùng bởi 1
+                  tiến trình), <b>Giữ và chờ</b> (giữ tài nguyên trong khi chờ
+                  tài nguyên khác), <b>Không thu hồi</b> (tài nguyên không bị
+                  lấy lại cưỡng chế), <b>Chờ vòng tròn</b> (P1 chờ P2, P2 chờ
+                  P1...).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Tiến trình A giữ file X, chờ file Y; tiến trình
+                  B giữ file Y, chờ file X — cả hai chờ nhau mãi mãi ⟹ deadlock.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Nêu 1 cách đơn giản để tránh điều kiện
+                  "chờ vòng tròn"?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Quy định thứ tự cấp phát tài nguyên cố định (VD: luôn xin
+                    tài nguyên theo thứ tự alphabet) để không thể xảy ra vòng
+                    chờ lẫn nhau.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Liệt kê đầy đủ 4 điều kiện cần để xảy ra Deadlock.</p>
+                <p>
+                  2. Nêu một tình huống thực tế ngoài đời (không phải máy tính)
+                  tương tự deadlock (gợi ý: giao thông tại ngã tư).
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Đồng bộ hóa (Synchronization)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Cơ chế đảm bảo nhiều tiến trình/luồng truy
+                  cập tài nguyên chung (vùng nhớ, file...) một cách an toàn,
+                  tránh race condition. <b>Mutex</b> (khóa loại trừ — chỉ 1
+                  luồng vào vùng critical section tại 1 thời điểm).
+                  <b>Semaphore</b> (bộ đếm — cho phép N luồng truy cập đồng
+                  thời).
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>mutex.lock();
+// vùng dữ liệu dùng chung (critical section)
+soDu = soDu + 100;
+mutex.unlock();</code></pre>
+                <p>
+                  <b>Ví dụ:</b> 2 luồng cùng cộng tiền vào 1 tài khoản không có
+                  mutex có thể gây mất dữ liệu (race condition) — cả 2 đọc cùng
+                  giá trị cũ rồi ghi đè lên nhau.
+                </p>
+                <p><b>Bài tập mẫu:</b> Race condition là gì?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Lỗi xảy ra khi kết quả chương trình phụ thuộc vào thứ tự
+                    thực thi không kiểm soát được của nhiều luồng truy cập cùng
+                    dữ liệu.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Mutex và Semaphore khác nhau cơ bản ở điểm nào? (gợi ý: số
+                  luồng được phép vào cùng lúc)
+                </p>
+                <p>
+                  2. Cho ví dụ 1 tình huống thực tế cần Semaphore với N=3 (cho
+                  phép 3 luồng cùng truy cập).
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Hệ thống file (File System)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Cách hệ điều hành tổ chức, lưu trữ và quản
+                  lý file trên thiết bị lưu trữ (ổ cứng, SSD). Cấu trúc thư mục
+                  dạng cây, mỗi file có metadata (tên, kích thước, quyền truy
+                  cập, thời gian sửa).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Windows dùng NTFS, Linux thường dùng ext4 — mỗi
+                  hệ thống file có cách quản lý block dữ liệu và metadata khác
+                  nhau.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao cần lưu metadata (thông tin về
+                  file) riêng biệt với nội dung file?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Giúp hệ điều hành nhanh chóng biết vị trí, kích thước, quyền
+                    truy cập của file mà không cần đọc toàn bộ nội dung file.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Liệt kê 3 loại thông tin thường có trong metadata của một
+                  file.
+                </p>
+                <p>
+                  2. Cấu trúc thư mục dạng cây (tree) mang lại lợi ích gì so với
+                  lưu tất cả file phẳng trong 1 danh sách?
+                </p>
+              </div>
+            </details>
           </div>
         </div>
         <div id="cs-architecture" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">⚙️</div>
-            <h2>Kiến trúc máy tính</h2>
-            <p>
-              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
-            </p>
+          <div class="card">
+            <h2>⚙️ Kiến Trúc Máy Tính</h2>
+
+            <details class="cs-topic" open>
+              <summary>1️⃣ Kiến trúc Von Neumann</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Kiến trúc nền tảng của hầu hết máy tính hiện
+                  đại, gồm: CPU (xử lý), Bộ nhớ (lưu cả chương trình và dữ liệu
+                  chung 1 không gian địa chỉ), thiết bị Vào/Ra (I/O), và Bus kết
+                  nối các thành phần.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Vì chương trình và dữ liệu dùng chung bộ nhớ,
+                  CPU phải luân phiên lấy lệnh và lấy dữ liệu qua cùng 1 bus —
+                  gây ra "Von Neumann bottleneck" (điểm nghẽn cổ chai).
+                </p>
+                <p><b>Bài tập mẫu:</b> "Von Neumann bottleneck" là gì?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Hiện tượng tốc độ xử lý bị giới hạn bởi băng thông của bus
+                    chung giữa CPU và bộ nhớ, vì lệnh và dữ liệu phải đi qua
+                    cùng một đường truyền.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Kiến trúc Harvard khác Von Neumann ở điểm nào? (gợi ý: bộ
+                  nhớ lệnh và dữ liệu tách riêng)
+                </p>
+                <p>2. Nêu 3 thành phần chính của kiến trúc Von Neumann.</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ CPU — ALU, CU, Registers</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <b>ALU</b> (Arithmetic Logic Unit) thực hiện
+                  phép toán số học/logic. <b>CU</b> (Control Unit) điều khiển,
+                  giải mã lệnh và điều phối các thành phần khác.
+                  <b>Registers</b> (thanh ghi) là bộ nhớ siêu nhanh ngay trong
+                  CPU, lưu dữ liệu đang xử lý tạm thời.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Khi CPU thực hiện phép cộng, CU giải mã lệnh
+                  ADD, ALU thực hiện phép cộng, kết quả lưu tạm vào 1 register
+                  trước khi ghi lại bộ nhớ.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao thanh ghi (register) nhanh hơn RAM
+                  rất nhiều?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Vì thanh ghi nằm ngay trong CPU, khoảng cách vật lý gần và
+                    tốc độ truy xuất theo xung nhịp CPU, trong khi RAM ở xa hơn
+                    và phải qua bus bộ nhớ.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. ALU chịu trách nhiệm cho những loại phép toán nào?</p>
+                <p>
+                  2. Vì sao số lượng thanh ghi trong CPU lại rất hạn chế (thường
+                  chỉ vài chục cái) thay vì hàng nghìn?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Bộ nhớ phân cấp (Memory Hierarchy)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Các loại bộ nhớ được tổ chức theo tầng, càng
+                  gần CPU càng nhanh nhưng càng đắt và dung lượng càng nhỏ:
+                  <b>Register</b> (nhanh nhất, ít nhất) →
+                  <b>Cache (L1/L2/L3)</b> → <b>RAM</b> →
+                  <b>Ổ đĩa (SSD/HDD)</b> (chậm nhất, nhiều nhất).
+                </p>
+                <table class="bigo-table">
+                  <tr>
+                    <th>Loại</th>
+                    <th>Tốc độ</th>
+                    <th>Dung lượng</th>
+                  </tr>
+                  <tr>
+                    <td>Register</td>
+                    <td>Cực nhanh</td>
+                    <td>Vài trăm byte</td>
+                  </tr>
+                  <tr>
+                    <td>Cache (L1-L3)</td>
+                    <td>Rất nhanh</td>
+                    <td>KB - vài chục MB</td>
+                  </tr>
+                  <tr>
+                    <td>RAM</td>
+                    <td>Nhanh</td>
+                    <td>GB</td>
+                  </tr>
+                  <tr>
+                    <td>SSD/HDD</td>
+                    <td>Chậm</td>
+                    <td>TB</td>
+                  </tr>
+                </table>
+                <p>
+                  <b>Ví dụ:</b> Dữ liệu hay dùng được đưa vào Cache để CPU không
+                  phải chờ RAM (chậm hơn) mỗi lần cần truy cập.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Vì sao không làm RAM có tốc độ như Cache
+                  luôn cho nhanh?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Vì bộ nhớ tốc độ cao (như Cache) có giá thành sản xuất rất
+                    đắt, không khả thi để làm dung lượng lớn như RAM (vài GB)
+                    với chi phí hợp lý.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Sắp xếp lại theo đúng thứ tự nhanh→chậm: RAM, Cache L1,
+                  SSD, Register.
+                </p>
+                <p>2. "Cache Hit" và "Cache Miss" là gì?</p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Chu kỳ lệnh (Fetch – Decode – Execute)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Mỗi lệnh máy được CPU xử lý qua chu kỳ:
+                  <b>Fetch</b> (lấy lệnh từ bộ nhớ theo địa chỉ trong thanh ghi
+                  PC), <b>Decode</b> (giải mã lệnh xem cần làm gì),
+                  <b>Execute</b> (thực thi lệnh, có thể ghi kết quả lại bộ
+                  nhớ/thanh ghi).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Lệnh "ADD R1, R2, R3" — Fetch lấy lệnh này từ bộ
+                  nhớ, Decode hiểu đây là phép cộng 2 thanh ghi R2+R3, Execute
+                  thực hiện phép cộng và lưu vào R1.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Thanh ghi PC (Program Counter) dùng để làm
+                  gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Lưu địa chỉ của lệnh tiếp theo sẽ được Fetch — sau mỗi lệnh,
+                    PC tự động tăng để trỏ tới lệnh kế tiếp.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Điều gì xảy ra với PC khi CPU gặp lệnh nhảy (jump/branch)?
+                </p>
+                <p>
+                  2. Vẽ sơ đồ 3 bước Fetch-Decode-Execute cho lệnh "SUB R1, R2,
+                  R3".
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Số nhị phân &amp; Biểu diễn dữ liệu</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Máy tính lưu mọi dữ liệu dưới dạng nhị phân
+                  (bit 0/1). Số nguyên có dấu thường dùng biểu diễn
+                  <b>bù 2 (two's complement)</b>; ký tự dùng bảng mã
+                  ASCII/Unicode; số thực dùng chuẩn IEEE 754.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Số 5 ở hệ nhị phân 8-bit là 00000101; số −5 (bù
+                  2) là 11111011 (đảo bit rồi cộng 1).
+                </p>
+                <p><b>Bài tập mẫu:</b> Đổi số 13 sang hệ nhị phân.</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    13 = 8+4+1 = 2³+2²+2⁰ ⟹ 1101 (có thể dùng công cụ CS
+                    Calculator để kiểm tra lại)
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>1. Đổi số nhị phân 10110 sang hệ thập phân.</p>
+                <p>
+                  2. Vì sao máy tính cần dùng biểu diễn bù 2 thay vì chỉ thêm 1
+                  bit dấu đơn giản cho số âm?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Pipeline (Ống lệnh)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Kỹ thuật cho phép CPU xử lý nhiều lệnh cùng
+                  lúc theo kiểu dây chuyền — khi lệnh 1 đang ở bước Execute thì
+                  lệnh 2 có thể đang Decode, lệnh 3 đang Fetch — tăng thông
+                  lượng (throughput) đáng kể so với xử lý tuần tự từng lệnh một.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Giống dây chuyền lắp ráp ô tô: trong khi xe A
+                  đang sơn, xe B có thể đang lắp động cơ, xe C đang được đưa vào
+                  — nhiều xe được xử lý song song ở các công đoạn khác nhau.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Pipeline giúp cải thiện điều gì trong hiệu
+                  năng CPU?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Tăng thông lượng (số lệnh hoàn thành trên một đơn vị thời
+                    gian) bằng cách xử lý song song các giai đoạn khác nhau của
+                    nhiều lệnh liên tiếp.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Điều gì xảy ra với pipeline khi gặp lệnh nhảy (branch) — vì
+                  sao đây là một thách thức? (gợi ý: pipeline hazard)
+                </p>
+                <p>
+                  2. Superscalar và Pipeline khác nhau như thế nào? (gợi ý: tìm
+                  hiểu thêm nếu chưa biết, đây là câu hỏi mở rộng)
+                </p>
+              </div>
+            </details>
           </div>
         </div>
         <div id="cs-ai" class="cs-subject-panel">
-          <div class="card cs-coming-soon">
-            <div class="cs-coming-soon-icon">🤖</div>
-            <h2>Trí tuệ nhân tạo</h2>
-            <p>
-              Nội dung đang được xây dựng, sẽ có trong bản cập nhật tiếp theo.
-            </p>
+          <div class="card">
+            <h2>🤖 Trí Tuệ Nhân Tạo</h2>
+
+            <details class="cs-topic" open>
+              <summary>
+                1️⃣ Giới thiệu AI — Machine Learning vs Deep Learning
+              </summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> <b>AI</b> (Trí tuệ nhân tạo) là lĩnh vực
+                  rộng nghiên cứu máy móc mô phỏng trí thông minh con người.
+                  <b>Machine Learning (ML)</b> là tập con của AI — máy tự học từ
+                  dữ liệu thay vì lập trình luật cứng.
+                  <b>Deep Learning (DL)</b> là tập con của ML, dùng mạng nơ-ron
+                  nhiều lớp (deep neural network) để học các đặc trưng phức tạp.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> AI = mọi hệ thống "thông minh" (kể cả luật
+                  if-else đơn giản); ML = máy tự học phân loại email spam từ dữ
+                  liệu; DL = mạng nơ-ron sâu nhận diện khuôn mặt.
+                </p>
+                <p><b>Bài tập mẫu:</b> Quan hệ giữa AI, ML, DL như thế nào?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    AI là tập lớn nhất, ML là tập con của AI, DL là tập con của
+                    ML — giống các vòng tròn lồng nhau (DL ⊂ ML ⊂ AI).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Nêu 2 ví dụ AI không phải Machine Learning (VD: hệ thống
+                  luật if-else cố định).
+                </p>
+                <p>
+                  2. Vì sao Deep Learning cần nhiều dữ liệu và sức mạnh tính
+                  toán hơn ML truyền thống?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>2️⃣ Học có giám sát (Supervised Learning)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Huấn luyện mô hình từ dữ liệu đã có nhãn
+                  (label) sẵn — cho cả input và output đúng, máy học cách ánh xạ
+                  từ input tới output. Gồm 2 dạng: <b>Classification</b> (phân
+                  loại — output là nhãn rời rạc) và <b>Regression</b> (hồi quy —
+                  output là số liên tục).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Dự đoán email là spam/không spam
+                  (classification); dự đoán giá nhà dựa vào diện tích
+                  (regression).
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Dự đoán "có mưa hay không" ngày mai là
+                  Classification hay Regression?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Classification — vì output chỉ có 2 nhãn rời rạc: "có mưa"
+                    hoặc "không mưa".
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Dự đoán nhiệt độ ngày mai là Classification hay Regression?
+                  Vì sao?
+                </p>
+                <p>
+                  2. Vì sao Supervised Learning cần tốn công gán nhãn (label) dữ
+                  liệu trước khi huấn luyện?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>3️⃣ Học không giám sát (Unsupervised Learning)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Huấn luyện từ dữ liệu KHÔNG có nhãn — máy tự
+                  tìm ra cấu trúc/nhóm ẩn trong dữ liệu. Phổ biến nhất:
+                  <b>Clustering (phân cụm)</b> — nhóm các điểm dữ liệu tương tự
+                  nhau lại (VD: thuật toán K-Means).
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Phân nhóm khách hàng theo hành vi mua sắm mà
+                  không cần biết trước "nhóm nào là gì" — máy tự phát hiện các
+                  cụm khách hàng có đặc điểm tương đồng.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Khác biệt cốt lõi giữa Supervised và
+                  Unsupervised Learning là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Supervised có dữ liệu đã gán nhãn đúng để học; Unsupervised
+                    không có nhãn, máy tự tìm cấu trúc/nhóm dựa vào sự tương
+                    đồng trong dữ liệu.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Nêu 1 ứng dụng thực tế khác của Clustering ngoài phân nhóm
+                  khách hàng.
+                </p>
+                <p>
+                  2. Phát hiện gian lận thẻ tín dụng bất thường (anomaly
+                  detection) thuộc Supervised hay Unsupervised? Vì sao có thể
+                  tranh luận cả hai?
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>4️⃣ Mạng nơ-ron nhân tạo (Neural Network)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Mô phỏng đơn giản hóa nơ-ron sinh học, gồm
+                  các lớp: <b>Input layer</b> (nhận dữ liệu vào),
+                  <b>Hidden layer(s)</b> (xử lý trung gian),
+                  <b>Output layer</b> (kết quả). Mỗi kết nối có trọng số
+                  (weight), mỗi nơ-ron có hàm kích hoạt (activation function)
+                  như ReLU, Sigmoid.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> Nhận diện chữ số viết tay: input là các pixel
+                  ảnh, hidden layers học các đặc trưng (nét cong, đường thẳng),
+                  output là 10 nơ-ron tương ứng số 0-9.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Hàm kích hoạt (activation function) dùng
+                  để làm gì trong mạng nơ-ron?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Thêm tính phi tuyến (non-linearity) vào mạng, giúp mạng học
+                    được các mối quan hệ phức tạp thay vì chỉ là phép biến đổi
+                    tuyến tính đơn giản.
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Một mạng nơ-ron không có Hidden layer (chỉ input→output
+                  trực tiếp) có học được bài toán phức tạp không? Vì sao?
+                </p>
+                <p>
+                  2. Nêu vai trò của "trọng số" (weight) trong quá trình huấn
+                  luyện mạng nơ-ron.
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>5️⃣ Cây quyết định (Decision Tree)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Mô hình học máy dạng cây, mỗi node trong là
+                  1 câu hỏi/điều kiện, mỗi nhánh là kết quả trả lời, mỗi lá là
+                  kết quả dự đoán cuối cùng. Dễ hiểu, dễ trực quan hóa — con
+                  người có thể đọc hiểu logic quyết định.
+                </p>
+                <pre
+                  class="code-block active"
+                  style="display: block"
+                ><code>          [Trời có mưa?]
+          /            \
+        Có              Không
+        /                  \
+[Mang ô]            [Mang kính râm?]</code></pre>
+                <p>
+                  <b>Ví dụ:</b> Dự đoán có nên chơi tennis không dựa vào: Trời
+                  (nắng/mưa) → Độ ẩm (cao/thấp) → Gió (mạnh/nhẹ) — mỗi câu hỏi
+                  chia nhỏ dần tới quyết định cuối.
+                </p>
+                <p>
+                  <b>Bài tập mẫu:</b> Ưu điểm lớn nhất của Decision Tree so với
+                  Neural Network là gì?
+                </p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    Dễ diễn giải (interpretable) — con người có thể nhìn vào cây
+                    và hiểu chính xác vì sao mô hình đưa ra quyết định đó, khác
+                    với Neural Network thường là "hộp đen".
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Vẽ một cây quyết định đơn giản cho bài toán "có nên mang áo
+                  mưa không" dựa vào 2 yếu tố bạn tự chọn.
+                </p>
+                <p>
+                  2. Decision Tree có nhược điểm gì khi cây quá sâu? (gợi ý:
+                  overfitting)
+                </p>
+              </div>
+            </details>
+
+            <details class="cs-topic">
+              <summary>6️⃣ Thuật toán tìm kiếm trong AI (Search)</summary>
+              <div class="cs-topic-body">
+                <p>
+                  <b>Lý thuyết:</b> Nhiều bài toán AI (giải mê cung, chơi cờ) là
+                  bài toán tìm kiếm trong không gian trạng thái. Ngoài BFS/DFS
+                  đã học (môn DSA), AI còn dùng: <b>A*</b> — tìm đường đi ngắn
+                  nhất có định hướng bằng hàm heuristic (ước lượng khoảng cách
+                  còn lại); <b>Minimax</b> — thuật toán cho trò chơi 2 người đối
+                  kháng (cờ vua, cờ caro), giả định đối thủ luôn chơi tối ưu.
+                </p>
+                <p>
+                  <b>Ví dụ:</b> A* trong game tìm đường (pathfinding) ưu tiên
+                  khám phá theo hướng gần đích hơn (dùng heuristic khoảng cách
+                  Euclid/Manhattan) thay vì mù quáng như BFS.
+                </p>
+                <p><b>Bài tập mẫu:</b> A* khác BFS ở điểm cốt lõi nào?</p>
+                <details class="cs-answer">
+                  <summary>Xem đáp án</summary>
+                  <p>
+                    A* dùng hàm heuristic để ước lượng và ưu tiên hướng đi có
+                    khả năng gần đích hơn, trong khi BFS duyệt đều tất cả các
+                    hướng không phân biệt (mù quáng).
+                  </p>
+                </details>
+                <p><b>Bài tập tự luyện:</b></p>
+                <p>
+                  1. Nêu một hàm heuristic đơn giản có thể dùng cho bài toán tìm
+                  đường trên lưới ô vuông (gợi ý: khoảng cách Manhattan).
+                </p>
+                <p>
+                  2. Trong Minimax, người chơi Max và Min có mục tiêu gì khác
+                  nhau tại mỗi lượt?
+                </p>
+              </div>
+            </details>
           </div>
         </div>
       </section>
@@ -5636,6 +7244,413 @@ const decoded = jwt.verify(token, "secretKey");</code></pre>
               Khôi phục Mặc định
             </button>
           </div>
+        </div>
+      </section>
+
+      <!-- TAB MỚI: CS CALCULATOR (Section 7 của prompt) -->
+      <section class="panel" id="panel-calculator">
+        <div class="card">
+          <h2>🧮 Máy Tính Thường</h2>
+          <input
+            type="text"
+            id="basicCalcInput"
+            placeholder="Nhập biểu thức, ví dụ: 12 + 5 * (3 - 1)"
+            onkeydown="if (event.key === 'Enter') computeBasicCalc();"
+          />
+          <button
+            class="btn-primary"
+            style="margin-top: 10px"
+            onclick="computeBasicCalc()"
+          >
+            Tính
+          </button>
+          <div
+            id="basicCalcResult"
+            class="dict-result"
+            style="display: none; margin-top: 14px"
+          ></div>
+          <p
+            style="font-size: 11px; color: var(--text-muted); margin-top: 10px"
+          >
+            Hỗ trợ: + − × (hoặc *) ÷ (hoặc /), dấu ngoặc (). Không dùng eval() —
+            tự viết bộ phân tích biểu thức an toàn.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>🔢 Chuyển Đổi Cơ Số (Thập phân ↔ Nhị phân ↔ Hex ↔ Octal)</h2>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              flex-wrap: wrap;
+              align-items: center;
+            "
+          >
+            <input
+              type="text"
+              id="baseConvertInput"
+              placeholder="Nhập số..."
+              style="max-width: 200px"
+            />
+            <select id="baseConvertFrom" style="max-width: 160px">
+              <option value="10">Thập phân (Decimal)</option>
+              <option value="2">Nhị phân (Binary)</option>
+              <option value="16">Hex</option>
+              <option value="8">Octal</option>
+            </select>
+            <button class="btn-primary" onclick="computeBaseConvert()">
+              Chuyển đổi
+            </button>
+          </div>
+          <div
+            id="baseConvertResult"
+            class="dict-result"
+            style="display: none; margin-top: 16px"
+          ></div>
+        </div>
+
+        <div class="card">
+          <h2>➕ Số Học Nhị Phân (AND / OR / XOR / Cộng / Trừ)</h2>
+          <div class="grid-2">
+            <div>
+              <label class="field-label">Số nhị phân A</label>
+              <input type="text" id="binOpA" placeholder="Ví dụ: 1010" />
+            </div>
+            <div>
+              <label class="field-label">Số nhị phân B</label>
+              <input type="text" id="binOpB" placeholder="Ví dụ: 0110" />
+            </div>
+          </div>
+          <div
+            style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px"
+          >
+            <button class="btn-secondary" onclick="computeBinaryOp('add')">
+              A + B
+            </button>
+            <button class="btn-secondary" onclick="computeBinaryOp('sub')">
+              A − B
+            </button>
+            <button class="btn-secondary" onclick="computeBinaryOp('and')">
+              A AND B
+            </button>
+            <button class="btn-secondary" onclick="computeBinaryOp('or')">
+              A OR B
+            </button>
+            <button class="btn-secondary" onclick="computeBinaryOp('xor')">
+              A XOR B
+            </button>
+          </div>
+          <div
+            id="binOpResult"
+            class="dict-result"
+            style="display: none; margin-top: 16px"
+          ></div>
+        </div>
+
+        <div class="card">
+          <h2>📈 So Sánh Độ Phức Tạp Big O</h2>
+          <label class="field-label">Nhập n (kích thước dữ liệu):</label>
+          <input
+            type="number"
+            id="bigOInput"
+            value="10"
+            min="1"
+            max="1000"
+            style="max-width: 150px"
+          />
+          <button
+            class="btn-primary"
+            style="margin-top: 10px"
+            onclick="computeBigOCompare()"
+          >
+            So sánh
+          </button>
+          <div id="bigOResult" style="margin-top: 16px"></div>
+        </div>
+
+        <div class="card">
+          <h2>🌳 Tính Số Node / Chiều Cao Cây Nhị Phân</h2>
+          <div class="linalg-op-tabs">
+            <button
+              class="treecalc-btn active"
+              data-mode="fromHeight"
+              onclick="switchTreeCalcMode('fromHeight')"
+            >
+              Từ chiều cao → số node
+            </button>
+            <button
+              class="treecalc-btn"
+              data-mode="fromNodes"
+              onclick="switchTreeCalcMode('fromNodes')"
+            >
+              Từ số node → chiều cao
+            </button>
+          </div>
+          <div id="treeCalcFromHeight" style="margin-top: 14px">
+            <label class="field-label"
+              >Chiều cao cây h (số cạnh từ gốc tới lá sâu nhất, gốc có
+              h=0):</label
+            >
+            <input
+              type="number"
+              id="treeHeightInput"
+              value="3"
+              min="0"
+              max="30"
+              style="max-width: 150px"
+            />
+          </div>
+          <div id="treeCalcFromNodes" style="margin-top: 14px; display: none">
+            <label class="field-label">Số lượng node n:</label>
+            <input
+              type="number"
+              id="treeNodesInput"
+              value="7"
+              min="1"
+              style="max-width: 150px"
+            />
+          </div>
+          <button
+            class="btn-primary"
+            style="margin-top: 10px"
+            onclick="computeTreeCalc()"
+          >
+            Tính
+          </button>
+          <div
+            id="treeCalcResult"
+            class="dict-result"
+            style="display: none; margin-top: 16px"
+          ></div>
+        </div>
+
+        <div class="card">
+          <h2>🔗 Công Cụ Khác</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 14px;
+            "
+          >
+            Máy tính Ma trận và Subnet/CIDR đã có sẵn ở đúng chuyên đề của chúng
+            để tránh trùng lặp công cụ:
+          </p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap">
+            <button class="btn-secondary" onclick="jumpToCsTool('linalg')">
+              📐 Máy tính Ma trận (Đại số tuyến tính)
+            </button>
+            <button class="btn-secondary" onclick="jumpToCsTool('network')">
+              📡 Máy tính Subnet/CIDR (Mạng máy tính)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB MỚI: BÀI KIỂM TRA (Section 8 của prompt) -->
+      <section class="panel" id="panel-quiz">
+        <div class="card">
+          <h2>📝 Chọn Môn Để Kiểm Tra</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 16px;
+            "
+          >
+            ⚠️ Đây là bộ câu hỏi khởi đầu (~10 câu/môn) để bạn dùng thử ngay —
+            chưa đạt 100+ câu/môn như bản kế hoạch gốc vì viết tay 1000+ câu hỏi
+            chất lượng thật sự cần nhiều thời gian hơn một lượt cập nhật. Hệ
+            thống đã sẵn sàng để mở rộng thêm câu hỏi dần theo thời gian.
+          </p>
+          <div class="cs-subject-grid" id="quizSubjectGrid"></div>
+        </div>
+
+        <div class="card" id="quizAreaCard" style="display: none">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 16px;
+            "
+          >
+            <h2 id="quizAreaTitle">Bài kiểm tra</h2>
+            <button class="btn-secondary" onclick="closeQuizArea()">
+              ← Quay lại chọn môn
+            </button>
+          </div>
+          <div id="quizQuestionsContainer"></div>
+          <button
+            class="btn-primary"
+            style="margin-top: 16px"
+            id="quizSubmitBtn"
+            onclick="submitQuiz()"
+          >
+            Nộp bài
+          </button>
+          <div id="quizResultBox" style="display: none; margin-top: 20px"></div>
+        </div>
+
+        <div class="card">
+          <h2>📊 Thống Kê &amp; Xếp Hạng Điểm Số</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 14px;
+            "
+          >
+            Xếp hạng trong phạm vi các tài khoản đã từng đăng nhập trên
+            <b>trình duyệt này</b> (dữ liệu lưu bằng LocalStorage, không đồng bộ
+            qua thiết bị khác).
+          </p>
+          <div id="quizStatsBox"></div>
+        </div>
+      </section>
+
+      <!-- TAB MỚI: DASHBOARD SINH VIÊN (Section 9 của prompt) -->
+      <section class="panel" id="panel-dashboard">
+        <div class="card">
+          <h2>🎓 Tổng Quan Học Tập</h2>
+          <div class="task-stats-row" id="dashboardOverviewStats"></div>
+        </div>
+
+        <div class="card">
+          <h2>📐 GPA Calculator</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 14px;
+            "
+          >
+            Thang điểm 10 (theo hệ Việt Nam). GPA = Tổng(Điểm × Tín chỉ) /
+            Tổng(Tín chỉ).
+          </p>
+          <table class="bigo-table" id="gpaTable">
+            <tr>
+              <th>Môn học</th>
+              <th>Tín chỉ</th>
+              <th>Điểm (0-10)</th>
+              <th></th>
+            </tr>
+          </table>
+          <button
+            class="btn-secondary"
+            style="margin-top: 10px"
+            onclick="addGpaRow()"
+          >
+            + Thêm môn
+          </button>
+          <button
+            class="btn-primary"
+            style="margin-top: 10px; margin-left: 8px"
+            onclick="computeGpa()"
+          >
+            Tính GPA
+          </button>
+          <div
+            id="gpaResult"
+            class="dict-result"
+            style="display: none; margin-top: 16px"
+          ></div>
+        </div>
+
+        <div class="card">
+          <h2>🎯 Tín Chỉ Tích Lũy</h2>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              align-items: center;
+              flex-wrap: wrap;
+              margin-bottom: 14px;
+            "
+          >
+            <label class="field-label" style="margin: 0"
+              >Mục tiêu tổng tín chỉ ra trường:</label
+            >
+            <input
+              type="number"
+              id="creditTargetInput"
+              value="130"
+              style="max-width: 100px"
+              onchange="saveCreditTarget()"
+            />
+          </div>
+          <div id="creditProgressBox"></div>
+        </div>
+
+        <div class="card">
+          <h2>📅 Lịch Học Trong Tuần</h2>
+          <div class="grid-2">
+            <input
+              type="text"
+              id="scheduleClassName"
+              placeholder="Tên môn học..."
+            />
+            <select id="scheduleDay">
+              <option value="Thứ 2">Thứ 2</option>
+              <option value="Thứ 3">Thứ 3</option>
+              <option value="Thứ 4">Thứ 4</option>
+              <option value="Thứ 5">Thứ 5</option>
+              <option value="Thứ 6">Thứ 6</option>
+              <option value="Thứ 7">Thứ 7</option>
+              <option value="Chủ nhật">Chủ nhật</option>
+            </select>
+          </div>
+          <div class="grid-2" style="margin-top: 14px">
+            <input
+              type="text"
+              id="scheduleTime"
+              placeholder="Giờ học, VD: 07:00 - 09:30"
+            />
+            <input
+              type="text"
+              id="scheduleRoom"
+              placeholder="Phòng học (tùy chọn)"
+            />
+          </div>
+          <button
+            class="btn-primary"
+            style="margin-top: 14px"
+            onclick="addScheduleItem()"
+          >
+            + Thêm vào lịch
+          </button>
+          <ul
+            class="checklist-list"
+            id="scheduleList"
+            style="margin-top: 16px"
+          ></ul>
+        </div>
+
+        <div class="card">
+          <h2>⏰ Deadline Đồ Án Sắp Tới</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 14px;
+            "
+          >
+            Lấy trực tiếp từ bảng Task Kanban ở tab 💻 Lập Trình &amp; IDE —
+            không tạo hệ thống deadline trùng lặp.
+          </p>
+          <div id="dashboardUpcomingTasks"></div>
+        </div>
+
+        <div class="card">
+          <h2>📈 Tiến Độ Học Từng Môn</h2>
+          <table class="bigo-table" id="dashboardSubjectProgress">
+            <tr>
+              <th>Môn học</th>
+              <th>Trạng thái</th>
+              <th>Điểm kiểm tra gần nhất</th>
+            </tr>
+          </table>
         </div>
       </section>
 
