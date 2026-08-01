@@ -404,6 +404,7 @@
         <button class="tab-btn" data-tab="calculator">🧮 CS Calculator</button>
         <button class="tab-btn" data-tab="quiz">📝 Bài Kiểm Tra</button>
         <button class="tab-btn" data-tab="dashboard">🎓 Dashboard SV</button>
+        <button class="tab-btn" data-tab="mu">🔴 Manchester United</button>
       </nav>
 
       <!-- TAB 1: LẬP TRÌNH & IDE -->
@@ -6629,278 +6630,653 @@ mutex.unlock();</code></pre>
 
       <!-- TAB 2: GIẢI TRÍ -->
       <section class="panel" id="panel-entertainment">
-        <!-- SPOTIFY PLAYER -->
-        <div
-          class="card"
-          style="
-            background: rgba(20, 20, 20, 0.75);
-            border: 1px solid rgba(29, 185, 84, 0.35);
-          "
-        >
-          <div
-            style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 15px;
-            "
-          >
-            <h2 style="margin: 0; color: #1db954">🎧 Spotify Music & Chill</h2>
-          </div>
-
-          <div class="video-controls" style="margin-bottom: 15px">
-            <input
-              type="text"
-              id="spotifySearchInput"
-              placeholder="Dán link bài hát/playlist Spotify hoặc gõ để phát lofi..."
-              onkeydown="if (event.key === 'Enter') searchSpotifyMusic();"
-            />
-            <button
-              class="btn-primary"
-              onclick="searchSpotifyMusic()"
-              style="
-                background-color: #1db954;
-                box-shadow: 0 10px 30px rgba(29, 185, 84, 0.45);
-              "
-            >
-              Phát Nhạc
-            </button>
-          </div>
-
-          <div id="spotifyFrameContainer">
-            <iframe
-              id="spotifyIframe"
-              style="border-radius: 12px"
-              src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0"
-              width="100%"
-              height="352"
-              frameborder="0"
-              allowfullscreen=""
-              allow="
-                autoplay;
-                clipboard-write;
-                encrypted-media;
-                fullscreen;
-                picture-in-picture;
-              "
-              loading="lazy"
-            ></iframe>
-          </div>
-
+        <!-- THANH SUBTAB TRUNG TÂM GIẢI TRÍ -->
+        <div class="yt-subtabs" id="entSubtabs">
           <button
-            class="btn-secondary"
-            style="margin-top: 12px; font-size: 12px"
-            onclick="toggleSpotifyFavorite()"
+            class="yt-subtab-btn active"
+            data-entview="music"
+            onclick="switchEntView('music')"
           >
-            ⭐ Lưu bài đang phát vào Yêu thích
+            🎵 Nhạc
           </button>
-
-          <div style="margin-top: 16px">
-            <div
-              style="
-                font-size: 12px;
-                color: var(--text-muted);
-                margin-bottom: 6px;
-              "
-            >
-              🕘 Đã nghe gần đây
-            </div>
-            <div class="spotify-chip-row" id="spotifyHistoryChips"></div>
-          </div>
-
-          <div style="margin-top: 16px">
-            <div
-              style="
-                font-size: 12px;
-                color: var(--text-muted);
-                margin-bottom: 6px;
-              "
-            >
-              ⭐ Yêu thích
-            </div>
-            <div class="spotify-chip-row" id="spotifyFavoriteChips"></div>
-          </div>
+          <button
+            class="yt-subtab-btn"
+            data-entview="video"
+            onclick="switchEntView('video')"
+          >
+            📺 Video
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-entview="movies"
+            onclick="switchEntView('movies')"
+          >
+            🎬 Phim
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-entview="anime"
+            onclick="switchEntView('anime')"
+          >
+            📺 Anime
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-entview="manga"
+            onclick="switchEntView('manga')"
+          >
+            📖 Manga
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-entview="gaming"
+            onclick="switchEntView('gaming')"
+          >
+            🎮 Gaming
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-entview="fun"
+            onclick="switchEntView('fun')"
+          >
+            😂 Giải trí
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-entview="widgets"
+            onclick="switchEntView('widgets')"
+          >
+            🌦 Widget
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-entview="live"
+            onclick="switchEntView('live')"
+          >
+            🔴 Livestream
+          </button>
         </div>
 
-        <div class="card">
+        <!-- ====== 🎵 NHẠC (Spotify — GIỮ NGUYÊN, chỉ bọc thêm wrapper) ====== -->
+        <div id="ent-music" class="entertainment-subpanel active">
+          <!-- SPOTIFY PLAYER -->
           <div
+            class="card"
             style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 20px;
-              flex-wrap: wrap;
-              gap: 10px;
-            "
-          >
-            <h2 style="margin: 0">📺 YouTube Video</h2>
-            <button
-              class="btn-secondary"
-              id="googleAuthBtn"
-              onclick="loginGoogleAccount()"
-              style="font-size: 13px; padding: 8px 14px"
-            >
-              🌐 Đăng nhập Tài khoản Google
-            </button>
-          </div>
-
-          <div class="video-controls">
-            <input
-              type="text"
-              id="ytInput"
-              placeholder="Nhập từ khóa tìm kiếm hoặc dán link YouTube..."
-              onkeydown="if (event.key === 'Enter') handleYouTubeAction();"
-            />
-            <button class="btn-primary" onclick="handleYouTubeAction()">
-              Tìm / Phát
-            </button>
-          </div>
-
-          <div style="display: flex; gap: 10px; margin-bottom: 12px">
-            <button class="btn-secondary" style="flex: 1" onclick="prevTrack()">
-              ⏮ Bài trước
-            </button>
-            <button class="btn-secondary" style="flex: 1" onclick="nextTrack()">
-              Bài tiếp theo ⏭
-            </button>
-          </div>
-
-          <div class="yt-subtabs">
-            <button
-              class="yt-subtab-btn active"
-              data-ytview="search"
-              onclick="switchYtView('search')"
-            >
-              🔍 Tìm kiếm
-            </button>
-            <button
-              class="yt-subtab-btn"
-              data-ytview="history"
-              onclick="switchYtView('history')"
-            >
-              🕘 Lịch sử
-            </button>
-            <button
-              class="yt-subtab-btn"
-              data-ytview="favorites"
-              onclick="switchYtView('favorites')"
-            >
-              ⭐ Yêu thích
-            </button>
-            <button
-              class="yt-subtab-btn"
-              data-ytview="playlist"
-              onclick="switchYtView('playlist')"
-            >
-              📃 Playlist của tôi
-            </button>
-          </div>
-
-          <div
-            id="searchResults"
-            class="search-results"
-            style="display: none"
-          ></div>
-          <div
-            class="yt-video-list"
-            id="ytHistoryList"
-            style="display: none"
-          ></div>
-          <div
-            class="yt-video-list"
-            id="ytFavoritesList"
-            style="display: none"
-          ></div>
-          <div
-            class="yt-video-list"
-            id="ytPlaylistList"
-            style="display: none"
-          ></div>
-
-          <div
-            class="player"
-            id="playerBox"
-            style="
-              position: relative;
-              width: 100%;
-              aspect-ratio: 16/9;
-              background: #000;
-              border-radius: 18px;
-              overflow: hidden;
-              border: 1px solid var(--apple-glass-border);
+              background: rgba(20, 20, 20, 0.75);
+              border: 1px solid rgba(29, 185, 84, 0.35);
             "
           >
             <div
-              class="player-placeholder"
-              id="playerPlaceholder"
               style="
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(
-                  135deg,
-                  rgba(0, 0, 0, 0.75),
-                  rgba(30, 27, 75, 0.65)
-                );
                 display: flex;
+                justify-content: space-between;
                 align-items: center;
-                justify-content: center;
-                text-align: center;
+                margin-bottom: 15px;
               "
             >
-              <div class="overlay-text">
-                <svg
-                  width="40"
-                  height="40"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                  ></path>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  ></path>
-                </svg>
-                <p>Sẵn sàng phát Video</p>
-                <span
-                  >Nhập từ khóa tìm kiếm và ấn nút để hiện danh sách bài
-                  hát</span
-                >
+              <h2 style="margin: 0; color: #1db954">
+                🎧 Spotify Music & Chill
+              </h2>
+            </div>
+
+            <div class="video-controls" style="margin-bottom: 15px">
+              <input
+                type="text"
+                id="spotifySearchInput"
+                placeholder="Dán link bài hát/playlist Spotify hoặc gõ để phát lofi..."
+                onkeydown="if (event.key === 'Enter') searchSpotifyMusic();"
+              />
+              <button
+                class="btn-primary"
+                onclick="searchSpotifyMusic()"
+                style="
+                  background-color: #1db954;
+                  box-shadow: 0 10px 30px rgba(29, 185, 84, 0.45);
+                "
+              >
+                Phát Nhạc
+              </button>
+            </div>
+
+            <div id="spotifyFrameContainer">
+              <iframe
+                id="spotifyIframe"
+                style="border-radius: 12px"
+                src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0"
+                width="100%"
+                height="352"
+                frameborder="0"
+                allowfullscreen=""
+                allow="
+                  autoplay;
+                  clipboard-write;
+                  encrypted-media;
+                  fullscreen;
+                  picture-in-picture;
+                "
+                loading="lazy"
+              ></iframe>
+            </div>
+
+            <button
+              class="btn-secondary"
+              style="margin-top: 12px; font-size: 12px"
+              onclick="toggleSpotifyFavorite()"
+            >
+              ⭐ Lưu bài đang phát vào Yêu thích
+            </button>
+
+            <div style="margin-top: 16px">
+              <div
+                style="
+                  font-size: 12px;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                "
+              >
+                🕘 Đã nghe gần đây
+              </div>
+              <div class="spotify-chip-row" id="spotifyHistoryChips"></div>
+            </div>
+
+            <div style="margin-top: 16px">
+              <div
+                style="
+                  font-size: 12px;
+                  color: var(--text-muted);
+                  margin-bottom: 6px;
+                "
+              >
+                ⭐ Yêu thích
+              </div>
+              <div class="spotify-chip-row" id="spotifyFavoriteChips"></div>
+            </div>
+          </div>
+        </div>
+        <!-- ====== 📺 VIDEO (YouTube — GIỮ NGUYÊN, chỉ bọc thêm wrapper) ====== -->
+        <div id="ent-video" class="entertainment-subpanel">
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+                gap: 10px;
+              "
+            >
+              <h2 style="margin: 0">📺 YouTube Video</h2>
+              <button
+                class="btn-secondary"
+                id="googleAuthBtn"
+                onclick="loginGoogleAccount()"
+                style="font-size: 13px; padding: 8px 14px"
+              >
+                🌐 Đăng nhập Tài khoản Google
+              </button>
+            </div>
+
+            <div class="video-controls">
+              <input
+                type="text"
+                id="ytInput"
+                placeholder="Nhập từ khóa tìm kiếm hoặc dán link YouTube..."
+                onkeydown="if (event.key === 'Enter') handleYouTubeAction();"
+              />
+              <button class="btn-primary" onclick="handleYouTubeAction()">
+                Tìm / Phát
+              </button>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 12px">
+              <button
+                class="btn-secondary"
+                style="flex: 1"
+                onclick="prevTrack()"
+              >
+                ⏮ Bài trước
+              </button>
+              <button
+                class="btn-secondary"
+                style="flex: 1"
+                onclick="nextTrack()"
+              >
+                Bài tiếp theo ⏭
+              </button>
+            </div>
+
+            <div class="yt-subtabs">
+              <button
+                class="yt-subtab-btn active"
+                data-ytview="search"
+                onclick="switchYtView('search')"
+              >
+                🔍 Tìm kiếm
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-ytview="history"
+                onclick="switchYtView('history')"
+              >
+                🕘 Lịch sử
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-ytview="favorites"
+                onclick="switchYtView('favorites')"
+              >
+                ⭐ Yêu thích
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-ytview="playlist"
+                onclick="switchYtView('playlist')"
+              >
+                📃 Playlist của tôi
+              </button>
+            </div>
+
+            <div
+              id="searchResults"
+              class="search-results"
+              style="display: none"
+            ></div>
+            <div
+              class="yt-video-list"
+              id="ytHistoryList"
+              style="display: none"
+            ></div>
+            <div
+              class="yt-video-list"
+              id="ytFavoritesList"
+              style="display: none"
+            ></div>
+            <div
+              class="yt-video-list"
+              id="ytPlaylistList"
+              style="display: none"
+            ></div>
+
+            <div
+              class="player"
+              id="playerBox"
+              style="
+                position: relative;
+                width: 100%;
+                aspect-ratio: 16/9;
+                background: #000;
+                border-radius: 18px;
+                overflow: hidden;
+                border: 1px solid var(--apple-glass-border);
+              "
+            >
+              <div
+                class="player-placeholder"
+                id="playerPlaceholder"
+                style="
+                  position: absolute;
+                  inset: 0;
+                  background: linear-gradient(
+                    135deg,
+                    rgba(0, 0, 0, 0.75),
+                    rgba(30, 27, 75, 0.65)
+                  );
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  text-align: center;
+                "
+              >
+                <div class="overlay-text">
+                  <svg
+                    width="40"
+                    height="40"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <p>Sẵn sàng phát Video</p>
+                  <span
+                    >Nhập từ khóa tìm kiếm và ấn nút để hiện danh sách bài
+                    hát</span
+                  >
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div
-          class="card"
-          style="
-            background: rgba(26, 11, 12, 0.45);
-            border: 1px solid rgba(218, 41, 28, 0.3);
-          "
-        >
-          <h2 style="color: #ff453a">Manchester United Zone</h2>
-          <div
-            style="
-              border-radius: 14px;
-              overflow: hidden;
-              height: 500px;
-              border: 1px solid var(--apple-glass-border);
-              margin-top: 15px;
-            "
-          >
-            <iframe
-              src="https://www.fctables.com/teams/manchester-united-195973/iframe/?type=team-recent-matches&lang=en&past=4&future=4&title=Manchester+United"
-              width="100%"
-              height="100%"
-              frameborder="0"
-              scrolling="yes"
-            ></iframe>
+        <!-- ====== 🎬 PHIM (TMDb API — cần API Key cá nhân giống YouTube) ====== -->
+        <div id="ent-movies" class="entertainment-subpanel">
+          <div class="card">
+            <h2>🎬 Phim</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              Dùng TMDb (The Movie Database) API — dán API Key cá nhân của bạn ở
+              tab ⚙️ Cài Đặt. Lưu ý: TMDb chỉ cung cấp
+              <b>điểm đánh giá của chính TMDb</b>, không phải điểm IMDb thật
+              (IMDb không có API công khai miễn phí).
+            </p>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="movieSearchInput"
+                placeholder="Tìm phim..."
+                onkeydown="if (event.key === 'Enter') searchMovies();"
+              />
+              <button class="btn-primary" onclick="searchMovies()">
+                🔍 Tìm
+              </button>
+              <button class="btn-secondary" onclick="loadPopularMovies()">
+                🔥 Phim hot
+              </button>
+            </div>
+            <div
+              id="movieResults"
+              class="search-results"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+        </div>
+
+        <!-- ====== 📺 ANIME (Jikan/MyAnimeList API — MIỄN PHÍ, KHÔNG CẦN KEY) ====== -->
+        <div id="ent-anime" class="entertainment-subpanel">
+          <div class="card">
+            <h2>📺 Anime</h2>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="animeSearchInput"
+                placeholder="Tìm anime..."
+                onkeydown="if (event.key === 'Enter') searchAnime();"
+              />
+              <button class="btn-primary" onclick="searchAnime()">
+                🔍 Tìm
+              </button>
+              <button class="btn-secondary" onclick="loadTopAnime()">
+                🔥 Đang hot
+              </button>
+            </div>
+            <div
+              id="animeResults"
+              class="search-results"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+          <div class="card">
+            <h2>⭐ Anime Yêu Thích Của Bạn</h2>
+            <div id="animeFavoritesList" class="yt-video-list"></div>
+          </div>
+        </div>
+
+        <!-- ====== 📖 MANGA (Jikan API — MIỄN PHÍ + Tiến độ đọc lưu LocalStorage) ====== -->
+        <div id="ent-manga" class="entertainment-subpanel">
+          <div class="card">
+            <h2>📖 Manga</h2>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="mangaSearchInput"
+                placeholder="Tìm manga..."
+                onkeydown="if (event.key === 'Enter') searchManga();"
+              />
+              <button class="btn-primary" onclick="searchManga()">
+                🔍 Tìm
+              </button>
+              <button class="btn-secondary" onclick="loadTopManga()">
+                🔥 Nổi bật
+              </button>
+            </div>
+            <div
+              id="mangaResults"
+              class="search-results"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+          <div class="card">
+            <h2>🔖 Tiến Độ Đọc &amp; Bookmark Chương</h2>
+            <div id="mangaProgressList" class="yt-video-list"></div>
+          </div>
+        </div>
+
+        <!-- ====== 🎮 GAMING (Trình theo dõi cá nhân — LocalStorage) ====== -->
+        <div id="ent-gaming" class="entertainment-subpanel">
+          <div class="card">
+            <h2>🎮 Gaming</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Steam/Epic/Riot/Xbox/PlayStation không có API công khai dùng
+              được trực tiếp từ trình duyệt mà không cần đăng nhập OAuth qua
+              backend — nên đây là <b>sổ theo dõi game cá nhân</b> (bạn tự thêm
+              game, lưu bằng LocalStorage) thay vì đồng bộ tài khoản thật.
+            </p>
+            <div class="grid-2">
+              <input type="text" id="gameNameInput" placeholder="Tên game..." />
+              <select id="gamePlatformInput">
+                <option value="Steam">Steam</option>
+                <option value="Epic Games">Epic Games</option>
+                <option value="Riot Games">Riot Games</option>
+                <option value="Xbox">Xbox</option>
+                <option value="PlayStation">PlayStation</option>
+              </select>
+            </div>
+            <div class="grid-2" style="margin-top: 14px">
+              <select id="gameStatusInput">
+                <option value="playing">🎮 Đang chơi</option>
+                <option value="wishlist">⭐ Wishlist</option>
+              </select>
+              <button class="btn-primary" onclick="addGameEntry()">
+                + Thêm game
+              </button>
+            </div>
+            <div
+              style="display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap"
+            >
+              <button
+                class="yt-subtab-btn active"
+                data-gamefilter="all"
+                onclick="filterGameList('all')"
+              >
+                Tất cả
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-gamefilter="playing"
+                onclick="filterGameList('playing')"
+              >
+                Đang chơi
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-gamefilter="wishlist"
+                onclick="filterGameList('wishlist')"
+              >
+                Wishlist
+              </button>
+            </div>
+            <div id="gameListBox" class="yt-video-list"></div>
+          </div>
+        </div>
+
+        <!-- ====== 😂 GIẢI TRÍ NHANH (Meme/Joke/Fact/Ảnh thú cưng — API thật, miễn phí) ====== -->
+        <div id="ent-fun" class="entertainment-subpanel">
+          <div class="card">
+            <h2>😂 Giải Trí Nhanh</h2>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-bottom: 16px;
+              "
+            >
+              <button class="btn-secondary" onclick="fetchRandomMeme()">
+                🖼️ Meme ngẫu nhiên
+              </button>
+              <button class="btn-secondary" onclick="fetchRandomJoke()">
+                😂 Joke
+              </button>
+              <button class="btn-secondary" onclick="fetchRandomFact()">
+                💡 Fact thú vị
+              </button>
+              <button class="btn-secondary" onclick="fetchRandomPet('cat')">
+                🐱 Ảnh mèo
+              </button>
+              <button class="btn-secondary" onclick="fetchRandomPet('dog')">
+                🐶 Ảnh chó
+              </button>
+            </div>
+            <div
+              id="funContentBox"
+              class="web-demo-box"
+              style="text-align: center; min-height: 100px"
+            >
+              <p style="color: var(--text-muted); font-size: 13px">
+                Bấm 1 nút bên trên để bắt đầu...
+              </p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>💭 Quote Trong Ngày</h2>
+            <div
+              id="dailyQuoteBox"
+              style="
+                font-size: 15px;
+                font-style: italic;
+                color: var(--text-main);
+                padding: 16px;
+              "
+            ></div>
+          </div>
+        </div>
+
+        <!-- ====== 🌦 WIDGET (Thời tiết + Chất lượng không khí + Đồng hồ thế giới — Open-Meteo, MIỄN PHÍ) ====== -->
+        <div id="ent-widgets" class="entertainment-subpanel">
+          <div class="card">
+            <h2>🌦 Thời Tiết &amp; Chất Lượng Không Khí</h2>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="weatherCityInput"
+                placeholder="Nhập tên thành phố..."
+                onkeydown="if (event.key === 'Enter') searchWeatherWidget();"
+              />
+              <button class="btn-primary" onclick="searchWeatherWidget()">
+                🔍 Xem
+              </button>
+            </div>
+            <div id="weatherWidgetResult" style="margin-top: 16px"></div>
+          </div>
+
+          <div class="card">
+            <h2>🕐 Đồng Hồ Thế Giới</h2>
+            <div class="task-stats-row" id="worldClockBox"></div>
+          </div>
+        </div>
+
+        <!-- ====== 🔴 LIVESTREAM (Twitch/YouTube Live/Kick — embed thật) ====== -->
+        <div id="ent-live" class="entertainment-subpanel">
+          <div class="card">
+            <h2>🟣 Twitch</h2>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="twitchChannelInput"
+                placeholder="Tên kênh Twitch, ví dụ: shroud"
+              />
+              <button class="btn-primary" onclick="loadTwitchEmbed()">
+                Xem
+              </button>
+            </div>
+            <div id="twitchEmbedBox" style="margin-top: 14px"></div>
+          </div>
+
+          <div class="card">
+            <h2>🔴 YouTube Live</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 10px;
+              "
+            >
+              Dán link/ID video đang livestream trên YouTube (YouTube Embed hỗ
+              trợ cả video thường lẫn đang live).
+            </p>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="ytLiveInput"
+                placeholder="Link hoặc ID video YouTube Live..."
+              />
+              <button class="btn-primary" onclick="loadYtLiveEmbed()">
+                Xem
+              </button>
+            </div>
+            <div id="ytLiveEmbedBox" style="margin-top: 14px"></div>
+          </div>
+
+          <div class="card">
+            <h2>🟢 Kick</h2>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="kickChannelInput"
+                placeholder="Tên kênh Kick..."
+              />
+              <button class="btn-primary" onclick="loadKickEmbed()">Xem</button>
+            </div>
+            <div id="kickEmbedBox" style="margin-top: 14px"></div>
+          </div>
+
+          <div class="card">
+            <h2>🔵 Facebook Gaming</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 10px;
+              "
+            >
+              ⚠️ Facebook Gaming yêu cầu Facebook SDK + App ID để nhúng ổn định
+              — phần dưới đây mở kênh thật ở tab mới thay vì nhúng iframe không
+              chắc chắn hoạt động.
+            </p>
+            <div class="video-controls">
+              <input
+                type="text"
+                id="fbGamingInput"
+                placeholder="Tên kênh hoặc link Facebook Gaming..."
+              />
+              <button class="btn-secondary" onclick="openFacebookGaming()">
+                🔗 Mở kênh
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -7229,6 +7605,38 @@ mutex.unlock();</code></pre>
                 target="_blank"
                 style="color: var(--accent)"
                 >Google Cloud Console</a
+              >.
+            </p>
+          </div>
+
+          <div
+            style="
+              margin-bottom: 20px;
+              background: rgba(255, 255, 255, 0.03);
+              padding: 16px;
+              border-radius: 16px;
+              border: 1px solid var(--apple-glass-border);
+            "
+          >
+            <label class="field-label"
+              >🎬 TMDb API Key (dùng cho mục Phim, chỉ lưu trên trình duyệt của
+              bạn):</label
+            >
+            <input
+              type="password"
+              id="settingTmdbApiKey"
+              placeholder="Dán API Key cá nhân của bạn tại đây..."
+              oninput="saveTmdbApiKey()"
+            />
+            <p
+              style="font-size: 11px; color: var(--text-muted); margin-top: 8px"
+            >
+              Lấy key miễn phí tại
+              <a
+                href="https://www.themoviedb.org/settings/api"
+                target="_blank"
+                style="color: var(--accent)"
+                >TMDb — The Movie Database</a
               >.
             </p>
           </div>
@@ -7651,6 +8059,1014 @@ mutex.unlock();</code></pre>
               <th>Điểm kiểm tra gần nhất</th>
             </tr>
           </table>
+        </div>
+      </section>
+
+      <!-- TAB MỚI: MANCHESTER UNITED -->
+      <section class="panel" id="panel-mu">
+        <!-- BANNER (không dùng ảnh/logo có bản quyền — dùng gradient + emoji) -->
+        <div class="card mu-banner">
+          <div class="mu-banner-content">
+            <div class="mu-banner-badge">🔴</div>
+            <div>
+              <h1 class="mu-banner-title">Manchester United</h1>
+              <p class="mu-banner-sub">Old Trafford — "Theatre of Dreams"</p>
+            </div>
+          </div>
+          <p class="mu-banner-note">
+            ⚠️ Không dùng ảnh sân/logo chính thức có bản quyền — bạn có thể tự
+            thêm ảnh của riêng mình (đã có quyền sử dụng) ở mục 🖼️ Bộ sưu tập
+            bên dưới.
+          </p>
+        </div>
+
+        <!-- SUBTAB ĐIỀU HƯỚNG NỘI BỘ -->
+        <div class="yt-subtabs" id="muSubtabs">
+          <button
+            class="yt-subtab-btn active"
+            data-muview="overview"
+            onclick="switchMuView('overview')"
+          >
+            🏠 Tổng quan
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-muview="schedule"
+            onclick="switchMuView('schedule')"
+          >
+            📅 Lịch &amp; Tin tức
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-muview="squad"
+            onclick="switchMuView('squad')"
+          >
+            ⚽ Đội hình &amp; Cầu thủ
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-muview="stats"
+            onclick="switchMuView('stats')"
+          >
+            📊 Thống kê &amp; Dự đoán
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-muview="fanzone"
+            onclick="switchMuView('fanzone')"
+          >
+            🎉 Fan Zone
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-muview="media"
+            onclick="switchMuView('media')"
+          >
+            🎬 Media &amp; BST
+          </button>
+          <button
+            class="yt-subtab-btn"
+            data-muview="notify"
+            onclick="switchMuView('notify')"
+          >
+            🔔 Thông báo
+          </button>
+        </div>
+
+        <!-- ================= 🏠 TỔNG QUAN ================= -->
+        <div id="mu-overview" class="mu-subpanel active">
+          <!-- TRẬN ĐẤU TIẾP THEO + COUNTDOWN -->
+          <div class="card">
+            <h2>⏭️ Trận Đấu Tiếp Theo</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Không có nguồn dữ liệu lịch thi đấu trực tiếp miễn phí đủ tin
+              cậy để nhúng không cần backend — bạn tự nhập thông tin trận đấu,
+              hệ thống sẽ tự đếm ngược thời gian thực.
+            </p>
+            <div class="grid-2">
+              <input type="text" id="muNextOpponent" placeholder="Đối thủ..." />
+              <select id="muNextCompetition">
+                <option value="Premier League">Premier League</option>
+                <option value="FA Cup">FA Cup</option>
+                <option value="League Cup">League Cup</option>
+                <option value="Europa League">Europa League</option>
+                <option value="Friendly">Giao hữu</option>
+              </select>
+            </div>
+            <div class="grid-2" style="margin-top: 14px">
+              <input type="datetime-local" id="muNextDateTime" />
+              <input
+                type="text"
+                id="muNextVenue"
+                placeholder="Sân thi đấu..."
+              />
+            </div>
+            <button
+              class="btn-primary"
+              style="margin-top: 14px"
+              onclick="saveMuNextMatch()"
+            >
+              💾 Lưu trận đấu
+            </button>
+
+            <div id="muCountdownBox" class="mu-countdown-box"></div>
+          </div>
+
+          <!-- LIVE MATCH CENTER (theo dõi trực tiếp thủ công) -->
+          <div class="card">
+            <h2>📈 Live Match Center</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Không có feed dữ liệu trực tiếp thật (cần trả phí + backend) —
+              đây là bảng theo dõi trận đấu <b>thủ công</b>, giúp bạn tự ghi lại
+              diễn biến khi đang xem trận đấu thật.
+            </p>
+            <div class="grid-2">
+              <div>
+                <label class="field-label">Tỷ số MU</label>
+                <input
+                  type="number"
+                  id="muLiveScoreHome"
+                  value="0"
+                  min="0"
+                  onchange="saveMuLiveMatch()"
+                />
+              </div>
+              <div>
+                <label class="field-label">Tỷ số đối thủ</label>
+                <input
+                  type="number"
+                  id="muLiveScoreAway"
+                  value="0"
+                  min="0"
+                  onchange="saveMuLiveMatch()"
+                />
+              </div>
+            </div>
+            <div
+              class="task-stats-row"
+              id="muLiveStatsRow"
+              style="margin-top: 16px"
+            ></div>
+            <div class="grid-2" style="margin-top: 14px">
+              <div>
+                <label class="field-label">Possession MU (%)</label>
+                <input
+                  type="number"
+                  id="muLivePossession"
+                  value="50"
+                  min="0"
+                  max="100"
+                  onchange="saveMuLiveMatch()"
+                />
+              </div>
+              <div>
+                <label class="field-label">Shots (Tổng / Trúng đích)</label>
+                <input
+                  type="text"
+                  id="muLiveShots"
+                  placeholder="VD: 12/5"
+                  onchange="saveMuLiveMatch()"
+                />
+              </div>
+            </div>
+            <button
+              class="btn-secondary"
+              style="margin-top: 14px"
+              onclick="addMuMatchEvent()"
+            >
+              + Ghi sự kiện trận đấu
+            </button>
+            <input
+              type="text"
+              id="muMatchEventInput"
+              placeholder="VD: 45' Bàn thắng - Rashford"
+              style="margin-top: 8px"
+            />
+            <div
+              class="osi-log"
+              id="muMatchTimeline"
+              style="margin-top: 14px"
+            ></div>
+          </div>
+
+          <!-- KẾT QUẢ GẦN ĐÂY (giữ nguyên iframe fctables.com đã có sẵn) -->
+          <div class="card">
+            <h2>📋 Kết Quả Gần Đây</h2>
+            <div
+              style="
+                border-radius: 14px;
+                overflow: hidden;
+                height: 500px;
+                border: 1px solid var(--apple-glass-border);
+                margin-top: 15px;
+              "
+            >
+              <iframe
+                src="https://www.fctables.com/teams/manchester-united-195973/iframe/?type=team-recent-matches&lang=en&past=4&future=4&title=Manchester+United"
+                width="100%"
+                height="100%"
+                frameborder="0"
+                scrolling="yes"
+              ></iframe>
+            </div>
+          </div>
+
+          <!-- BXH PREMIER LEAGUE (cập nhật thủ công) -->
+          <div class="card">
+            <h2>🏆 Bảng Xếp Hạng Premier League</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              Bảng cập nhật thủ công (không có API miễn phí đủ tin cậy) — MU
+              được tô sáng để dễ theo dõi.
+            </p>
+            <div class="grid-2">
+              <input
+                type="text"
+                id="standingTeamInput"
+                placeholder="Tên đội..."
+              />
+              <input
+                type="number"
+                id="standingPointsInput"
+                placeholder="Điểm"
+                min="0"
+              />
+            </div>
+            <div class="grid-2" style="margin-top: 10px">
+              <input
+                type="number"
+                id="standingGdInput"
+                placeholder="Hiệu số (VD: +15 hoặc -3)"
+              />
+              <button class="btn-primary" onclick="addStandingRow()">
+                + Thêm đội
+              </button>
+            </div>
+            <table
+              class="bigo-table"
+              id="standingsTable"
+              style="margin-top: 16px"
+            >
+              <tr>
+                <th>#</th>
+                <th>Đội</th>
+                <th>Điểm</th>
+                <th>Hiệu số</th>
+                <th></th>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- ================= 📅 LỊCH & TIN TỨC ================= -->
+        <div id="mu-schedule" class="mu-subpanel">
+          <div class="card">
+            <h2>📅 Lịch Thi Đấu</h2>
+            <div class="grid-2">
+              <input
+                type="text"
+                id="muFixtureOpponent"
+                placeholder="Đối thủ..."
+              />
+              <select id="muFixtureCompetition">
+                <option value="Premier League">Premier League</option>
+                <option value="FA Cup">FA Cup</option>
+                <option value="League Cup">League Cup</option>
+                <option value="Europa League">Europa League</option>
+                <option value="Friendly">Giao hữu</option>
+              </select>
+            </div>
+            <div class="grid-2" style="margin-top: 10px">
+              <input type="datetime-local" id="muFixtureDateTime" />
+              <button class="btn-primary" onclick="addMuFixture()">
+                + Thêm trận
+              </button>
+            </div>
+            <div
+              style="display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap"
+            >
+              <button
+                class="yt-subtab-btn active"
+                data-fixturefilter="all"
+                onclick="filterMuFixtures('all')"
+              >
+                Tất cả
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-fixturefilter="Premier League"
+                onclick="filterMuFixtures('Premier League')"
+              >
+                Premier League
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-fixturefilter="FA Cup"
+                onclick="filterMuFixtures('FA Cup')"
+              >
+                FA Cup
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-fixturefilter="League Cup"
+                onclick="filterMuFixtures('League Cup')"
+              >
+                League Cup
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-fixturefilter="Europa League"
+                onclick="filterMuFixtures('Europa League')"
+              >
+                Europa League
+              </button>
+              <button
+                class="yt-subtab-btn"
+                data-fixturefilter="Friendly"
+                onclick="filterMuFixtures('Friendly')"
+              >
+                Giao hữu
+              </button>
+            </div>
+            <ul class="checklist-list" id="muFixtureList"></ul>
+          </div>
+
+          <div class="card">
+            <h2>📰 Tin Tức Nhanh</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Các trang tin (BBC, Sky Sports, The Athletic, ESPN, MU
+              Official, Goal) đều chặn CORS nên không thể nhúng trực tiếp nội
+              dung vào trang tĩnh không backend — bấm mỗi thẻ để mở nguồn tin
+              <b>thật</b> ở tab mới.
+            </p>
+            <div class="cs-subject-grid" id="muNewsSourcesGrid"></div>
+          </div>
+
+          <div class="card">
+            <h2>🔄 Chuyển Nhượng</h2>
+            <div class="grid-2">
+              <input
+                type="text"
+                id="transferPlayerInput"
+                placeholder="Tên cầu thủ..."
+              />
+              <select id="transferTypeInput">
+                <option value="in">🟢 IN (đến)</option>
+                <option value="out">🔴 OUT (đi)</option>
+              </select>
+            </div>
+            <div class="grid-2" style="margin-top: 10px">
+              <select id="transferStatusInput">
+                <option value="rumour">🗣️ Rumour (tin đồn)</option>
+                <option value="confirmed">✅ Confirmed (chính thức)</option>
+              </select>
+              <div>
+                <label class="field-label"
+                  >Độ tin cậy:
+                  <span id="transferConfidenceLabel">50</span>%</label
+                >
+                <input
+                  type="range"
+                  id="transferConfidenceInput"
+                  min="0"
+                  max="100"
+                  value="50"
+                  oninput="
+                    document.getElementById(
+                      'transferConfidenceLabel',
+                    ).textContent = this.value
+                  "
+                />
+              </div>
+            </div>
+            <button
+              class="btn-primary"
+              style="margin-top: 14px"
+              onclick="addTransferEntry()"
+            >
+              + Thêm tin chuyển nhượng
+            </button>
+            <div id="transferList" style="margin-top: 16px"></div>
+          </div>
+        </div>
+
+        <!-- ================= ⚽ ĐỘI HÌNH & CẦU THỦ ================= -->
+        <div id="mu-squad" class="mu-subpanel">
+          <div class="card">
+            <h2>⚽ Đội Hình Ra Sân</h2>
+            <label class="field-label">Sơ đồ chiến thuật:</label>
+            <select id="muFormationSelect" onchange="renderMuFormationPitch()">
+              <option value="4-2-3-1">4-2-3-1</option>
+              <option value="4-3-3">4-3-3</option>
+              <option value="3-4-2-1">3-4-2-1</option>
+            </select>
+            <div class="mu-pitch" id="muPitchContainer"></div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-top: 10px;
+              "
+            >
+              Bấm vào từng vị trí để nhập tên cầu thủ — tự lưu vào trình duyệt
+              của bạn.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>👥 Danh Sách Cầu Thủ</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Không có API đội hình/cầu thủ realtime miễn phí đáng tin cậy —
+              đây là sổ quản lý đội hình của riêng bạn (đã có sẵn vài dòng mẫu,
+              hãy tự cập nhật đội hình thật hiện tại).
+            </p>
+            <div class="grid-2">
+              <input
+                type="text"
+                id="playerNameInput"
+                placeholder="Tên cầu thủ..."
+              />
+              <input
+                type="number"
+                id="playerNumberInput"
+                placeholder="Số áo"
+                min="1"
+                max="99"
+              />
+            </div>
+            <div class="grid-2" style="margin-top: 10px">
+              <select id="playerPositionInput">
+                <option value="GK">Thủ môn (GK)</option>
+                <option value="DF">Hậu vệ (DF)</option>
+                <option value="MF">Tiền vệ (MF)</option>
+                <option value="FW">Tiền đạo (FW)</option>
+              </select>
+              <input
+                type="number"
+                id="playerAgeInput"
+                placeholder="Tuổi"
+                min="15"
+                max="45"
+              />
+            </div>
+            <input
+              type="text"
+              id="playerNationalityInput"
+              placeholder="Quốc tịch..."
+              style="margin-top: 10px"
+            />
+            <button
+              class="btn-primary"
+              style="margin-top: 14px"
+              onclick="addPlayerEntry()"
+            >
+              + Thêm cầu thủ
+            </button>
+
+            <input
+              type="text"
+              id="playerSearchInput"
+              placeholder="🔍 Tìm cầu thủ theo tên..."
+              style="margin-top: 16px"
+              oninput="renderPlayerRoster()"
+            />
+            <div
+              id="playerRosterList"
+              class="yt-video-list"
+              style="margin-top: 14px"
+            ></div>
+          </div>
+        </div>
+
+        <!-- MODAL PLAYER HUB (chi tiết cầu thủ) -->
+        <div class="modal-overlay" id="playerHubModalOverlay">
+          <div class="card modal-box" id="playerHubModalBox"></div>
+        </div>
+
+        <!-- ================= 📊 THỐNG KÊ & DỰ ĐOÁN ================= -->
+        <div id="mu-stats" class="mu-subpanel">
+          <div class="card">
+            <h2>📊 Thống Kê Mùa Giải</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              Cập nhật thủ công — lấy tên/số liệu từ danh sách cầu thủ ở mục
+              trước hoặc tự nhập.
+            </p>
+            <div class="grid-2">
+              <div>
+                <label class="field-label"
+                  >🥅 Top Scorer (Ghi bàn nhiều nhất)</label
+                >
+                <input
+                  type="text"
+                  id="statTopScorer"
+                  placeholder="Tên - số bàn"
+                  onchange="saveSeasonStats()"
+                />
+              </div>
+              <div>
+                <label class="field-label"
+                  >🎯 Top Assist (Kiến tạo nhiều nhất)</label
+                >
+                <input
+                  type="text"
+                  id="statTopAssist"
+                  placeholder="Tên - số kiến tạo"
+                  onchange="saveSeasonStats()"
+                />
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top: 14px">
+              <div>
+                <label class="field-label"
+                  >🧤 Most Clean Sheets (Giữ sạch lưới)</label
+                >
+                <input
+                  type="text"
+                  id="statCleanSheets"
+                  placeholder="Tên - số trận"
+                  onchange="saveSeasonStats()"
+                />
+              </div>
+              <div>
+                <label class="field-label"
+                  >⏱️ Most Appearances (Ra sân nhiều nhất)</label
+                >
+                <input
+                  type="text"
+                  id="statAppearances"
+                  placeholder="Tên - số trận"
+                  onchange="saveSeasonStats()"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>📈 Club Statistics</h2>
+            <div class="grid-2">
+              <div>
+                <label class="field-label">Tỷ lệ thắng (%)</label>
+                <input
+                  type="number"
+                  id="clubWinPercent"
+                  min="0"
+                  max="100"
+                  value="50"
+                  onchange="saveClubStats()"
+                />
+              </div>
+              <div>
+                <label class="field-label">Bàn thắng / Bàn thua</label>
+                <input
+                  type="text"
+                  id="clubGoalsForAgainst"
+                  placeholder="VD: 45/30"
+                  onchange="saveClubStats()"
+                />
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top: 14px">
+              <div>
+                <label class="field-label">Possession trung bình (%)</label>
+                <input
+                  type="number"
+                  id="clubPossessionAvg"
+                  min="0"
+                  max="100"
+                  value="55"
+                  onchange="saveClubStats()"
+                />
+              </div>
+              <div>
+                <label class="field-label">Độ chính xác chuyền bóng (%)</label>
+                <input
+                  type="number"
+                  id="clubPassAccuracy"
+                  min="0"
+                  max="100"
+                  value="85"
+                  onchange="saveClubStats()"
+                />
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top: 14px">
+              <div>
+                <label class="field-label">xG trung bình / trận</label>
+                <input
+                  type="number"
+                  id="clubXg"
+                  step="0.1"
+                  min="0"
+                  value="1.5"
+                  onchange="saveClubStats()"
+                />
+              </div>
+              <div>
+                <label class="field-label"
+                  >Đánh giá trung bình đội (0-10)</label
+                >
+                <input
+                  type="number"
+                  id="clubAvgRating"
+                  step="0.1"
+                  min="0"
+                  max="10"
+                  value="7"
+                  onchange="saveClubStats()"
+                />
+              </div>
+            </div>
+            <svg
+              id="clubStatsChart"
+              viewBox="0 0 300 160"
+              style="width: 100%; max-width: 400px; margin-top: 16px"
+            ></svg>
+          </div>
+
+          <div class="card">
+            <h2>🧠 Match Prediction</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Đây <b>không phải</b> mô hình AI/máy học thật (cần dữ liệu huấn
+              luyện + backend) — mà là công thức ước lượng đơn giản dựa trên
+              phong độ 5 trận gần nhất bạn tự nhập, mang tính tham khảo vui.
+            </p>
+            <label class="field-label"
+              >Phong độ 5 trận gần nhất (T=Thắng, H=Hòa, B=Bại), VD:
+              TTHTB</label
+            >
+            <input
+              type="text"
+              id="predictionFormInput"
+              placeholder="TTHTB"
+              maxlength="5"
+            />
+            <button
+              class="btn-primary"
+              style="margin-top: 10px"
+              onclick="computeMatchPrediction()"
+            >
+              Dự đoán
+            </button>
+            <div
+              id="predictionResult"
+              class="dict-result"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+
+          <div class="card">
+            <h2>🏆 Trophy Room</h2>
+            <div class="grid-2">
+              <select id="trophyTypeInput">
+                <option value="Premier League">Premier League</option>
+                <option value="FA Cup">FA Cup</option>
+                <option value="League Cup">League Cup</option>
+                <option value="Champions League">Champions League</option>
+                <option value="Europa League">Europa League</option>
+                <option value="Club World Cup">Club World Cup</option>
+                <option value="Community Shield">Community Shield</option>
+                <option value="UEFA Super Cup">UEFA Super Cup</option>
+                <option value="Intercontinental Cup">
+                  Intercontinental Cup
+                </option>
+              </select>
+              <input
+                type="number"
+                id="trophyYearInput"
+                placeholder="Năm vô địch, VD: 1999"
+              />
+            </div>
+            <button
+              class="btn-primary"
+              style="margin-top: 10px"
+              onclick="addTrophyEntry()"
+            >
+              + Thêm danh hiệu
+            </button>
+            <div
+              class="task-stats-row"
+              id="trophySummaryRow"
+              style="margin-top: 16px"
+            ></div>
+            <h3 style="font-size: 14px; margin: 16px 0 8px">📜 Timeline</h3>
+            <div
+              class="osi-log"
+              id="trophyTimeline"
+              style="max-height: 220px"
+            ></div>
+          </div>
+        </div>
+
+        <!-- ================= 🎉 FAN ZONE ================= -->
+        <div id="mu-fanzone" class="mu-subpanel">
+          <div class="card">
+            <h2>🌟 Vote Man Of The Match</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              Bình chọn dựa trên danh sách cầu thủ ở mục Đội hình. Kết quả tổng
+              hợp trong phạm vi các tài khoản trên trình duyệt này.
+            </p>
+            <select id="motmPlayerSelect"></select>
+            <button
+              class="btn-primary"
+              style="margin-top: 10px"
+              onclick="voteMotm()"
+            >
+              🗳️ Bình chọn
+            </button>
+            <div id="motmResultBox" style="margin-top: 16px"></div>
+          </div>
+
+          <div class="card">
+            <h2>🔮 Dự Đoán Tỷ Số</h2>
+            <div class="grid-2">
+              <input
+                type="number"
+                id="predictScoreHome"
+                placeholder="Bàn thắng MU"
+                min="0"
+              />
+              <input
+                type="number"
+                id="predictScoreAway"
+                placeholder="Bàn thắng đối thủ"
+                min="0"
+              />
+            </div>
+            <button
+              class="btn-primary"
+              style="margin-top: 10px"
+              onclick="submitScorePrediction()"
+            >
+              Gửi dự đoán
+            </button>
+            <div id="scorePredictionList" style="margin-top: 16px"></div>
+          </div>
+
+          <div class="card">
+            <h2>🧩 Mini Quiz MU</h2>
+            <div id="muQuizContainer"></div>
+            <button
+              class="btn-primary"
+              style="margin-top: 16px"
+              onclick="submitMuQuiz()"
+            >
+              Nộp bài
+            </button>
+            <div
+              id="muQuizResult"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+
+          <div class="card">
+            <h2>📊 Poll</h2>
+            <div class="grid-2">
+              <input
+                type="text"
+                id="pollQuestionInput"
+                placeholder="Câu hỏi poll..."
+              />
+              <input
+                type="text"
+                id="pollOptionsInput"
+                placeholder="Các lựa chọn, cách nhau bằng dấu phẩy"
+              />
+            </div>
+            <button
+              class="btn-secondary"
+              style="margin-top: 10px"
+              onclick="createPoll()"
+            >
+              + Tạo poll mới
+            </button>
+            <div id="pollListBox" style="margin-top: 16px"></div>
+          </div>
+
+          <div class="card">
+            <h2>💬 Fan Community</h2>
+            <textarea
+              id="fanCommentInput"
+              placeholder="Chia sẻ cảm nghĩ của bạn về MU..."
+              style="height: 70px"
+            ></textarea>
+            <button
+              class="btn-primary"
+              style="margin-top: 10px"
+              onclick="postFanComment()"
+            >
+              Đăng bình luận
+            </button>
+            <div id="fanCommentsList" style="margin-top: 16px"></div>
+          </div>
+        </div>
+
+        <!-- ================= 🎬 MEDIA & BỘ SƯU TẬP ================= -->
+        <div id="mu-media" class="mu-subpanel">
+          <div class="card">
+            <h2>🎬 Video</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              Dùng lại tính năng tìm kiếm YouTube đã có sẵn — bấm 1 nút để mở
+              tab Video và tự động tìm nội dung MU tương ứng.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap">
+              <button
+                class="btn-secondary"
+                onclick="
+                  muSearchYoutube('Manchester United Official Highlights')
+                "
+              >
+                📺 Highlights
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="muSearchYoutube('Manchester United Training')"
+              >
+                🏋️ Training
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="muSearchYoutube('Manchester United Press Conference')"
+              >
+                🎤 Press Conference
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="muSearchYoutube('Manchester United Academy')"
+              >
+                🌱 Academy
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>🖼️ Bộ Sưu Tập Cá Nhân</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Không nhúng ảnh sân/logo/áo đấu chính thức có bản quyền — đây
+              là kho ảnh <b>của riêng bạn</b> (dán link ảnh bạn đã có quyền sử
+              dụng).
+            </p>
+            <div class="grid-2">
+              <input
+                type="text"
+                id="galleryImgUrl"
+                placeholder="Dán link ảnh..."
+              />
+              <select id="galleryCategory">
+                <option value="Wallpaper">Wallpaper</option>
+                <option value="Logo">Logo</option>
+                <option value="Áo đấu">Áo đấu</option>
+                <option value="Old Trafford">Old Trafford</option>
+              </select>
+            </div>
+            <button
+              class="btn-primary"
+              style="margin-top: 10px"
+              onclick="addGalleryImage()"
+            >
+              + Thêm vào bộ sưu tập
+            </button>
+            <div
+              class="search-results"
+              id="galleryGrid"
+              style="display: none; margin-top: 16px"
+            ></div>
+          </div>
+        </div>
+
+        <!-- ================= 🔔 THÔNG BÁO ================= -->
+        <div id="mu-notify" class="mu-subpanel">
+          <div class="card">
+            <h2>🔔 Notification Center</h2>
+            <p
+              style="
+                font-size: 12px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ Không có sự kiện trận đấu thật gửi về (cần backend/feed trả
+              phí) — dùng nút mô phỏng bên dưới để thử; nếu bạn cho phép, trình
+              duyệt sẽ hiện thông báo <b>thật</b> (Web Notification API).
+            </p>
+            <button
+              class="btn-secondary"
+              onclick="requestMuNotificationPermission()"
+            >
+              🔔 Bật thông báo trình duyệt
+            </button>
+            <div
+              style="
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-top: 16px;
+              "
+            >
+              <button
+                class="btn-secondary"
+                onclick="simulateMuNotification('goal')"
+              >
+                ⚽ Mô phỏng: MU ghi bàn
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="simulateMuNotification('lineup')"
+              >
+                📋 Mô phỏng: Có đội hình
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="simulateMuNotification('halftime')"
+              >
+                ⏸️ Mô phỏng: Hết hiệp 1
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="simulateMuNotification('fulltime')"
+              >
+                🏁 Mô phỏng: Kết thúc trận
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="simulateMuNotification('redcard')"
+              >
+                🟥 Mô phỏng: Thẻ đỏ
+              </button>
+              <button
+                class="btn-secondary"
+                onclick="simulateMuNotification('transfer')"
+              >
+                🔄 Mô phỏng: Tin chuyển nhượng
+              </button>
+            </div>
+            <h3 style="font-size: 14px; margin: 20px 0 8px">
+              📜 Lịch sử thông báo
+            </h3>
+            <div
+              class="osi-log"
+              id="muNotificationHistory"
+              style="max-height: 240px"
+            ></div>
+          </div>
         </div>
       </section>
 

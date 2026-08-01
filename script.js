@@ -18,6 +18,22 @@ function loadYtApiKey() {
   if (input) input.value = localStorage.getItem("userYtApiKey") || "";
 }
 
+// ==========================================
+// TMDb API KEY - CÙNG CƠ CHẾ VỚI YOUTUBE (dùng cho mục 🎬 Phim)
+// ==========================================
+function getTmdbApiKey() {
+  return localStorage.getItem("userTmdbApiKey") || "";
+}
+function saveTmdbApiKey() {
+  const input = document.getElementById("settingTmdbApiKey");
+  if (!input) return;
+  localStorage.setItem("userTmdbApiKey", input.value.trim());
+}
+function loadTmdbApiKey() {
+  const input = document.getElementById("settingTmdbApiKey");
+  if (input) input.value = localStorage.getItem("userTmdbApiKey") || "";
+}
+
 let currentChatFriend = null;
 
 // ==========================================
@@ -72,6 +88,7 @@ function loadUserSettings() {
   }
 
   loadYtApiKey();
+  loadTmdbApiKey();
 }
 
 function applyUserSettings(settings) {
@@ -539,6 +556,7 @@ window.addEventListener("DOMContentLoaded", () => {
     renderYtLists();
     renderSpotifyLists();
     initDashboardAndQuiz();
+    initMuTab();
   } else {
     // "Ghi nhớ đăng nhập": điền sẵn tên tài khoản lần đăng nhập trước
     const remembered = localStorage.getItem("rememberedUsername");
@@ -780,6 +798,7 @@ function completeLoginSession(user, rememberMe) {
   renderYtLists();
   renderSpotifyLists();
   initDashboardAndQuiz();
+  initMuTab();
   updateOnlineStatusDisplay();
   showToast("Đăng nhập thành công! Chào mừng " + user, "success");
 }
@@ -4713,4 +4732,1854 @@ function loadProfileModalData() {
         )
         .join("")
     : `<div class="yt-empty">Chưa có lịch sử đăng nhập.</div>`;
+}
+
+// ==========================================
+// TRUNG TÂM GIẢI TRÍ NÂNG CẤP - CHUYỂN SUBTAB
+// ==========================================
+function switchEntView(view) {
+  document
+    .querySelectorAll("#entSubtabs .yt-subtab-btn")
+    .forEach((b) => b.classList.remove("active"));
+  const btn = document.querySelector(
+    `#entSubtabs .yt-subtab-btn[data-entview="${view}"]`,
+  );
+  if (btn) btn.classList.add("active");
+
+  document
+    .querySelectorAll(".entertainment-subpanel")
+    .forEach((p) => p.classList.remove("active"));
+  const panel = document.getElementById("ent-" + view);
+  if (panel) panel.classList.add("active");
+
+  // Khởi tạo nội dung lần đầu mở từng mục
+  if (view === "fun" && !document.getElementById("dailyQuoteBox").innerHTML)
+    renderDailyQuote();
+  if (view === "widgets") renderWorldClock();
+  if (view === "gaming") renderGameList();
+  if (view === "anime") renderAnimeFavorites();
+  if (view === "manga") renderMangaProgress();
+}
+
+// ==========================================
+// 🎬 PHIM (TMDb API)
+// ==========================================
+async function searchMovies() {
+  const query = document.getElementById("movieSearchInput").value.trim();
+  if (!query) return;
+  await tmdbFetchAndRender(
+    `https://api.themoviedb.org/3/search/movie?api_key=${getTmdbApiKey()}&query=${encodeURIComponent(query)}&language=vi-VN`,
+  );
+}
+async function loadPopularMovies() {
+  await tmdbFetchAndRender(
+    `https://api.themoviedb.org/3/movie/popular?api_key=${getTmdbApiKey()}&language=vi-VN`,
+  );
+}
+
+async function tmdbFetchAndRender(url) {
+  const resultsDiv = document.getElementById("movieResults");
+  resultsDiv.style.display = "block";
+
+  const apiKey = getTmdbApiKey();
+  if (!apiKey) {
+    resultsDiv.innerHTML = `
+      <div style="padding: 15px; text-align: center; color: #ff453a; border: 1px solid #ff453a; border-radius: 12px;">
+        <b>Lỗi: Thiếu TMDb API Key!</b><br>
+        <span style="font-size: 12px; color: var(--text-muted);">Vào tab ⚙️ Cài Đặt và dán API Key cá nhân của bạn.</span>
+      </div>`;
+    return;
+  }
+
+  resultsDiv.innerHTML = `<div style="padding: 15px; text-align: center; color: var(--accent);">Đang tải phim...</div>`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.status_message) {
+      resultsDiv.innerHTML = `<div style="padding: 15px; text-align: center; color: #ff453a;">Lỗi API: ${data.status_message}</div>`;
+      return;
+    }
+    if (!data.results || data.results.length === 0) {
+      resultsDiv.innerHTML = `<div style="padding: 15px; text-align: center; color: #ff453a;">Không tìm thấy phim nào.</div>`;
+      return;
+    }
+
+    resultsDiv.style.display = "grid";
+    resultsDiv.innerHTML = data.results
+      .slice(0, 12)
+      .map((m) => {
+        const poster = m.poster_path
+          ? `https://image.tmdb.org/t/p/w342${m.poster_path}`
+          : "";
+        const year = (m.release_date || "").slice(0, 4);
+        return `
+        <div class="result-item-grid" onclick="searchMovieTrailer('${(m.title || "").replace(/'/g, "")}')" style="cursor: pointer;">
+          ${poster ? `<img src="${poster}" alt="${m.title}">` : `<div style="aspect-ratio:16/9;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;">Không có poster</div>`}
+          <div class="info">
+            <div class="title">${m.title}</div>
+            <div class="channel">${year || "—"} • ⭐ ${m.vote_average ? m.vote_average.toFixed(1) : "—"} (TMDb)</div>
+          </div>
+        </div>`;
+      })
+      .join("");
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="padding: 15px; text-align: center; color: #ff453a;">Lỗi mạng hoặc không thể kết nối tới TMDb API.</div>`;
+  }
+}
+
+// Xem trailer: điều hướng sang mục Video, tìm sẵn "{tên phim} official trailer"
+function searchMovieTrailer(title) {
+  document.querySelector('.tab-btn[data-tab="entertainment"]').click();
+  setTimeout(() => {
+    switchEntView("video");
+    document.getElementById("ytInput").value = title + " official trailer";
+    handleYouTubeAction();
+  }, 150);
+}
+
+// ==========================================
+// 📺 ANIME (Jikan / MyAnimeList API — MIỄN PHÍ, KHÔNG CẦN KEY)
+// ==========================================
+async function searchAnime() {
+  const query = document.getElementById("animeSearchInput").value.trim();
+  if (!query) return;
+  await jikanFetchAndRender(
+    `https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=12`,
+    "animeResults",
+    "anime",
+  );
+}
+async function loadTopAnime() {
+  await jikanFetchAndRender(
+    `https://api.jikan.moe/v4/top/anime?filter=airing&limit=12`,
+    "animeResults",
+    "anime",
+  );
+}
+async function searchManga() {
+  const query = document.getElementById("mangaSearchInput").value.trim();
+  if (!query) return;
+  await jikanFetchAndRender(
+    `https://api.jikan.moe/v4/manga?q=${encodeURIComponent(query)}&limit=12`,
+    "mangaResults",
+    "manga",
+  );
+}
+async function loadTopManga() {
+  await jikanFetchAndRender(
+    `https://api.jikan.moe/v4/top/manga?limit=12`,
+    "mangaResults",
+    "manga",
+  );
+}
+
+async function jikanFetchAndRender(url, containerId, kind) {
+  const resultsDiv = document.getElementById(containerId);
+  resultsDiv.style.display = "block";
+  resultsDiv.innerHTML = `<div style="padding: 15px; text-align: center; color: var(--accent);">Đang tải...</div>`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.data || data.data.length === 0) {
+      resultsDiv.innerHTML = `<div style="padding: 15px; text-align: center; color: #ff453a;">Không tìm thấy kết quả nào.</div>`;
+      return;
+    }
+
+    resultsDiv.style.display = "grid";
+    resultsDiv.innerHTML = data.data
+      .map((item) => {
+        const title = item.title;
+        const image =
+          item.images && item.images.jpg ? item.images.jpg.image_url : "";
+        const score = item.score ? `⭐ ${item.score}` : "Chưa có điểm";
+        const idAttr = item.mal_id;
+        const actionFn =
+          kind === "anime"
+            ? `toggleAnimeFavorite(${idAttr}, '${title.replace(/'/g, "")}', '${image}')`
+            : `addMangaProgress(${idAttr}, '${title.replace(/'/g, "")}', '${image}')`;
+        return `
+        <div class="result-item-grid" style="cursor: default;">
+          ${image ? `<img src="${image}" alt="${title}">` : ""}
+          <div class="info">
+            <div class="title" title="${title}">${title}</div>
+            <div class="channel">${score}</div>
+          </div>
+          <div class="yt-card-actions">
+            <button class="task-action-btn" onclick="${actionFn}">${kind === "anime" ? "⭐ Yêu thích" : "🔖 Theo dõi"}</button>
+          </div>
+        </div>`;
+      })
+      .join("");
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="padding: 15px; text-align: center; color: #ff453a;">Lỗi mạng hoặc Jikan API đang giới hạn tốc độ (rate limit) — thử lại sau vài giây.</div>`;
+  }
+}
+
+// ---- Anime yêu thích ----
+function animeFavKey() {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return "animeFavorites_" + currentUser;
+}
+function getAnimeFavorites() {
+  return JSON.parse(localStorage.getItem(animeFavKey())) || [];
+}
+function toggleAnimeFavorite(id, title, image) {
+  let list = getAnimeFavorites();
+  if (list.find((a) => a.id === id)) {
+    list = list.filter((a) => a.id !== id);
+    showToast("Đã bỏ khỏi yêu thích", "info");
+  } else {
+    list.unshift({ id, title, image });
+    showToast("Đã thêm vào anime yêu thích!", "success");
+  }
+  localStorage.setItem(animeFavKey(), JSON.stringify(list));
+  renderAnimeFavorites();
+}
+function renderAnimeFavorites() {
+  const box = document.getElementById("animeFavoritesList");
+  if (!box) return;
+  const list = getAnimeFavorites();
+  box.innerHTML = list.length
+    ? list
+        .map(
+          (a) => `
+      <div class="yt-video-row" style="cursor: default;">
+        <img src="${a.image}" alt="${a.title}">
+        <div class="yt-video-info"><div class="yt-video-title">${a.title}</div></div>
+        <div class="yt-video-actions">
+          <span class="yt-icon-btn" onclick="toggleAnimeFavorite(${a.id}, '${a.title.replace(/'/g, "")}', '${a.image}')">🗑</span>
+        </div>
+      </div>`,
+        )
+        .join("")
+    : `<div class="yt-empty">Chưa có anime yêu thích nào.</div>`;
+}
+
+// ---- Manga: tiến độ đọc + bookmark chương ----
+function mangaProgressKey() {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return "mangaProgress_" + currentUser;
+}
+function getMangaProgress() {
+  return JSON.parse(localStorage.getItem(mangaProgressKey())) || [];
+}
+function addMangaProgress(id, title, image) {
+  let list = getMangaProgress();
+  if (!list.find((m) => m.id === id)) {
+    list.unshift({ id, title, image, chapter: 0 });
+    localStorage.setItem(mangaProgressKey(), JSON.stringify(list));
+    showToast("Đã thêm vào danh sách theo dõi!", "success");
+    renderMangaProgress();
+  } else {
+    showToast("Manga này đã có trong danh sách theo dõi rồi", "info");
+  }
+}
+function updateMangaChapter(id, chapter) {
+  const list = getMangaProgress();
+  const item = list.find((m) => m.id === id);
+  if (item) item.chapter = parseInt(chapter) || 0;
+  localStorage.setItem(mangaProgressKey(), JSON.stringify(list));
+}
+function removeMangaProgress(id) {
+  const list = getMangaProgress().filter((m) => m.id !== id);
+  localStorage.setItem(mangaProgressKey(), JSON.stringify(list));
+  renderMangaProgress();
+}
+function renderMangaProgress() {
+  const box = document.getElementById("mangaProgressList");
+  if (!box) return;
+  const list = getMangaProgress();
+  box.innerHTML = list.length
+    ? list
+        .map(
+          (m) => `
+      <div class="yt-video-row" style="cursor: default;">
+        <img src="${m.image}" alt="${m.title}">
+        <div class="yt-video-info">
+          <div class="yt-video-title">${m.title}</div>
+          <div class="yt-video-sub">Đang đọc chương:
+            <input type="number" value="${m.chapter}" min="0" style="width:60px;display:inline-block;" onchange="updateMangaChapter(${m.id}, this.value)">
+          </div>
+        </div>
+        <div class="yt-video-actions">
+          <span class="yt-icon-btn" onclick="removeMangaProgress(${m.id})">🗑</span>
+        </div>
+      </div>`,
+        )
+        .join("")
+    : `<div class="yt-empty">Chưa theo dõi manga nào.</div>`;
+}
+
+// ==========================================
+// 🎮 GAMING (Sổ theo dõi cá nhân — LocalStorage)
+// ==========================================
+function gameListKey() {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return "gameList_" + currentUser;
+}
+function getGameList() {
+  return JSON.parse(localStorage.getItem(gameListKey())) || [];
+}
+function saveGameList(list) {
+  localStorage.setItem(gameListKey(), JSON.stringify(list));
+}
+
+let currentGameFilter = "all";
+
+function addGameEntry() {
+  const name = document.getElementById("gameNameInput").value.trim();
+  const platform = document.getElementById("gamePlatformInput").value;
+  const status = document.getElementById("gameStatusInput").value;
+  if (!name) {
+    showToast("Vui lòng nhập tên game!", "error");
+    return;
+  }
+  const list = getGameList();
+  list.unshift({ id: generateTaskId(), name, platform, status });
+  saveGameList(list);
+  document.getElementById("gameNameInput").value = "";
+  renderGameList();
+  showToast("Đã thêm game: " + name, "success");
+}
+
+function removeGameEntry(id) {
+  saveGameList(getGameList().filter((g) => g.id !== id));
+  renderGameList();
+}
+
+function filterGameList(filter) {
+  currentGameFilter = filter;
+  document
+    .querySelectorAll("[data-gamefilter]")
+    .forEach((b) => b.classList.remove("active"));
+  document
+    .querySelector(`[data-gamefilter="${filter}"]`)
+    .classList.add("active");
+  renderGameList();
+}
+
+function renderGameList() {
+  const box = document.getElementById("gameListBox");
+  if (!box) return;
+  let list = getGameList();
+  if (currentGameFilter !== "all") {
+    list = list.filter((g) => g.status === currentGameFilter);
+  }
+  box.innerHTML = list.length
+    ? list
+        .map(
+          (g) => `
+      <div class="yt-video-row" style="cursor: default;">
+        <div class="yt-video-info">
+          <div class="yt-video-title">${g.name}</div>
+          <div class="yt-video-sub">${g.platform} • ${g.status === "playing" ? "🎮 Đang chơi" : "⭐ Wishlist"}</div>
+        </div>
+        <div class="yt-video-actions">
+          <span class="yt-icon-btn" onclick="removeGameEntry('${g.id}')">🗑</span>
+        </div>
+      </div>`,
+        )
+        .join("")
+    : `<div class="yt-empty">Chưa có game nào trong danh sách.</div>`;
+}
+
+// ==========================================
+// 😂 GIẢI TRÍ NHANH (Meme / Joke / Fact / Ảnh thú cưng — API thật, miễn phí)
+// ==========================================
+async function fetchRandomMeme() {
+  const box = document.getElementById("funContentBox");
+  box.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tải meme...</p>`;
+  try {
+    const res = await fetch("https://meme-api.com/gimme");
+    const data = await res.json();
+    box.innerHTML = `
+      <img src="${data.url}" alt="meme" class="fun-content-img">
+      <p style="font-size: 13px; color: var(--text-main);">${data.title}</p>
+      <p style="font-size: 11px; color: var(--text-muted);">Nguồn: r/${data.subreddit}</p>
+    `;
+  } catch (err) {
+    box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không thể tải meme lúc này, thử lại sau.</p>`;
+  }
+}
+
+async function fetchRandomJoke() {
+  const box = document.getElementById("funContentBox");
+  box.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tải joke...</p>`;
+  try {
+    const res = await fetch(
+      "https://official-joke-api.appspot.com/random_joke",
+    );
+    const data = await res.json();
+    box.innerHTML = `
+      <p style="font-size: 15px; color: var(--text-main); margin-bottom: 8px;">${data.setup}</p>
+      <p style="font-size: 15px; color: var(--accent); font-weight: 600;">${data.punchline}</p>
+    `;
+  } catch (err) {
+    box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không thể tải joke lúc này, thử lại sau.</p>`;
+  }
+}
+
+async function fetchRandomFact() {
+  const box = document.getElementById("funContentBox");
+  box.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tải fact...</p>`;
+  try {
+    const res = await fetch(
+      "https://uselessfacts.jsph.pl/api/v2/facts/random?language=en",
+    );
+    const data = await res.json();
+    box.innerHTML = `<p style="font-size: 15px; color: var(--text-main);">💡 ${data.text}</p>`;
+  } catch (err) {
+    box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không thể tải fact lúc này, thử lại sau.</p>`;
+  }
+}
+
+async function fetchRandomPet(kind) {
+  const box = document.getElementById("funContentBox");
+  box.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tải ảnh...</p>`;
+  try {
+    if (kind === "cat") {
+      const res = await fetch("https://api.thecatapi.com/v1/images/search");
+      const data = await res.json();
+      box.innerHTML = `<img src="${data[0].url}" alt="cat" class="fun-content-img">`;
+    } else {
+      const res = await fetch("https://dog.ceo/api/breeds/image/random");
+      const data = await res.json();
+      box.innerHTML = `<img src="${data.message}" alt="dog" class="fun-content-img">`;
+    }
+  } catch (err) {
+    box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không thể tải ảnh lúc này, thử lại sau.</p>`;
+  }
+}
+
+// Quote trong ngày: dùng danh sách quote cục bộ (ổn định, không phụ thuộc API
+// bên ngoài hay bị sập), chọn theo ngày trong năm để mỗi ngày ra 1 câu khác nhau.
+const dailyQuotes = [
+  {
+    text: "Cách tốt nhất để dự đoán tương lai là tự tạo ra nó.",
+    author: "Peter Drucker",
+  },
+  {
+    text: "Code sạch luôn trông như được viết bởi người quan tâm đến nó.",
+    author: "Robert C. Martin",
+  },
+  {
+    text: "Đừng sợ hoàn hảo, bạn sẽ không bao giờ đạt được nó.",
+    author: "Salvador Dalí",
+  },
+  {
+    text: "Học một ngôn ngữ lập trình mới không dạy bạn cách suy nghĩ khác, chỉ mở rộng vốn từ vựng của bạn.",
+    author: "Alan Perlis",
+  },
+  {
+    text: "Thành công là đi từ thất bại này đến thất bại khác mà không mất đi nhiệt huyết.",
+    author: "Winston Churchill",
+  },
+  {
+    text: "Chương trình tốt là bằng chứng của một tư duy có tổ chức tốt.",
+    author: "Khuyết danh",
+  },
+  {
+    text: "Ước mơ lớn và dám thất bại một cách ngoạn mục.",
+    author: "Norman Vaughan",
+  },
+  { text: "Bí quyết để tiến về phía trước là bắt đầu.", author: "Mark Twain" },
+  {
+    text: "Không có gì là không thể, chính từ 'không thể' cũng nói rằng 'tôi có thể'.",
+    author: "Audrey Hepburn",
+  },
+  {
+    text: "Hãy làm hôm nay những gì người khác không làm, để ngày mai bạn có thể làm những gì người khác không thể.",
+    author: "Jerry Rice",
+  },
+];
+function renderDailyQuote() {
+  const box = document.getElementById("dailyQuoteBox");
+  if (!box) return;
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000,
+  );
+  const quote = dailyQuotes[dayOfYear % dailyQuotes.length];
+  box.innerHTML = `"${quote.text}"<br><span style="font-size: 12px; color: var(--text-muted); font-style: normal;">— ${quote.author}</span>`;
+}
+
+// ==========================================
+// 🌦 WIDGET: THỜI TIẾT + CHẤT LƯỢNG KHÔNG KHÍ + ĐỒNG HỒ THẾ GIỚI (Open-Meteo, miễn phí không cần key)
+// ==========================================
+async function searchWeatherWidget() {
+  const city = document.getElementById("weatherCityInput").value.trim();
+  const resultBox = document.getElementById("weatherWidgetResult");
+  if (!city) return;
+  resultBox.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tìm...</p>`;
+
+  try {
+    const geoRes = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=vi`,
+    );
+    const geoData = await geoRes.json();
+    if (!geoData.results || geoData.results.length === 0) {
+      resultBox.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không tìm thấy thành phố "${city}".</p>`;
+      return;
+    }
+    const { latitude, longitude, name, country } = geoData.results[0];
+
+    const [weatherRes, airRes] = await Promise.all([
+      fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`,
+      ),
+      fetch(
+        `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${latitude}&longitude=${longitude}&current=us_aqi`,
+      ),
+    ]);
+    const weatherData = await weatherRes.json();
+    const airData = await airRes.json();
+
+    const temp = weatherData.current_weather.temperature;
+    const wind = weatherData.current_weather.windspeed;
+    const aqi = airData.current ? airData.current.us_aqi : "—";
+    const aqiLabel =
+      aqi <= 50
+        ? "Tốt 🟢"
+        : aqi <= 100
+          ? "Trung bình 🟡"
+          : aqi <= 150
+            ? "Kém với nhóm nhạy cảm 🟠"
+            : "Xấu 🔴";
+
+    resultBox.innerHTML = `
+      <table class="bigo-table">
+        <tr><td>📍 Địa điểm</td><td>${name}, ${country}</td></tr>
+        <tr><td>🌡️ Nhiệt độ</td><td>${temp}°C</td></tr>
+        <tr><td>💨 Tốc độ gió</td><td>${wind} km/h</td></tr>
+        <tr><td>🫁 Chỉ số AQI (chất lượng không khí)</td><td>${aqi} — ${aqiLabel}</td></tr>
+      </table>
+    `;
+  } catch (err) {
+    resultBox.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không thể tải dữ liệu thời tiết lúc này.</p>`;
+  }
+}
+
+const worldClockZones = [
+  { label: "🇻🇳 Hà Nội", tz: "Asia/Ho_Chi_Minh" },
+  { label: "🇯🇵 Tokyo", tz: "Asia/Tokyo" },
+  { label: "🇬🇧 London", tz: "Europe/London" },
+  { label: "🇺🇸 New York", tz: "America/New_York" },
+  { label: "🇦🇺 Sydney", tz: "Australia/Sydney" },
+];
+
+function renderWorldClock() {
+  const box = document.getElementById("worldClockBox");
+  if (!box) return;
+  box.innerHTML = worldClockZones
+    .map(
+      (z) => `
+    <div class="stat-chip">
+      <div class="stat-value" id="clock-${z.tz.replace(/\//g, "-")}" style="font-size: 16px;">--:--:--</div>
+      <div class="stat-label">${z.label}</div>
+    </div>`,
+    )
+    .join("");
+  updateWorldClockTimes();
+}
+
+function updateWorldClockTimes() {
+  worldClockZones.forEach((z) => {
+    const el = document.getElementById("clock-" + z.tz.replace(/\//g, "-"));
+    if (!el) return;
+    el.textContent = new Date().toLocaleTimeString("vi-VN", { timeZone: z.tz });
+  });
+}
+setInterval(updateWorldClockTimes, 1000);
+
+// ==========================================
+// 🔴 LIVESTREAM: TWITCH / YOUTUBE LIVE / KICK / FACEBOOK GAMING
+// ==========================================
+function loadTwitchEmbed() {
+  const channel = document.getElementById("twitchChannelInput").value.trim();
+  const box = document.getElementById("twitchEmbedBox");
+  if (!channel) return;
+  const parentDomain = location.hostname || "localhost";
+  box.innerHTML = `
+    <iframe
+      src="https://player.twitch.tv/?channel=${encodeURIComponent(channel)}&parent=${parentDomain}"
+      height="400"
+      width="100%"
+      allowfullscreen
+      style="border-radius: 14px; border: 1px solid var(--apple-glass-border);"
+    ></iframe>
+  `;
+}
+
+function loadYtLiveEmbed() {
+  const input = document.getElementById("ytLiveInput").value.trim();
+  const box = document.getElementById("ytLiveEmbedBox");
+  if (!input) return;
+  const match = input.match(
+    /(?:v=|youtu\.be\/|embed\/|shorts\/)([a-zA-Z0-9_-]{11})/,
+  );
+  const videoId = match ? match[1] : input;
+  box.innerHTML = `
+    <div class="player" style="height: 400px;">
+      <iframe
+        src="https://www.youtube.com/embed/${videoId}?autoplay=1"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  `;
+}
+
+function loadKickEmbed() {
+  const channel = document.getElementById("kickChannelInput").value.trim();
+  const box = document.getElementById("kickEmbedBox");
+  if (!channel) return;
+  box.innerHTML = `
+    <iframe
+      src="https://player.kick.com/${encodeURIComponent(channel)}"
+      height="400"
+      width="100%"
+      frameborder="0"
+      scrolling="no"
+      allowfullscreen="true"
+      style="border-radius: 14px; border: 1px solid var(--apple-glass-border);"
+    ></iframe>
+  `;
+}
+
+function openFacebookGaming() {
+  const input = document.getElementById("fbGamingInput").value.trim();
+  if (!input) return;
+  const url = input.startsWith("http")
+    ? input
+    : `https://www.facebook.com/gaming/${encodeURIComponent(input)}`;
+  window.open(url, "_blank");
+}
+
+// ==========================================
+// TAB MANCHESTER UNITED
+// ==========================================
+function muKey(name) {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return `mu_${name}_${currentUser}`;
+}
+
+// ---- Điều hướng subtab nội bộ ----
+function switchMuView(view) {
+  document
+    .querySelectorAll("#muSubtabs .yt-subtab-btn")
+    .forEach((b) => b.classList.remove("active"));
+  const btn = document.querySelector(
+    `#muSubtabs .yt-subtab-btn[data-muview="${view}"]`,
+  );
+  if (btn) btn.classList.add("active");
+
+  document
+    .querySelectorAll(".mu-subpanel")
+    .forEach((p) => p.classList.remove("active"));
+  const panel = document.getElementById("mu-" + view);
+  if (panel) panel.classList.add("active");
+
+  if (view === "squad") {
+    renderMuFormationPitch();
+    renderPlayerRoster();
+  }
+  if (view === "schedule") {
+    renderMuFixtureList();
+    renderMuNewsSources();
+    renderTransferList();
+  }
+  if (view === "stats") {
+    renderClubStatsChart();
+    renderTrophyRoom();
+  }
+  if (view === "fanzone") {
+    populateMotmSelect();
+    renderMotmResults();
+    renderScorePredictions();
+    renderMuQuiz();
+    renderPolls();
+    renderFanComments();
+  }
+  if (view === "notify") {
+    renderMuNotificationHistory();
+  }
+}
+
+// ---- Trận đấu tiếp theo + Countdown thời gian thực ----
+function saveMuNextMatch() {
+  const data = {
+    opponent: document.getElementById("muNextOpponent").value.trim(),
+    competition: document.getElementById("muNextCompetition").value,
+    datetime: document.getElementById("muNextDateTime").value,
+    venue: document.getElementById("muNextVenue").value.trim(),
+  };
+  localStorage.setItem(muKey("nextMatch"), JSON.stringify(data));
+  showToast("Đã lưu thông tin trận đấu tiếp theo!", "success");
+  renderMuCountdown();
+}
+
+function loadMuNextMatch() {
+  const data = JSON.parse(localStorage.getItem(muKey("nextMatch")));
+  if (!data) return;
+  if (document.getElementById("muNextOpponent")) {
+    document.getElementById("muNextOpponent").value = data.opponent || "";
+    document.getElementById("muNextCompetition").value =
+      data.competition || "Premier League";
+    document.getElementById("muNextDateTime").value = data.datetime || "";
+    document.getElementById("muNextVenue").value = data.venue || "";
+  }
+}
+
+function renderMuCountdown() {
+  const box = document.getElementById("muCountdownBox");
+  if (!box) return;
+  const data = JSON.parse(localStorage.getItem(muKey("nextMatch")));
+
+  if (!data || !data.datetime) {
+    box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Chưa có thông tin trận đấu tiếp theo.</p>`;
+    return;
+  }
+
+  const target = new Date(data.datetime).getTime();
+  const diff = target - Date.now();
+
+  if (diff <= 0) {
+    box.innerHTML = `<p style="font-size:13px;color:var(--text-main);">⚽ vs <b>${data.opponent || "?"}</b> (${data.competition}) — Trận đấu đã/đang diễn ra tại ${data.venue || "?"}!</p>`;
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const mins = Math.floor((diff / (1000 * 60)) % 60);
+  const secs = Math.floor((diff / 1000) % 60);
+
+  box.innerHTML = `
+    <p style="width: 100%; text-align: center; font-size: 13px; color: var(--text-main); margin-bottom: 10px;">⚽ vs <b>${data.opponent || "?"}</b> — ${data.competition} tại ${data.venue || "?"}</p>
+    <div class="stat-chip"><div class="stat-value">${days}</div><div class="stat-label">Ngày</div></div>
+    <div class="stat-chip"><div class="stat-value">${hours}</div><div class="stat-label">Giờ</div></div>
+    <div class="stat-chip"><div class="stat-value">${mins}</div><div class="stat-label">Phút</div></div>
+    <div class="stat-chip"><div class="stat-value">${secs}</div><div class="stat-label">Giây</div></div>
+  `;
+}
+setInterval(renderMuCountdown, 1000);
+
+// ---- Live Match Center (theo dõi thủ công) ----
+function saveMuLiveMatch() {
+  const data = {
+    home: parseInt(document.getElementById("muLiveScoreHome").value) || 0,
+    away: parseInt(document.getElementById("muLiveScoreAway").value) || 0,
+    possession:
+      parseInt(document.getElementById("muLivePossession").value) || 50,
+    shots: document.getElementById("muLiveShots").value.trim(),
+  };
+  localStorage.setItem(muKey("liveMatch"), JSON.stringify(data));
+  renderMuLiveStats();
+}
+
+function loadMuLiveMatch() {
+  const data = JSON.parse(localStorage.getItem(muKey("liveMatch")));
+  if (!data) return;
+  if (document.getElementById("muLiveScoreHome")) {
+    document.getElementById("muLiveScoreHome").value = data.home || 0;
+    document.getElementById("muLiveScoreAway").value = data.away || 0;
+    document.getElementById("muLivePossession").value = data.possession || 50;
+    document.getElementById("muLiveShots").value = data.shots || "";
+  }
+  renderMuLiveStats();
+}
+
+function renderMuLiveStats() {
+  const box = document.getElementById("muLiveStatsRow");
+  if (!box) return;
+  const data = JSON.parse(localStorage.getItem(muKey("liveMatch"))) || {
+    home: 0,
+    away: 0,
+    possession: 50,
+    shots: "0/0",
+  };
+  box.innerHTML = `
+    <div class="stat-chip"><div class="stat-value">${data.home} - ${data.away}</div><div class="stat-label">Tỷ số</div></div>
+    <div class="stat-chip"><div class="stat-value">${data.possession}%</div><div class="stat-label">Possession MU</div></div>
+    <div class="stat-chip"><div class="stat-value">${data.shots || "—"}</div><div class="stat-label">Shots (Tổng/Trúng đích)</div></div>
+  `;
+}
+
+function addMuMatchEvent() {
+  const input = document.getElementById("muMatchEventInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const key = muKey("matchTimeline");
+  let events = JSON.parse(localStorage.getItem(key)) || [];
+  events.unshift({ text, time: Date.now() });
+  events = events.slice(0, 30);
+  localStorage.setItem(key, JSON.stringify(events));
+  input.value = "";
+  renderMuMatchTimeline();
+}
+
+function renderMuMatchTimeline() {
+  const box = document.getElementById("muMatchTimeline");
+  if (!box) return;
+  const events = JSON.parse(localStorage.getItem(muKey("matchTimeline"))) || [];
+  box.innerHTML = events.length
+    ? events.map((e) => `<div>${e.text}</div>`).join("")
+    : `<div style="color: var(--text-muted);">Chưa có sự kiện nào được ghi lại.</div>`;
+}
+
+// ---- Bảng xếp hạng Premier League (thủ công) ----
+function getStandings() {
+  return JSON.parse(localStorage.getItem(muKey("standings"))) || [];
+}
+function saveStandings(list) {
+  localStorage.setItem(muKey("standings"), JSON.stringify(list));
+}
+function addStandingRow() {
+  const team = document.getElementById("standingTeamInput").value.trim();
+  const points = parseInt(document.getElementById("standingPointsInput").value);
+  const gd = document.getElementById("standingGdInput").value.trim();
+  if (!team || isNaN(points)) {
+    showToast("Vui lòng nhập tên đội và điểm số!", "error");
+    return;
+  }
+  const list = getStandings();
+  list.push({ team, points, gd });
+  list.sort((a, b) => b.points - a.points);
+  saveStandings(list);
+  document.getElementById("standingTeamInput").value = "";
+  document.getElementById("standingPointsInput").value = "";
+  document.getElementById("standingGdInput").value = "";
+  renderStandingsTable();
+}
+function removeStandingRow(idx) {
+  const list = getStandings();
+  list.splice(idx, 1);
+  saveStandings(list);
+  renderStandingsTable();
+}
+function renderStandingsTable() {
+  const table = document.getElementById("standingsTable");
+  if (!table) return;
+  const list = getStandings();
+
+  Array.from(table.querySelectorAll("tr")).forEach((r, i) => {
+    if (i > 0) r.remove();
+  });
+
+  list.forEach((s, idx) => {
+    const isMu = /manchester united|^mu$/i.test(s.team);
+    const tr = document.createElement("tr");
+    if (isMu) tr.className = "standing-row-highlight";
+    tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${s.team}</td>
+      <td>${s.points}</td>
+      <td>${s.gd || "—"}</td>
+      <td><span class="delete-btn" onclick="removeStandingRow(${idx})">✕</span></td>
+    `;
+    table.appendChild(tr);
+  });
+}
+
+// ---- Lịch thi đấu ----
+function getMuFixtures() {
+  return JSON.parse(localStorage.getItem(muKey("fixtures"))) || [];
+}
+function saveMuFixtures(list) {
+  localStorage.setItem(muKey("fixtures"), JSON.stringify(list));
+}
+function addMuFixture() {
+  const opponent = document.getElementById("muFixtureOpponent").value.trim();
+  const competition = document.getElementById("muFixtureCompetition").value;
+  const datetime = document.getElementById("muFixtureDateTime").value;
+  if (!opponent || !datetime) {
+    showToast("Vui lòng nhập đối thủ và thời gian!", "error");
+    return;
+  }
+  const list = getMuFixtures();
+  list.push({ id: generateTaskId(), opponent, competition, datetime });
+  list.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+  saveMuFixtures(list);
+  document.getElementById("muFixtureOpponent").value = "";
+  document.getElementById("muFixtureDateTime").value = "";
+  renderMuFixtureList();
+  showToast("Đã thêm trận đấu vào lịch!", "success");
+}
+function removeMuFixture(id) {
+  saveMuFixtures(getMuFixtures().filter((f) => f.id !== id));
+  renderMuFixtureList();
+}
+let currentFixtureFilter = "all";
+function filterMuFixtures(filter) {
+  currentFixtureFilter = filter;
+  document
+    .querySelectorAll("[data-fixturefilter]")
+    .forEach((b) => b.classList.remove("active"));
+  document
+    .querySelector(`[data-fixturefilter="${filter}"]`)
+    .classList.add("active");
+  renderMuFixtureList();
+}
+function renderMuFixtureList() {
+  const list = document.getElementById("muFixtureList");
+  if (!list) return;
+  let fixtures = getMuFixtures();
+  if (currentFixtureFilter !== "all") {
+    fixtures = fixtures.filter((f) => f.competition === currentFixtureFilter);
+  }
+  list.innerHTML = fixtures.length
+    ? fixtures
+        .map(
+          (f) => `
+      <li>
+        <span class="task-text"><b>${new Date(f.datetime).toLocaleString("vi-VN")}</b> — vs ${f.opponent} (${f.competition})</span>
+        <span class="delete-btn" onclick="removeMuFixture('${f.id}')">✕</span>
+      </li>`,
+        )
+        .join("")
+    : `<li style="color: var(--text-muted);">Chưa có trận đấu nào trong lịch.</li>`;
+}
+
+// ---- Tin tức nhanh (link-out tới nguồn thật, không nhúng do CORS) ----
+const muNewsSources = [
+  {
+    name: "BBC Sport",
+    icon: "📰",
+    url: "https://www.bbc.com/sport/football/teams/manchester-united",
+  },
+  {
+    name: "Sky Sports",
+    icon: "📺",
+    url: "https://www.skysports.com/manchester-united",
+  },
+  {
+    name: "The Athletic",
+    icon: "🗞️",
+    url: "https://www.nytimes.com/athletic/team/manchester-united/",
+  },
+  {
+    name: "ESPN",
+    icon: "🌐",
+    url: "https://www.espn.com/soccer/team/_/id/360/manchester-united",
+  },
+  {
+    name: "Man Utd Official",
+    icon: "🔴",
+    url: "https://www.manutd.com/en/news",
+  },
+  {
+    name: "Goal.com",
+    icon: "⚽",
+    url: "https://www.goal.com/en/manchester-united/6f5s5o1itc491ne9tzhitswlz",
+  },
+];
+function renderMuNewsSources() {
+  const grid = document.getElementById("muNewsSourcesGrid");
+  if (!grid) return;
+  grid.innerHTML = muNewsSources
+    .map(
+      (s) => `
+    <div class="cs-subject-card" onclick="window.open('${s.url}', '_blank')">
+      <div class="cs-subject-icon">${s.icon}</div>
+      <div class="cs-subject-name">${s.name}</div>
+      <div class="cs-subject-status">🔗 Đọc tiếp</div>
+    </div>`,
+    )
+    .join("");
+}
+
+// ---- Chuyển nhượng ----
+function getTransfers() {
+  return JSON.parse(localStorage.getItem(muKey("transfers"))) || [];
+}
+function saveTransfers(list) {
+  localStorage.setItem(muKey("transfers"), JSON.stringify(list));
+}
+function addTransferEntry() {
+  const player = document.getElementById("transferPlayerInput").value.trim();
+  const type = document.getElementById("transferTypeInput").value;
+  const status = document.getElementById("transferStatusInput").value;
+  const confidence = parseInt(
+    document.getElementById("transferConfidenceInput").value,
+  );
+  if (!player) {
+    showToast("Vui lòng nhập tên cầu thủ!", "error");
+    return;
+  }
+  const list = getTransfers();
+  list.unshift({ id: generateTaskId(), player, type, status, confidence });
+  saveTransfers(list);
+  document.getElementById("transferPlayerInput").value = "";
+  renderTransferList();
+  showToast("Đã thêm tin chuyển nhượng!", "success");
+}
+function removeTransferEntry(id) {
+  saveTransfers(getTransfers().filter((t) => t.id !== id));
+  renderTransferList();
+}
+function renderTransferList() {
+  const box = document.getElementById("transferList");
+  if (!box) return;
+  const list = getTransfers();
+  box.innerHTML = list.length
+    ? list
+        .map(
+          (t) => `
+      <div class="upcoming-task-row" style="flex-direction: column; align-items: stretch; gap: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>${t.type === "in" ? "🟢 IN" : "🔴 OUT"} — <b>${t.player}</b> ${t.status === "confirmed" ? "✅ Confirmed" : "🗣️ Rumour"}</span>
+          <span class="delete-btn" onclick="removeTransferEntry('${t.id}')">✕</span>
+        </div>
+        <div class="progress-track" style="margin-bottom: 0;"><div class="progress-fill" style="width: ${t.confidence}%;"></div></div>
+        <span style="font-size: 11px; color: var(--text-muted);">Độ tin cậy: ${t.confidence}%</span>
+      </div>`,
+        )
+        .join("")
+    : `<p style="font-size: 12px; color: var(--text-muted);">Chưa có tin chuyển nhượng nào.</p>`;
+}
+
+// ---- Đội hình / Sơ đồ chiến thuật ----
+const muFormations = {
+  "4-2-3-1": [
+    ["GK"],
+    ["LB", "CB", "CB", "RB"],
+    ["CDM", "CDM"],
+    ["LW", "CAM", "RW"],
+    ["ST"],
+  ],
+  "4-3-3": [
+    ["GK"],
+    ["LB", "CB", "CB", "RB"],
+    ["CM", "CM", "CM"],
+    ["LW", "ST", "RW"],
+  ],
+  "3-4-2-1": [
+    ["GK"],
+    ["CB", "CB", "CB"],
+    ["LM", "CM", "CM", "RM"],
+    ["CAM", "CAM"],
+    ["ST"],
+  ],
+};
+
+function getFormationSlots() {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  const formation = document.getElementById("muFormationSelect").value;
+  const key = muKey("formationSlots_" + formation);
+  return { key, data: JSON.parse(localStorage.getItem(key)) || {} };
+}
+
+function renderMuFormationPitch() {
+  const container = document.getElementById("muPitchContainer");
+  if (!container) return;
+  const formation = document.getElementById("muFormationSelect").value;
+  const rows = muFormations[formation];
+  const { key, data: slotNames } = getFormationSlots();
+
+  container.innerHTML = rows
+    .map((row, rowIdx) => {
+      const slots = row
+        .map((pos, colIdx) => {
+          const slotId = `${rowIdx}_${colIdx}`;
+          const name = slotNames[slotId] || pos;
+          return `<div class="mu-player-slot" onclick="editFormationSlot('${slotId}', '${pos}')">${name}</div>`;
+        })
+        .join("");
+      return `<div class="mu-pitch-row">${slots}</div>`;
+    })
+    .join("");
+}
+
+function editFormationSlot(slotId, position) {
+  const name = prompt(`Nhập tên cầu thủ cho vị trí ${position}:`);
+  if (name === null) return;
+  const { key, data } = getFormationSlots();
+  data[slotId] = name.trim() || position;
+  localStorage.setItem(key, JSON.stringify(data));
+  renderMuFormationPitch();
+}
+
+// ---- Danh sách cầu thủ (Player Hub) ----
+function getPlayers() {
+  const existing = localStorage.getItem(muKey("players"));
+  if (existing) return JSON.parse(existing);
+  // Dữ liệu mẫu ban đầu — chỉ mang tính minh họa, hãy tự cập nhật đội hình thật
+  const seed = [
+    {
+      id: generateTaskId(),
+      name: "(Mẫu) Thủ môn số 1",
+      number: 1,
+      position: "GK",
+      age: 27,
+      nationality: "—",
+      height: "",
+      weight: "",
+      foot: "",
+      contract: "",
+      marketValue: "",
+      appearances: 0,
+      goals: 0,
+      assists: 0,
+      minutes: 0,
+      cards: "",
+      passAccuracy: "",
+      injured: false,
+    },
+  ];
+  localStorage.setItem(muKey("players"), JSON.stringify(seed));
+  return seed;
+}
+function savePlayers(list) {
+  localStorage.setItem(muKey("players"), JSON.stringify(list));
+}
+
+function addPlayerEntry() {
+  const name = document.getElementById("playerNameInput").value.trim();
+  const number = parseInt(document.getElementById("playerNumberInput").value);
+  const position = document.getElementById("playerPositionInput").value;
+  const age = parseInt(document.getElementById("playerAgeInput").value) || null;
+  const nationality = document
+    .getElementById("playerNationalityInput")
+    .value.trim();
+
+  if (!name) {
+    showToast("Vui lòng nhập tên cầu thủ!", "error");
+    return;
+  }
+
+  const list = getPlayers();
+  list.push({
+    id: generateTaskId(),
+    name,
+    number: isNaN(number) ? null : number,
+    position,
+    age,
+    nationality,
+    height: "",
+    weight: "",
+    foot: "",
+    contract: "",
+    marketValue: "",
+    appearances: 0,
+    goals: 0,
+    assists: 0,
+    minutes: 0,
+    cards: "",
+    passAccuracy: "",
+    injured: false,
+  });
+  savePlayers(list);
+
+  [
+    "playerNameInput",
+    "playerNumberInput",
+    "playerAgeInput",
+    "playerNationalityInput",
+  ].forEach((id) => (document.getElementById(id).value = ""));
+  renderPlayerRoster();
+  showToast("Đã thêm cầu thủ: " + name, "success");
+}
+
+function removePlayerEntry(id) {
+  savePlayers(getPlayers().filter((p) => p.id !== id));
+  renderPlayerRoster();
+}
+
+function renderPlayerRoster() {
+  const box = document.getElementById("playerRosterList");
+  if (!box) return;
+  const searchInput = document.getElementById("playerSearchInput");
+  const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+  let players = getPlayers();
+  if (query)
+    players = players.filter((p) => p.name.toLowerCase().includes(query));
+
+  box.innerHTML = players.length
+    ? players
+        .map(
+          (p) => `
+      <div class="yt-video-row" onclick="openPlayerHubModal('${p.id}')">
+        <div class="yt-video-info">
+          <div class="yt-video-title">#${p.number || "-"} ${p.name} ${p.injured ? "🤕" : ""}</div>
+          <div class="yt-video-sub">${p.position} • ${p.nationality || "—"} • ${p.age ? p.age + " tuổi" : "—"}</div>
+        </div>
+        <div class="yt-video-actions">
+          <span class="yt-icon-btn" onclick="event.stopPropagation(); removePlayerEntry('${p.id}')">🗑</span>
+        </div>
+      </div>`,
+        )
+        .join("")
+    : `<div class="yt-empty">Chưa có cầu thủ nào, hoặc không tìm thấy kết quả.</div>`;
+}
+
+function openPlayerHubModal(id) {
+  const player = getPlayers().find((p) => p.id === id);
+  if (!player) return;
+
+  document.getElementById("playerHubModalBox").innerHTML = `
+    <div class="modal-header">
+      <h2>#${player.number || "-"} ${player.name}</h2>
+      <span class="modal-close" onclick="closePlayerHubModal()">✕</span>
+    </div>
+    <div class="task-stats-row">
+      <div class="stat-chip"><div class="stat-value" style="font-size:15px;">${player.position}</div><div class="stat-label">Vị trí</div></div>
+      <div class="stat-chip"><div class="stat-value" style="font-size:15px;">${player.age || "—"}</div><div class="stat-label">Tuổi</div></div>
+      <div class="stat-chip"><div class="stat-value" style="font-size:15px;">${player.nationality || "—"}</div><div class="stat-label">Quốc tịch</div></div>
+    </div>
+    <div class="grid-2" style="margin-top: 16px;">
+      <div><label class="field-label">Chiều cao</label><input type="text" value="${player.height || ""}" onchange="updatePlayerField('${id}','height',this.value)"></div>
+      <div><label class="field-label">Cân nặng</label><input type="text" value="${player.weight || ""}" onchange="updatePlayerField('${id}','weight',this.value)"></div>
+    </div>
+    <div class="grid-2" style="margin-top: 14px;">
+      <div><label class="field-label">Chân thuận</label><input type="text" value="${player.foot || ""}" onchange="updatePlayerField('${id}','foot',this.value)"></div>
+      <div><label class="field-label">Hợp đồng đến</label><input type="text" value="${player.contract || ""}" onchange="updatePlayerField('${id}','contract',this.value)"></div>
+    </div>
+    <div class="grid-2" style="margin-top: 14px;">
+      <div><label class="field-label">Giá trị chuyển nhượng</label><input type="text" value="${player.marketValue || ""}" onchange="updatePlayerField('${id}','marketValue',this.value)"></div>
+      <div><label class="field-label">Độ chính xác chuyền (%)</label><input type="text" value="${player.passAccuracy || ""}" onchange="updatePlayerField('${id}','passAccuracy',this.value)"></div>
+    </div>
+    <h3 style="font-size: 14px; margin: 16px 0 8px;">📊 Thống kê mùa giải</h3>
+    <div class="grid-2">
+      <div><label class="field-label">Ra sân</label><input type="number" value="${player.appearances || 0}" onchange="updatePlayerField('${id}','appearances',this.value)"></div>
+      <div><label class="field-label">Bàn thắng</label><input type="number" value="${player.goals || 0}" onchange="updatePlayerField('${id}','goals',this.value)"></div>
+    </div>
+    <div class="grid-2" style="margin-top: 14px;">
+      <div><label class="field-label">Kiến tạo</label><input type="number" value="${player.assists || 0}" onchange="updatePlayerField('${id}','assists',this.value)"></div>
+      <div><label class="field-label">Số phút thi đấu</label><input type="number" value="${player.minutes || 0}" onchange="updatePlayerField('${id}','minutes',this.value)"></div>
+    </div>
+    <svg viewBox="0 0 200 200" style="width: 180px; margin: 16px auto; display: block;" id="playerRadarChart"></svg>
+    <label style="display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: var(--text-muted); cursor: pointer;">
+      <input type="checkbox" style="width: auto;" ${player.injured ? "checked" : ""} onchange="updatePlayerField('${id}','injured',this.checked)"> Đang chấn thương / treo giò
+    </label>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button class="btn-secondary" onclick="closePlayerHubModal()">Đóng</button>
+    </div>
+  `;
+  document.getElementById("playerHubModalOverlay").classList.add("active");
+  renderPlayerRadarChart(player);
+}
+function closePlayerHubModal() {
+  document.getElementById("playerHubModalOverlay").classList.remove("active");
+}
+function updatePlayerField(id, field, value) {
+  const list = getPlayers();
+  const player = list.find((p) => p.id === id);
+  if (!player) return;
+  if (["appearances", "goals", "assists", "minutes"].includes(field)) {
+    player[field] = parseInt(value) || 0;
+  } else if (field === "injured") {
+    player[field] = value;
+  } else {
+    player[field] = value;
+  }
+  savePlayers(list);
+  renderPlayerRoster();
+}
+
+function renderPlayerRadarChart(player) {
+  const svg = document.getElementById("playerRadarChart");
+  if (!svg) return;
+  const stats = [
+    { label: "Bàn thắng", value: Math.min(100, player.goals * 5) },
+    { label: "Kiến tạo", value: Math.min(100, player.assists * 5) },
+    { label: "Ra sân", value: Math.min(100, player.appearances * 2.5) },
+    { label: "Chuyền bóng", value: parseFloat(player.passAccuracy) || 0 },
+  ];
+  const cx = 100,
+    cy = 100,
+    r = 70;
+  const n = stats.length;
+  const points = stats.map((s, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const dist = (s.value / 100) * r;
+    return [cx + dist * Math.cos(angle), cy + dist * Math.sin(angle)];
+  });
+  const axisLines = stats
+    .map((s, i) => {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" style="stroke: rgba(255,255,255,0.15);" />`;
+    })
+    .join("");
+  const polygon = points.map((p) => p.join(",")).join(" ");
+  svg.innerHTML = `
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" style="stroke: rgba(255,255,255,0.1);" />
+    ${axisLines}
+    <polygon points="${polygon}" style="fill: rgba(10,132,255,0.35); stroke: var(--accent); stroke-width: 2;" />
+  `;
+}
+
+// ---- Thống kê mùa giải ----
+function saveSeasonStats() {
+  const data = {
+    topScorer: document.getElementById("statTopScorer").value.trim(),
+    topAssist: document.getElementById("statTopAssist").value.trim(),
+    cleanSheets: document.getElementById("statCleanSheets").value.trim(),
+    appearances: document.getElementById("statAppearances").value.trim(),
+  };
+  localStorage.setItem(muKey("seasonStats"), JSON.stringify(data));
+}
+function loadSeasonStats() {
+  const data = JSON.parse(localStorage.getItem(muKey("seasonStats")));
+  if (!data || !document.getElementById("statTopScorer")) return;
+  document.getElementById("statTopScorer").value = data.topScorer || "";
+  document.getElementById("statTopAssist").value = data.topAssist || "";
+  document.getElementById("statCleanSheets").value = data.cleanSheets || "";
+  document.getElementById("statAppearances").value = data.appearances || "";
+}
+
+// ---- Club Statistics + biểu đồ ----
+function saveClubStats() {
+  const data = {
+    winPercent: parseInt(document.getElementById("clubWinPercent").value) || 0,
+    goalsForAgainst: document
+      .getElementById("clubGoalsForAgainst")
+      .value.trim(),
+    possessionAvg:
+      parseInt(document.getElementById("clubPossessionAvg").value) || 0,
+    passAccuracy:
+      parseInt(document.getElementById("clubPassAccuracy").value) || 0,
+    xg: parseFloat(document.getElementById("clubXg").value) || 0,
+    avgRating: parseFloat(document.getElementById("clubAvgRating").value) || 0,
+  };
+  localStorage.setItem(muKey("clubStats"), JSON.stringify(data));
+  renderClubStatsChart();
+}
+function loadClubStats() {
+  const data = JSON.parse(localStorage.getItem(muKey("clubStats")));
+  if (!data || !document.getElementById("clubWinPercent")) return;
+  document.getElementById("clubWinPercent").value = data.winPercent;
+  document.getElementById("clubGoalsForAgainst").value = data.goalsForAgainst;
+  document.getElementById("clubPossessionAvg").value = data.possessionAvg;
+  document.getElementById("clubPassAccuracy").value = data.passAccuracy;
+  document.getElementById("clubXg").value = data.xg;
+  document.getElementById("clubAvgRating").value = data.avgRating;
+}
+function renderClubStatsChart() {
+  const svg = document.getElementById("clubStatsChart");
+  if (!svg) return;
+  const data = JSON.parse(localStorage.getItem(muKey("clubStats"))) || {
+    winPercent: 50,
+    possessionAvg: 55,
+    passAccuracy: 85,
+    avgRating: 7,
+  };
+  const bars = [
+    { label: "Thắng %", value: data.winPercent, color: "#30d158" },
+    { label: "Possession %", value: data.possessionAvg, color: "#0a84ff" },
+    { label: "Chuyền %", value: data.passAccuracy, color: "#bf5af2" },
+    { label: "Rating x10", value: data.avgRating * 10, color: "#ffd60a" },
+  ];
+  const barWidth = 50,
+    gap = 20,
+    baseY = 130;
+  let barsHtml = "";
+  bars.forEach((b, i) => {
+    const barHeight = Math.min(100, b.value) * 0.9;
+    const x = 15 + i * (barWidth + gap);
+    const y = baseY - barHeight;
+    barsHtml += `
+      <rect x="${x}" y="${y}" width="${barWidth}" height="${Math.max(barHeight, 2)}" rx="6" fill="${b.color}" />
+      <text x="${x + barWidth / 2}" y="${baseY + 16}" text-anchor="middle" font-size="10" fill="var(--text-muted)">${b.label}</text>
+      <text x="${x + barWidth / 2}" y="${y - 6}" text-anchor="middle" font-size="11" fill="var(--text-main)" font-weight="600">${fmtNum(b.value)}</text>
+    `;
+  });
+  svg.innerHTML = `<line x1="10" y1="${baseY}" x2="290" y2="${baseY}" stroke="rgba(255,255,255,0.15)" />${barsHtml}`;
+}
+
+// ---- Match Prediction (công thức ước lượng đơn giản, KHÔNG phải AI thật) ----
+function computeMatchPrediction() {
+  const form = document
+    .getElementById("predictionFormInput")
+    .value.trim()
+    .toUpperCase();
+  const resultBox = document.getElementById("predictionResult");
+  resultBox.style.display = "block";
+
+  if (!/^[TWHB]{1,5}$/.test(form.replace(/W/g, "T"))) {
+    resultBox.innerHTML = `<span style="color:#ff453a;">⚠ Vui lòng nhập phong độ hợp lệ, chỉ gồm T (thắng), H (hòa), B (bại). Ví dụ: TTHTB</span>`;
+    return;
+  }
+
+  const wins = (form.match(/T/g) || []).length;
+  const draws = (form.match(/H/g) || []).length;
+  const losses = (form.match(/B/g) || []).length;
+  const total = form.length || 1;
+
+  // Công thức đơn giản: trọng số phong độ + hệ số sân nhà, chuẩn hóa về 100%
+  const homeAdvantage = 10;
+  let winScore = (wins / total) * 100 + homeAdvantage;
+  let drawScore = (draws / total) * 100;
+  let loseScore = (losses / total) * 100;
+
+  const sum = winScore + drawScore + loseScore || 1;
+  const winPct = Math.round((winScore / sum) * 100);
+  const drawPct = Math.round((drawScore / sum) * 100);
+  const losePct = 100 - winPct - drawPct;
+
+  const predictedGoalsFor = Math.max(
+    0,
+    Math.round(((wins * 1.5 + draws * 1) / total) * 3),
+  );
+  const predictedGoalsAgainst = Math.max(
+    0,
+    Math.round(((losses * 1.5 + draws * 0.5) / total) * 2),
+  );
+
+  resultBox.innerHTML = `
+    <table class="bigo-table">
+      <tr><th>Thắng</th><th>Hòa</th><th>Thua</th></tr>
+      <tr><td style="color:#30d158;font-weight:700;">${winPct}%</td><td style="color:#ffd60a;font-weight:700;">${drawPct}%</td><td style="color:#ff453a;font-weight:700;">${losePct}%</td></tr>
+    </table>
+    <p style="margin-top: 12px; font-size: 14px;"><b>Tỷ số dự đoán:</b> Manchester United ${predictedGoalsFor} - ${predictedGoalsAgainst} Đối thủ</p>
+    <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">* Chỉ mang tính tham khảo vui, tính theo công thức đơn giản dựa trên phong độ bạn nhập, không phải mô hình machine learning thật.</p>
+  `;
+}
+
+// ---- Trophy Room ----
+function getTrophies() {
+  return JSON.parse(localStorage.getItem(muKey("trophies"))) || [];
+}
+function saveTrophiesList(list) {
+  localStorage.setItem(muKey("trophies"), JSON.stringify(list));
+}
+function addTrophyEntry() {
+  const type = document.getElementById("trophyTypeInput").value;
+  const year = parseInt(document.getElementById("trophyYearInput").value);
+  if (isNaN(year)) {
+    showToast("Vui lòng nhập năm vô địch!", "error");
+    return;
+  }
+  const list = getTrophies();
+  list.push({ type, year });
+  list.sort((a, b) => b.year - a.year);
+  saveTrophiesList(list);
+  document.getElementById("trophyYearInput").value = "";
+  renderTrophyRoom();
+  showToast("Đã thêm danh hiệu!", "success");
+}
+function renderTrophyRoom() {
+  const summaryBox = document.getElementById("trophySummaryRow");
+  const timelineBox = document.getElementById("trophyTimeline");
+  if (!summaryBox || !timelineBox) return;
+
+  const list = getTrophies();
+  const grouped = {};
+  list.forEach((t) => {
+    grouped[t.type] = (grouped[t.type] || 0) + 1;
+  });
+
+  summaryBox.innerHTML = Object.keys(grouped).length
+    ? Object.keys(grouped)
+        .map(
+          (type) => `
+      <div class="stat-chip"><div class="stat-value" style="font-size:20px;">${grouped[type]}</div><div class="stat-label">${type}</div></div>`,
+        )
+        .join("")
+    : `<p style="font-size: 12px; color: var(--text-muted);">Chưa có danh hiệu nào được thêm.</p>`;
+
+  timelineBox.innerHTML = list.length
+    ? list.map((t) => `<div>🏆 ${t.year} — ${t.type}</div>`).join("")
+    : `<div style="color: var(--text-muted);">Chưa có danh hiệu nào.</div>`;
+}
+
+// ---- Fan Zone: Vote MOTM ----
+function populateMotmSelect() {
+  const select = document.getElementById("motmPlayerSelect");
+  if (!select) return;
+  const players = getPlayers();
+  select.innerHTML = players
+    .map(
+      (p) => `<option value="${p.id}">#${p.number || "-"} ${p.name}</option>`,
+    )
+    .join("");
+}
+function voteMotm() {
+  const select = document.getElementById("motmPlayerSelect");
+  const playerId = select.value;
+  const player = getPlayers().find((p) => p.id === playerId);
+  if (!player) return;
+
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  localStorage.setItem(
+    `muMotmVote_${currentUser}`,
+    JSON.stringify({ playerId, playerName: player.name }),
+  );
+  showToast("Đã bình chọn: " + player.name, "success");
+  renderMotmResults();
+}
+function renderMotmResults() {
+  const box = document.getElementById("motmResultBox");
+  if (!box) return;
+  const tally = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("muMotmVote_")) {
+      const vote = JSON.parse(localStorage.getItem(key));
+      tally[vote.playerName] = (tally[vote.playerName] || 0) + 1;
+    }
+  }
+  const entries = Object.entries(tally).sort((a, b) => b[1] - a[1]);
+  box.innerHTML = entries.length
+    ? `<table class="bigo-table"><tr><th>Cầu thủ</th><th>Số phiếu</th></tr>${entries.map(([name, votes]) => `<tr><td>${name}</td><td>${votes}</td></tr>`).join("")}</table>`
+    : `<p style="font-size: 12px; color: var(--text-muted);">Chưa có ai bình chọn.</p>`;
+}
+
+// ---- Fan Zone: Dự đoán tỷ số ----
+function submitScorePrediction() {
+  const home = document.getElementById("predictScoreHome").value;
+  const away = document.getElementById("predictScoreAway").value;
+  if (home === "" || away === "") {
+    showToast("Vui lòng nhập đủ tỷ số dự đoán!", "error");
+    return;
+  }
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  localStorage.setItem(
+    `muScorePrediction_${currentUser}`,
+    JSON.stringify({ home, away, user: currentUser }),
+  );
+  showToast("Đã gửi dự đoán!", "success");
+  renderScorePredictions();
+}
+function renderScorePredictions() {
+  const box = document.getElementById("scorePredictionList");
+  if (!box) return;
+  const predictions = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("muScorePrediction_")) {
+      predictions.push(JSON.parse(localStorage.getItem(key)));
+    }
+  }
+  box.innerHTML = predictions.length
+    ? `<table class="bigo-table"><tr><th>Người dự đoán</th><th>Tỷ số dự đoán</th></tr>${predictions.map((p) => `<tr><td>${p.user}</td><td>MU ${p.home} - ${p.away}</td></tr>`).join("")}</table>`
+    : `<p style="font-size: 12px; color: var(--text-muted);">Chưa có ai dự đoán.</p>`;
+}
+
+// ---- Fan Zone: Mini Quiz MU (sự kiện lịch sử ổn định, không phụ thuộc mùa giải hiện tại) ----
+const muQuizBank = [
+  {
+    q: "Manchester United được thành lập năm nào?",
+    options: ["1878", "1902", "1920", "1950"],
+    correct: 0,
+  },
+  {
+    q: "Sân nhà của Manchester United tên là gì?",
+    options: ["Anfield", "Etihad Stadium", "Old Trafford", "Emirates Stadium"],
+    correct: 2,
+  },
+  {
+    q: "Manchester United đã vô địch UEFA Champions League / Cúp C1 châu Âu bao nhiêu lần?",
+    options: ["1 lần", "2 lần", "3 lần", "5 lần"],
+    correct: 2,
+  },
+  {
+    q: 'HLV nào dẫn dắt Manchester United giành "cú ăn ba" (Treble) lịch sử năm 1999?',
+    options: [
+      "José Mourinho",
+      "Sir Alex Ferguson",
+      "David Moyes",
+      "Louis van Gaal",
+    ],
+    correct: 1,
+  },
+  {
+    q: "Biệt danh của Manchester United là gì?",
+    options: ["The Reds", "Quỷ Đỏ (Red Devils)", "The Gunners", "The Citizens"],
+    correct: 1,
+  },
+];
+let currentMuQuizAnswers = {};
+function renderMuQuiz() {
+  const container = document.getElementById("muQuizContainer");
+  if (!container) return;
+  currentMuQuizAnswers = {};
+  container.innerHTML = muQuizBank
+    .map(
+      (q, qIdx) => `
+    <div class="quiz-question-block" id="muQuizQ${qIdx}">
+      <div class="quiz-question-title">Câu ${qIdx + 1}: ${q.q}</div>
+      ${q.options
+        .map(
+          (opt, optIdx) => `
+        <label class="quiz-option-label" id="muQuizQ${qIdx}_opt${optIdx}">
+          <input type="radio" name="muQuizQ${qIdx}" value="${optIdx}" onchange="currentMuQuizAnswers[${qIdx}] = ${optIdx}">
+          ${opt}
+        </label>`,
+        )
+        .join("")}
+    </div>`,
+    )
+    .join("");
+  document.getElementById("muQuizResult").style.display = "none";
+}
+function submitMuQuiz() {
+  let score = 0;
+  muQuizBank.forEach((q, qIdx) => {
+    const chosen = currentMuQuizAnswers[qIdx];
+    const correctLabel = document.getElementById(
+      `muQuizQ${qIdx}_opt${q.correct}`,
+    );
+    if (correctLabel) correctLabel.classList.add("correct");
+    if (chosen === q.correct) score++;
+    else if (chosen !== undefined) {
+      const wrongLabel = document.getElementById(`muQuizQ${qIdx}_opt${chosen}`);
+      if (wrongLabel) wrongLabel.classList.add("wrong");
+    }
+  });
+  const resultBox = document.getElementById("muQuizResult");
+  resultBox.style.display = "block";
+  resultBox.innerHTML = `<div class="quiz-score-chip">Điểm của bạn: ${score}/${muQuizBank.length}</div>`;
+  showToast(
+    `Hoàn thành Mini Quiz MU! Điểm: ${score}/${muQuizBank.length}`,
+    "success",
+  );
+  awardXp(score * 5);
+}
+
+// ---- Fan Zone: Poll ----
+function getPolls() {
+  return JSON.parse(localStorage.getItem(muKey("polls"))) || [];
+}
+function savePolls(list) {
+  localStorage.setItem(muKey("polls"), JSON.stringify(list));
+}
+function createPoll() {
+  const question = document.getElementById("pollQuestionInput").value.trim();
+  const optionsRaw = document.getElementById("pollOptionsInput").value.trim();
+  if (!question || !optionsRaw) {
+    showToast("Vui lòng nhập câu hỏi và các lựa chọn!", "error");
+    return;
+  }
+  const options = optionsRaw
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+  if (options.length < 2) {
+    showToast("Cần ít nhất 2 lựa chọn!", "error");
+    return;
+  }
+  const list = getPolls();
+  list.unshift({
+    id: generateTaskId(),
+    question,
+    options,
+    votes: options.map(() => 0),
+  });
+  savePolls(list);
+  document.getElementById("pollQuestionInput").value = "";
+  document.getElementById("pollOptionsInput").value = "";
+  renderPolls();
+  showToast("Đã tạo poll mới!", "success");
+}
+function votePollOption(pollId, optIdx) {
+  const list = getPolls();
+  const poll = list.find((p) => p.id === pollId);
+  if (!poll) return;
+  poll.votes[optIdx]++;
+  savePolls(list);
+  renderPolls();
+}
+function renderPolls() {
+  const box = document.getElementById("pollListBox");
+  if (!box) return;
+  const list = getPolls();
+  box.innerHTML = list.length
+    ? list
+        .map((poll) => {
+          const total = poll.votes.reduce((a, b) => a + b, 0) || 1;
+          return `
+        <div class="quiz-question-block">
+          <div class="quiz-question-title">${poll.question}</div>
+          ${poll.options
+            .map(
+              (opt, idx) => `
+            <div style="margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; cursor: pointer;" onclick="votePollOption('${poll.id}', ${idx})">
+                <span>${opt}</span><span>${poll.votes[idx]} phiếu (${Math.round((poll.votes[idx] / total) * 100)}%)</span>
+              </div>
+              <div class="progress-track" style="margin-bottom: 0;"><div class="progress-fill" style="width: ${(poll.votes[idx] / total) * 100}%;"></div></div>
+            </div>`,
+            )
+            .join("")}
+        </div>`;
+        })
+        .join("")
+    : `<p style="font-size: 12px; color: var(--text-muted);">Chưa có poll nào, hãy tạo poll đầu tiên!</p>`;
+}
+
+// ---- Fan Zone: Fan Community (bình luận) ----
+function getFanComments() {
+  return JSON.parse(localStorage.getItem(muKey("comments"))) || [];
+}
+function saveFanComments(list) {
+  localStorage.setItem(muKey("comments"), JSON.stringify(list));
+}
+function postFanComment() {
+  const input = document.getElementById("fanCommentInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const currentUser = sessionStorage.getItem("currentUser") || "Khách";
+  const list = getFanComments();
+  list.unshift({
+    id: generateTaskId(),
+    user: currentUser,
+    text,
+    likes: 0,
+    time: Date.now(),
+  });
+  saveFanComments(list);
+  input.value = "";
+  renderFanComments();
+}
+function likeFanComment(id) {
+  const list = getFanComments();
+  const comment = list.find((c) => c.id === id);
+  if (comment) comment.likes++;
+  saveFanComments(list);
+  renderFanComments();
+}
+function renderFanComments() {
+  const box = document.getElementById("fanCommentsList");
+  if (!box) return;
+  const list = getFanComments();
+  box.innerHTML = list.length
+    ? list
+        .map(
+          (c) => `
+      <div class="quiz-question-block">
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">${c.user} • ${new Date(c.time).toLocaleString("vi-VN")}</div>
+        <div style="font-size: 13px; color: var(--text-main);">${c.text}</div>
+        <button class="task-action-btn" style="margin-top: 8px;" onclick="likeFanComment('${c.id}')">👍 ${c.likes}</button>
+      </div>`,
+        )
+        .join("")
+    : `<p style="font-size: 12px; color: var(--text-muted);">Chưa có bình luận nào, hãy là người đầu tiên!</p>`;
+}
+
+// ---- Media: tái sử dụng tính năng tìm kiếm YouTube đã có ----
+function muSearchYoutube(query) {
+  document.querySelector('.tab-btn[data-tab="entertainment"]').click();
+  setTimeout(() => {
+    switchEntView("video");
+    document.getElementById("ytInput").value = query;
+    handleYouTubeAction();
+  }, 150);
+}
+
+// ---- Bộ sưu tập cá nhân (không chứa ảnh có bản quyền, chỉ link người dùng tự thêm) ----
+function getGalleryImages() {
+  return JSON.parse(localStorage.getItem(muKey("gallery"))) || [];
+}
+function saveGalleryImages(list) {
+  localStorage.setItem(muKey("gallery"), JSON.stringify(list));
+}
+function addGalleryImage() {
+  const url = document.getElementById("galleryImgUrl").value.trim();
+  const category = document.getElementById("galleryCategory").value;
+  if (!url) {
+    showToast("Vui lòng dán link ảnh!", "error");
+    return;
+  }
+  const list = getGalleryImages();
+  list.unshift({ id: generateTaskId(), url, category });
+  saveGalleryImages(list);
+  document.getElementById("galleryImgUrl").value = "";
+  renderGallery();
+  showToast("Đã thêm ảnh vào bộ sưu tập!", "success");
+}
+function removeGalleryImage(id) {
+  saveGalleryImages(getGalleryImages().filter((g) => g.id !== id));
+  renderGallery();
+}
+function renderGallery() {
+  const grid = document.getElementById("galleryGrid");
+  if (!grid) return;
+  const list = getGalleryImages();
+  grid.style.display = list.length ? "grid" : "none";
+  grid.innerHTML = list
+    .map(
+      (g) => `
+    <div class="result-item-grid">
+      <img src="${g.url}" alt="${g.category}" onerror="this.style.display='none'">
+      <div class="info">
+        <div class="title">${g.category}</div>
+      </div>
+      <div class="yt-card-actions">
+        <span class="yt-icon-btn" onclick="removeGalleryImage('${g.id}')">🗑 Xóa</span>
+      </div>
+    </div>`,
+    )
+    .join("");
+}
+
+// ---- Notification Center ----
+function requestMuNotificationPermission() {
+  if (!("Notification" in window)) {
+    showToast("Trình duyệt của bạn không hỗ trợ Web Notification!", "error");
+    return;
+  }
+  Notification.requestPermission().then((permission) => {
+    if (permission === "granted") {
+      showToast("Đã bật thông báo trình duyệt!", "success");
+    } else {
+      showToast("Bạn đã từ chối quyền thông báo.", "info");
+    }
+  });
+}
+
+const muNotificationMessages = {
+  goal: "⚽ MU vừa ghi bàn!",
+  lineup: "📋 Đội hình ra sân đã được công bố!",
+  halftime: "⏸️ Hết hiệp 1!",
+  fulltime: "🏁 Trận đấu đã kết thúc!",
+  redcard: "🟥 Có thẻ đỏ trong trận đấu!",
+  transfer: "🔄 Có tin chuyển nhượng mới!",
+};
+
+function simulateMuNotification(type) {
+  const message = muNotificationMessages[type] || "Thông báo mới từ MU";
+
+  // Toast trong app (luôn hoạt động)
+  showToast(message, "info");
+
+  // Thông báo trình duyệt thật (nếu đã được cấp quyền)
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("Manchester United", { body: message, icon: "" });
+  }
+
+  const key = muKey("notificationHistory");
+  let history = JSON.parse(localStorage.getItem(key)) || [];
+  history.unshift({ message, time: Date.now() });
+  history = history.slice(0, 20);
+  localStorage.setItem(key, JSON.stringify(history));
+  renderMuNotificationHistory();
+}
+
+function renderMuNotificationHistory() {
+  const box = document.getElementById("muNotificationHistory");
+  if (!box) return;
+  const history =
+    JSON.parse(localStorage.getItem(muKey("notificationHistory"))) || [];
+  box.innerHTML = history.length
+    ? history
+        .map(
+          (h) =>
+            `<div>[${new Date(h.time).toLocaleTimeString("vi-VN")}] ${h.message}</div>`,
+        )
+        .join("")
+    : `<div style="color: var(--text-muted);">Chưa có thông báo nào.</div>`;
+}
+
+// ---- Khởi tạo toàn bộ tab MU khi trang tải xong (nếu đã đăng nhập) ----
+function initMuTab() {
+  if (!document.getElementById("panel-mu")) return;
+  loadMuNextMatch();
+  renderMuCountdown();
+  loadMuLiveMatch();
+  renderMuMatchTimeline();
+  renderStandingsTable();
+  loadSeasonStats();
+  loadClubStats();
 }
