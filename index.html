@@ -405,6 +405,9 @@
         <button class="tab-btn" data-tab="quiz">📝 Bài Kiểm Tra</button>
         <button class="tab-btn" data-tab="dashboard">🎓 Dashboard SV</button>
         <button class="tab-btn" data-tab="mu">🔴 Manchester United</button>
+        <button class="tab-btn" data-tab="analytics">📊 Analytics</button>
+        <button class="tab-btn" data-tab="news">📰 News Hub</button>
+        <button class="tab-btn" data-tab="devhub">💻 Developer Hub</button>
       </nav>
 
       <!-- TAB 1: LẬP TRÌNH & IDE -->
@@ -9067,6 +9070,248 @@ mutex.unlock();</code></pre>
               style="max-height: 240px"
             ></div>
           </div>
+        </div>
+      </section>
+
+      <!-- TAB MỚI: ANALYTICS -->
+      <section class="panel" id="panel-analytics">
+        <div class="card">
+          <h2>📊 System Analytics</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 16px;
+            "
+          >
+            ⚠️ Trình duyệt <b>không cho phép</b> trang web đọc CPU/RAM/tốc độ
+            mạng thật của hệ điều hành (giới hạn bảo mật). Các chỉ số dưới đây
+            dùng <b>phép đo/ước lượng thật</b> có thể thực hiện được từ
+            JavaScript (FPS thật, độ trễ mạng thật qua fetch, bộ nhớ JS Heap
+            thật trên Chrome, dung lượng LocalStorage thật...) — không phải số
+            liệu giả ngẫu nhiên.
+          </p>
+          <div class="task-stats-row" id="analyticsStatsRow"></div>
+        </div>
+
+        <div class="card">
+          <h2>📈 FPS Realtime</h2>
+          <svg
+            id="fpsChart"
+            viewBox="0 0 400 120"
+            style="width: 100%; max-width: 500px"
+          ></svg>
+        </div>
+
+        <div class="card">
+          <h2>💾 Dung Lượng Lưu Trữ</h2>
+          <table class="bigo-table" id="storageStatsTable">
+            <tr>
+              <th>Loại</th>
+              <th>Đã dùng</th>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <h2>🖥️ Thông Tin Trình Duyệt &amp; Thiết Bị</h2>
+          <table class="bigo-table" id="browserInfoTable">
+            <tr>
+              <th>Thuộc tính</th>
+              <th>Giá trị</th>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <h2>🔋 Pin &amp; Kết Nối</h2>
+          <div class="task-stats-row" id="batteryNetworkRow"></div>
+        </div>
+      </section>
+
+      <!-- TAB MỚI: NEWS HUB -->
+      <section class="panel" id="panel-news">
+        <div class="card">
+          <h2>📰 News Hub</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 16px;
+            "
+          >
+            ⚠️ Hầu hết các trang tin chặn CORS nên không thể nhúng nội dung bài
+            viết trực tiếp vào trang tĩnh không backend — mỗi mục dưới đây mở
+            <b>tìm kiếm Google News thật</b> theo chủ đề ở tab mới (luôn cập
+            nhật mới nhất, không phải nội dung giả).
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 8px;
+              margin-bottom: 16px;
+              flex-wrap: wrap;
+            "
+          >
+            <input
+              type="text"
+              id="newsSearchInput"
+              placeholder="🔍 Tìm tin theo từ khóa..."
+              style="flex: 1; min-width: 200px"
+              onkeydown="if (event.key === 'Enter') searchNewsCustom();"
+            />
+            <button class="btn-primary" onclick="searchNewsCustom()">
+              Tìm
+            </button>
+          </div>
+          <div class="cs-subject-grid" id="newsCategoryGrid"></div>
+        </div>
+
+        <div class="card">
+          <h2>🔖 Bookmark Của Bạn</h2>
+          <div class="grid-2">
+            <input
+              type="text"
+              id="newsBookmarkTitle"
+              placeholder="Tiêu đề bài viết..."
+            />
+            <input
+              type="text"
+              id="newsBookmarkUrl"
+              placeholder="Dán link bài viết..."
+            />
+          </div>
+          <button
+            class="btn-primary"
+            style="margin-top: 10px"
+            onclick="addNewsBookmark()"
+          >
+            + Lưu bookmark
+          </button>
+          <div
+            id="newsBookmarkList"
+            class="yt-video-list"
+            style="margin-top: 16px"
+          ></div>
+        </div>
+      </section>
+
+      <!-- TAB MỚI: DEVELOPER HUB -->
+      <section class="panel" id="panel-devhub">
+        <div class="card">
+          <h2>💻 GitHub Profile</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 14px;
+            "
+          >
+            Dùng GitHub REST API công khai (không cần API Key cho dữ liệu công
+            khai, giới hạn ~60 request/giờ theo IP).
+          </p>
+          <div class="video-controls">
+            <input
+              type="text"
+              id="githubUsernameInput"
+              placeholder="Tên đăng nhập GitHub..."
+              onkeydown="if (event.key === 'Enter') loadGithubProfile();"
+            />
+            <button class="btn-primary" onclick="loadGithubProfile()">
+              Tra cứu
+            </button>
+          </div>
+          <div id="githubProfileBox" style="margin-top: 16px"></div>
+          <div
+            id="githubReposBox"
+            class="search-results"
+            style="display: none; margin-top: 16px"
+          ></div>
+        </div>
+
+        <div class="card">
+          <h2>🏆 Coding Stats khác</h2>
+          <div class="grid-2">
+            <input
+              type="text"
+              id="codewarsUsernameInput"
+              placeholder="Tên đăng nhập Codewars..."
+            />
+            <button class="btn-primary" onclick="loadCodewarsStats()">
+              Tra cứu Codewars
+            </button>
+          </div>
+          <div id="codewarsResultBox" style="margin-top: 14px"></div>
+
+          <div class="grid-2" style="margin-top: 20px">
+            <input
+              type="text"
+              id="stackoverflowUserIdInput"
+              placeholder="User ID StackOverflow (số trong URL profile)..."
+            />
+            <button class="btn-primary" onclick="loadStackOverflowStats()">
+              Tra cứu StackOverflow
+            </button>
+          </div>
+          <div id="stackoverflowResultBox" style="margin-top: 14px"></div>
+
+          <p
+            style="font-size: 12px; color: var(--text-muted); margin-top: 20px"
+          >
+            ⚠️ LeetCode và HackerRank không có API công khai ổn định — bấm để mở
+            trang cá nhân thật:
+          </p>
+          <div
+            style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px"
+          >
+            <input
+              type="text"
+              id="leetcodeUsernameInput"
+              placeholder="Tên đăng nhập LeetCode..."
+            />
+            <button class="btn-secondary" onclick="openLeetcodeProfile()">
+              🔗 Mở LeetCode
+            </button>
+            <input
+              type="text"
+              id="hackerrankUsernameInput"
+              placeholder="Tên đăng nhập HackerRank..."
+            />
+            <button class="btn-secondary" onclick="openHackerrankProfile()">
+              🔗 Mở HackerRank
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>🗺️ Roadmap Cá Nhân</h2>
+          <p
+            style="
+              font-size: 12px;
+              color: var(--text-muted);
+              margin-bottom: 14px;
+            "
+          >
+            Danh sách công nghệ bạn muốn học, tham khảo từ
+            <a
+              href="https://roadmap.sh"
+              target="_blank"
+              style="color: var(--accent)"
+              >roadmap.sh</a
+            >, tự đánh dấu tiến độ, lưu LocalStorage.
+          </p>
+          <div class="video-controls">
+            <input
+              type="text"
+              id="roadmapItemInput"
+              placeholder="Thêm mục roadmap, VD: Học Docker..."
+              onkeydown="if (event.key === 'Enter') addRoadmapItem();"
+            />
+            <button class="btn-primary" onclick="addRoadmapItem()">
+              + Thêm
+            </button>
+          </div>
+          <ul class="todo-list" id="roadmapList" style="margin-top: 16px"></ul>
         </div>
       </section>
 

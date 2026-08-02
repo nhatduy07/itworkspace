@@ -557,6 +557,9 @@ window.addEventListener("DOMContentLoaded", () => {
     renderSpotifyLists();
     initDashboardAndQuiz();
     initMuTab();
+    initAnalyticsTab();
+    initNewsHub();
+    initDevHub();
   } else {
     // "Ghi nhớ đăng nhập": điền sẵn tên tài khoản lần đăng nhập trước
     const remembered = localStorage.getItem("rememberedUsername");
@@ -799,6 +802,9 @@ function completeLoginSession(user, rememberMe) {
   renderSpotifyLists();
   initDashboardAndQuiz();
   initMuTab();
+  initAnalyticsTab();
+  initNewsHub();
+  initDevHub();
   updateOnlineStatusDisplay();
   showToast("Đăng nhập thành công! Chào mừng " + user, "success");
 }
@@ -1003,6 +1009,9 @@ tabBtns.forEach((btn, index) => {
     // Tự động load lại cài đặt và avatar khi bấm vào tab cài đặt
     if (targetTab === "settings") {
       loadUserSettings();
+    }
+    if (targetTab === "analytics") {
+      initAnalyticsTab();
     }
 
     if (pillIndicator) {
@@ -6582,4 +6591,493 @@ function initMuTab() {
   renderStandingsTable();
   loadSeasonStats();
   loadClubStats();
+}
+
+// ==========================================
+// 📊 ANALYTICS TAB
+// ==========================================
+// Ghi chú trung thực: trình duyệt không cho phép JavaScript đọc CPU/RAM/tốc
+// độ mạng thật của hệ điều hành vì lý do bảo mật. Các số liệu dưới đây đều
+// là phép đo THẬT có thể thực hiện được từ trình duyệt (FPS thực tế đo bằng
+// requestAnimationFrame, độ trễ mạng thực tế đo bằng fetch, bộ nhớ JS Heap
+// thực tế trên Chrome...), không phải số ngẫu nhiên giả lập.
+
+let fpsHistory = [];
+let lastFrameTime = performance.now();
+let frameCount = 0;
+let currentFps = 0;
+
+function fpsTick(now) {
+  frameCount++;
+  if (now - lastFrameTime >= 1000) {
+    currentFps = frameCount;
+    frameCount = 0;
+    lastFrameTime = now;
+    fpsHistory.push(currentFps);
+    if (fpsHistory.length > 30) fpsHistory.shift();
+    if (
+      document.getElementById("panel-analytics")?.classList.contains("active")
+    ) {
+      renderFpsChart();
+    }
+  }
+  requestAnimationFrame(fpsTick);
+}
+requestAnimationFrame(fpsTick);
+
+function renderFpsChart() {
+  const svg = document.getElementById("fpsChart");
+  if (!svg || fpsHistory.length === 0) return;
+  const w = 400,
+    h = 120,
+    maxFps = 60;
+  const stepX = w / Math.max(1, fpsHistory.length - 1);
+
+  const points = fpsHistory
+    .map((fps, i) => `${i * stepX},${h - (Math.min(fps, maxFps) / maxFps) * h}`)
+    .join(" ");
+
+  svg.innerHTML = `
+    <polyline points="${points}" fill="none" style="stroke: #30d158; stroke-width: 2;" />
+    <text x="5" y="15" font-size="11" fill="var(--text-main)">${currentFps} FPS</text>
+  `;
+}
+
+async function measureNetworkPing() {
+  const start = performance.now();
+  try {
+    await fetch("https://api.github.com/zen", { cache: "no-store" });
+    return Math.round(performance.now() - start);
+  } catch (err) {
+    return null;
+  }
+}
+
+async function renderAnalyticsStats() {
+  const box = document.getElementById("analyticsStatsRow");
+  if (!box) return;
+
+  const ping = await measureNetworkPing();
+
+  let ramInfo = "Không hỗ trợ (chỉ Chrome)";
+  if (performance.memory) {
+    const usedMB = (performance.memory.usedJSHeapSize / 1048576).toFixed(1);
+    const limitMB = (performance.memory.jsHeapSizeLimit / 1048576).toFixed(0);
+    ramInfo = `${usedMB} / ${limitMB} MB`;
+  }
+
+  const connection =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
+  const networkSpeed = connection
+    ? `${connection.effectiveType || "?"} (~${connection.downlink || "?"} Mbps)`
+    : "Không hỗ trợ";
+
+  const stats = [
+    { label: "FPS hiện tại", value: currentFps || "..." },
+    { label: "RAM (JS Heap)", value: ramInfo },
+    {
+      label: "Ping (tới GitHub API)",
+      value: ping !== null ? ping + " ms" : "Lỗi mạng",
+    },
+    { label: "Tốc độ mạng (ước lượng)", value: networkSpeed },
+    {
+      label: "Trạng thái",
+      value: navigator.onLine ? "🟢 Online" : "🔴 Offline",
+    },
+  ];
+
+  box.innerHTML = stats
+    .map(
+      (s) => `
+    <div class="stat-chip"><div class="stat-value" style="font-size:15px;">${s.value}</div><div class="stat-label">${s.label}</div></div>`,
+    )
+    .join("");
+}
+
+function renderStorageStats() {
+  const table = document.getElementById("storageStatsTable");
+  if (!table) return;
+
+  let localStorageBytes = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    localStorageBytes +=
+      (key.length + (localStorage.getItem(key) || "").length) * 2;
+  }
+  const localStorageKB = (localStorageBytes / 1024).toFixed(2);
+
+  let sessionStorageBytes = 0;
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i);
+    sessionStorageBytes +=
+      (key.length + (sessionStorage.getItem(key) || "").length) * 2;
+  }
+  const sessionStorageKB = (sessionStorageBytes / 1024).toFixed(2);
+
+  Array.from(table.querySelectorAll("tr")).forEach((r, i) => {
+    if (i > 0) r.remove();
+  });
+
+  const rows = [
+    ["LocalStorage", `${localStorageKB} KB (${localStorage.length} key)`],
+    ["SessionStorage", `${sessionStorageKB} KB (${sessionStorage.length} key)`],
+  ];
+  rows.forEach(([label, value]) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${label}</td><td>${value}</td>`;
+    table.appendChild(tr);
+  });
+
+  if (navigator.storage && navigator.storage.estimate) {
+    navigator.storage.estimate().then((est) => {
+      const usedMB = ((est.usage || 0) / 1048576).toFixed(2);
+      const quotaMB = ((est.quota || 0) / 1048576).toFixed(0);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>Tổng dung lượng trình duyệt (IndexedDB + cache...)</td><td>${usedMB} / ${quotaMB} MB</td>`;
+      table.appendChild(tr);
+    });
+  }
+}
+
+function renderBrowserInfo() {
+  const table = document.getElementById("browserInfoTable");
+  if (!table) return;
+
+  Array.from(table.querySelectorAll("tr")).forEach((r, i) => {
+    if (i > 0) r.remove();
+  });
+
+  const rows = [
+    ["Trình duyệt", getDeviceInfo()],
+    ["User Agent", navigator.userAgent],
+    ["Độ phân giải màn hình", `${screen.width} × ${screen.height}`],
+    [
+      "Kích thước cửa sổ hiện tại",
+      `${window.innerWidth} × ${window.innerHeight}`,
+    ],
+    ["Ngôn ngữ trình duyệt", navigator.language],
+    [
+      "Số nhân CPU logic (hardwareConcurrency)",
+      navigator.hardwareConcurrency || "Không hỗ trợ",
+    ],
+  ];
+  rows.forEach(([label, value]) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${label}</td><td style="word-break: break-all;">${value}</td>`;
+    table.appendChild(tr);
+  });
+}
+
+function renderBatteryNetworkRow() {
+  const box = document.getElementById("batteryNetworkRow");
+  if (!box) return;
+
+  box.innerHTML = `<div class="stat-chip"><div class="stat-value" style="font-size:15px;">⏳</div><div class="stat-label">Đang kiểm tra pin...</div></div>`;
+
+  if (navigator.getBattery) {
+    navigator.getBattery().then((battery) => {
+      const percent = Math.round(battery.level * 100);
+      box.innerHTML = `
+        <div class="stat-chip"><div class="stat-value" style="font-size:18px;">${percent}%</div><div class="stat-label">Mức pin</div></div>
+        <div class="stat-chip"><div class="stat-value" style="font-size:15px;">${battery.charging ? "🔌 Đang sạc" : "🔋 Không sạc"}</div><div class="stat-label">Trạng thái sạc</div></div>
+      `;
+    });
+  } else {
+    box.innerHTML = `<div class="stat-chip"><div class="stat-value" style="font-size:13px;">Không hỗ trợ</div><div class="stat-label">Battery API (đã bị nhiều trình duyệt gỡ bỏ vì lý do riêng tư)</div></div>`;
+  }
+}
+
+function initAnalyticsTab() {
+  if (!document.getElementById("panel-analytics")) return;
+  renderAnalyticsStats();
+  renderStorageStats();
+  renderBrowserInfo();
+  renderBatteryNetworkRow();
+  renderFpsChart();
+}
+
+// ==========================================
+// 📰 NEWS HUB TAB
+// ==========================================
+const newsCategories = [
+  { name: "Công nghệ", icon: "💻", query: "công nghệ" },
+  { name: "AI", icon: "🤖", query: "trí tuệ nhân tạo AI" },
+  { name: "Lập trình", icon: "⌨️", query: "lập trình programming" },
+  { name: "Game", icon: "🎮", query: "game esports" },
+  { name: "Thể thao", icon: "⚽", query: "thể thao bóng đá" },
+  { name: "Thế giới", icon: "🌍", query: "tin tức thế giới" },
+  { name: "Kinh doanh", icon: "💼", query: "kinh doanh tài chính" },
+];
+
+function renderNewsCategoryGrid() {
+  const grid = document.getElementById("newsCategoryGrid");
+  if (!grid) return;
+  grid.innerHTML = newsCategories
+    .map(
+      (c) => `
+    <div class="cs-subject-card" onclick="openGoogleNewsSearch('${c.query}')">
+      <div class="cs-subject-icon">${c.icon}</div>
+      <div class="cs-subject-name">${c.name}</div>
+      <div class="cs-subject-status">🔗 Xem tin mới nhất</div>
+    </div>`,
+    )
+    .join("");
+}
+
+function openGoogleNewsSearch(query) {
+  window.open(
+    `https://news.google.com/search?q=${encodeURIComponent(query)}&hl=vi&gl=VN`,
+    "_blank",
+  );
+}
+
+function searchNewsCustom() {
+  const query = document.getElementById("newsSearchInput").value.trim();
+  if (!query) return;
+  openGoogleNewsSearch(query);
+}
+
+// ---- Bookmark tin tức ----
+function newsBookmarkKey() {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return "newsBookmarks_" + currentUser;
+}
+function getNewsBookmarks() {
+  return JSON.parse(localStorage.getItem(newsBookmarkKey())) || [];
+}
+function addNewsBookmark() {
+  const title = document.getElementById("newsBookmarkTitle").value.trim();
+  const url = document.getElementById("newsBookmarkUrl").value.trim();
+  if (!title || !url) {
+    showToast("Vui lòng nhập tiêu đề và link!", "error");
+    return;
+  }
+  const list = getNewsBookmarks();
+  list.unshift({ id: generateTaskId(), title, url });
+  localStorage.setItem(newsBookmarkKey(), JSON.stringify(list));
+  document.getElementById("newsBookmarkTitle").value = "";
+  document.getElementById("newsBookmarkUrl").value = "";
+  renderNewsBookmarks();
+  showToast("Đã lưu bookmark!", "success");
+}
+function removeNewsBookmark(id) {
+  const list = getNewsBookmarks().filter((b) => b.id !== id);
+  localStorage.setItem(newsBookmarkKey(), JSON.stringify(list));
+  renderNewsBookmarks();
+}
+function renderNewsBookmarks() {
+  const box = document.getElementById("newsBookmarkList");
+  if (!box) return;
+  const list = getNewsBookmarks();
+  box.innerHTML = list.length
+    ? list
+        .map(
+          (b) => `
+      <div class="yt-video-row" onclick="window.open('${b.url}', '_blank')">
+        <div class="yt-video-info"><div class="yt-video-title">${b.title}</div><div class="yt-video-sub">${b.url}</div></div>
+        <div class="yt-video-actions"><span class="yt-icon-btn" onclick="event.stopPropagation(); removeNewsBookmark('${b.id}')">🗑</span></div>
+      </div>`,
+        )
+        .join("")
+    : `<div class="yt-empty">Chưa có bookmark nào.</div>`;
+}
+
+function initNewsHub() {
+  if (!document.getElementById("panel-news")) return;
+  renderNewsCategoryGrid();
+  renderNewsBookmarks();
+}
+
+// ==========================================
+// 💻 DEVELOPER HUB TAB
+// ==========================================
+async function loadGithubProfile() {
+  const username = document.getElementById("githubUsernameInput").value.trim();
+  const profileBox = document.getElementById("githubProfileBox");
+  const reposBox = document.getElementById("githubReposBox");
+  if (!username) return;
+
+  profileBox.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tải...</p>`;
+  reposBox.style.display = "none";
+
+  try {
+    const [userRes, reposRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${encodeURIComponent(username)}`),
+      fetch(
+        `https://api.github.com/users/${encodeURIComponent(username)}/repos?sort=updated&per_page=6`,
+      ),
+    ]);
+    const user = await userRes.json();
+    const repos = await reposRes.json();
+
+    if (user.message === "Not Found") {
+      profileBox.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không tìm thấy tài khoản GitHub "${username}".</p>`;
+      return;
+    }
+
+    profileBox.innerHTML = `
+      <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+        <img src="${user.avatar_url}" alt="avatar" style="width: 64px; height: 64px; border-radius: 50%;">
+        <div>
+          <h3 style="font-size: 16px; color: var(--text-main);">${user.name || user.login}</h3>
+          <p style="font-size: 12px; color: var(--text-muted);">@${user.login} ${user.bio ? "• " + user.bio : ""}</p>
+        </div>
+      </div>
+      <div class="task-stats-row">
+        <div class="stat-chip"><div class="stat-value">${user.public_repos}</div><div class="stat-label">Repository</div></div>
+        <div class="stat-chip"><div class="stat-value">${user.followers}</div><div class="stat-label">Followers</div></div>
+        <div class="stat-chip"><div class="stat-value">${user.following}</div><div class="stat-label">Following</div></div>
+      </div>
+    `;
+
+    if (Array.isArray(repos) && repos.length > 0) {
+      reposBox.style.display = "grid";
+      reposBox.innerHTML = repos
+        .map(
+          (r) => `
+        <div class="github-repo-card">
+          <h3>${r.name}</h3>
+          <p>${r.description || "Không có mô tả"}</p>
+          <p style="margin-top: 8px;">⭐ ${r.stargazers_count} • 🍴 ${r.forks_count} • ${r.language || "—"}</p>
+        </div>`,
+        )
+        .join("");
+    }
+    showToast("Đã tải hồ sơ GitHub!", "success");
+  } catch (err) {
+    profileBox.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Lỗi mạng hoặc GitHub API đang giới hạn tốc độ (rate limit ~60 request/giờ không key).</p>`;
+  }
+}
+
+async function loadCodewarsStats() {
+  const username = document
+    .getElementById("codewarsUsernameInput")
+    .value.trim();
+  const box = document.getElementById("codewarsResultBox");
+  if (!username) return;
+  box.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tải...</p>`;
+  try {
+    const res = await fetch(
+      `https://www.codewars.com/api/v1/users/${encodeURIComponent(username)}`,
+    );
+    const data = await res.json();
+    if (data.success === false) {
+      box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không tìm thấy tài khoản Codewars này.</p>`;
+      return;
+    }
+    box.innerHTML = `
+      <table class="bigo-table">
+        <tr><td>Tên</td><td>${data.name || data.username}</td></tr>
+        <tr><td>Rank tổng</td><td>${data.ranks.overall.name}</td></tr>
+        <tr><td>Honor</td><td>${data.honor}</td></tr>
+        <tr><td>Số bài đã giải</td><td>${data.codeChallenges.totalCompleted}</td></tr>
+      </table>
+    `;
+  } catch (err) {
+    box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Lỗi mạng, thử lại sau.</p>`;
+  }
+}
+
+async function loadStackOverflowStats() {
+  const userId = document
+    .getElementById("stackoverflowUserIdInput")
+    .value.trim();
+  const box = document.getElementById("stackoverflowResultBox");
+  if (!userId) return;
+  box.innerHTML = `<p style="color: var(--text-muted); font-size: 13px;">⏳ Đang tải...</p>`;
+  try {
+    const res = await fetch(
+      `https://api.stackexchange.com/2.3/users/${encodeURIComponent(userId)}?site=stackoverflow`,
+    );
+    const data = await res.json();
+    if (!data.items || data.items.length === 0) {
+      box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Không tìm thấy User ID này.</p>`;
+      return;
+    }
+    const user = data.items[0];
+    box.innerHTML = `
+      <table class="bigo-table">
+        <tr><td>Tên</td><td>${user.display_name}</td></tr>
+        <tr><td>Reputation</td><td>${user.reputation.toLocaleString()}</td></tr>
+        <tr><td>Huy hiệu (Vàng/Bạc/Đồng)</td><td>🥇${user.badge_counts.gold} 🥈${user.badge_counts.silver} 🥉${user.badge_counts.bronze}</td></tr>
+      </table>
+    `;
+  } catch (err) {
+    box.innerHTML = `<p style="color: #ff453a; font-size: 13px;">⚠ Lỗi mạng, thử lại sau.</p>`;
+  }
+}
+
+function openLeetcodeProfile() {
+  const username = document
+    .getElementById("leetcodeUsernameInput")
+    .value.trim();
+  if (!username) return;
+  window.open(
+    `https://leetcode.com/${encodeURIComponent(username)}/`,
+    "_blank",
+  );
+}
+function openHackerrankProfile() {
+  const username = document
+    .getElementById("hackerrankUsernameInput")
+    .value.trim();
+  if (!username) return;
+  window.open(
+    `https://www.hackerrank.com/profile/${encodeURIComponent(username)}`,
+    "_blank",
+  );
+}
+
+// ---- Roadmap cá nhân ----
+function roadmapKey() {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return "devRoadmap_" + currentUser;
+}
+function getRoadmapItems() {
+  return JSON.parse(localStorage.getItem(roadmapKey())) || [];
+}
+function addRoadmapItem() {
+  const input = document.getElementById("roadmapItemInput");
+  const text = input.value.trim();
+  if (!text) return;
+  const list = getRoadmapItems();
+  list.push({ id: generateTaskId(), text, done: false });
+  localStorage.setItem(roadmapKey(), JSON.stringify(list));
+  input.value = "";
+  renderRoadmapList();
+}
+function toggleRoadmapItem(id) {
+  const list = getRoadmapItems();
+  const item = list.find((i) => i.id === id);
+  if (item) item.done = !item.done;
+  localStorage.setItem(roadmapKey(), JSON.stringify(list));
+  renderRoadmapList();
+}
+function removeRoadmapItem(id) {
+  const list = getRoadmapItems().filter((i) => i.id !== id);
+  localStorage.setItem(roadmapKey(), JSON.stringify(list));
+  renderRoadmapList();
+}
+function renderRoadmapList() {
+  const list = document.getElementById("roadmapList");
+  if (!list) return;
+  const items = getRoadmapItems();
+  list.innerHTML = items.length
+    ? items
+        .map(
+          (item) => `
+      <li class="${item.done ? "done" : ""}">
+        <span class="task-text" onclick="toggleRoadmapItem('${item.id}')" style="cursor: pointer;">${item.text}</span>
+        <span class="delete-btn" onclick="removeRoadmapItem('${item.id}')">✕</span>
+      </li>`,
+        )
+        .join("")
+    : `<li style="color: var(--text-muted);">Chưa có mục roadmap nào.</li>`;
+}
+
+function initDevHub() {
+  if (!document.getElementById("panel-devhub")) return;
+  renderRoadmapList();
 }
