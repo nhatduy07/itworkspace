@@ -522,208 +522,52 @@ setInterval(() => {
 }, 2000);
 
 // ==========================================
-// AUTHENTICATION & QUẢN LÝ TÀI KHOẢN
+// PHIÊN LÀM VIỆC CỤC BỘ (ĐÃ BỎ ĐĂNG NHẬP/ĐĂNG KÝ)
 // ==========================================
-let isLoginMode = true;
+// Toàn bộ dữ liệu (task, avatar, cài đặt, điểm quiz, tiến độ học...) giờ chỉ
+// lưu bằng LocalStorage ngay trên trình duyệt này — không cần tài khoản,
+// không cần mật khẩu, không cần đăng nhập. Mọi hàm cũ vẫn dùng
+// sessionStorage.getItem("currentUser") để tạo key lưu trữ, nên ta chỉ cần
+// gán sẵn 1 "hồ sơ cục bộ" cố định ngay khi mở trang là toàn bộ phần còn lại
+// của app hoạt động y như cũ, không cần sửa hàng chục hàm khác.
 let loginStartTime = null;
 let usageTimerInterval = null;
+const LOCAL_USER = "Bạn";
 
 window.addEventListener("DOMContentLoaded", () => {
   updateOnlineStatusDisplay();
 
-  // Tự động đăng nhập lại nếu còn phiên "Ghi nhớ đăng nhập" (30 ngày) hợp lệ,
-  // kể cả khi đã đóng hẳn trình duyệt (sessionStorage của tab cũ đã mất).
-  if (sessionStorage.getItem("itDashboardLogged") !== "true") {
-    const remembered = JSON.parse(localStorage.getItem("rememberedSession"));
-    if (remembered && remembered.expiresAt > Date.now()) {
-      sessionStorage.setItem("itDashboardLogged", "true");
-      sessionStorage.setItem("currentUser", remembered.user);
-    } else if (remembered) {
-      localStorage.removeItem("rememberedSession"); // hết hạn 30 ngày
-    }
+  sessionStorage.setItem("itDashboardLogged", "true");
+  sessionStorage.setItem("currentUser", LOCAL_USER);
+
+  const dataKey = "accountData_" + LOCAL_USER;
+  if (!localStorage.getItem(dataKey)) {
+    localStorage.setItem(
+      dataKey,
+      JSON.stringify({ avatar: "", cover: "", bio: "" }),
+    );
   }
 
-  if (sessionStorage.getItem("itDashboardLogged") === "true") {
-    document.getElementById("loginOverlay").style.display = "none";
-    loginStartTime =
-      parseInt(sessionStorage.getItem("loginStartTime")) || Date.now();
-    updateAccountHeaderUI();
-    startUsageTracking();
-    loadUserSettings();
-    loadUserHeaderProfile();
-    loadMessengerConversations();
-    renderTaskBoard();
-    renderYtLists();
-    renderSpotifyLists();
-    initDashboardAndQuiz();
-    initMuTab();
-    initAnalyticsTab();
-    initNewsHub();
-    initDevHub();
-  } else {
-    // "Ghi nhớ đăng nhập": điền sẵn tên tài khoản lần đăng nhập trước
-    const remembered = localStorage.getItem("rememberedUsername");
-    if (remembered) {
-      document.getElementById("authUsername").value = remembered;
-      document.getElementById("rememberMeCheckbox").checked = true;
-    }
-  }
+  loginStartTime =
+    parseInt(sessionStorage.getItem("loginStartTime")) || Date.now();
+  sessionStorage.setItem("loginStartTime", loginStartTime);
+
+  updateAccountHeaderUI();
+  startUsageTracking();
+  loadUserSettings();
+  loadUserHeaderProfile();
+  loadMessengerConversations();
+  renderTaskBoard();
+  renderYtLists();
+  renderSpotifyLists();
+  initDashboardAndQuiz();
+  initMuTab();
+  initAnalyticsTab();
+  initNewsHub();
+  initDevHub();
 });
 
-function toggleAuthMode() {
-  isLoginMode = !isLoginMode;
-  const authBtnText = document.getElementById("authBtnText");
-  const switchBtn = document.getElementById("authSwitchBtn");
-  const authTitle = document.getElementById("authTitle");
-  const emailField = document.getElementById("authEmailWrapper");
-  document.getElementById("authError").style.display = "none";
-
-  if (!isLoginMode) {
-    authTitle.textContent = "ĐĂNG KÝ TÀI KHOẢN MỚI";
-    authTitle.style.display = "block";
-    authBtnText.textContent = "Đăng Ký";
-    switchBtn.textContent = "Đã có tài khoản? Đăng nhập ngay";
-    if (emailField) emailField.style.display = "block";
-  } else {
-    authTitle.style.display = "none";
-    authBtnText.textContent = "Đăng Nhập";
-    switchBtn.textContent = "Đăng ký tài khoản mới";
-    if (emailField) emailField.style.display = "none";
-  }
-  validateAuthForm();
-}
-
-// Kiểm tra hợp lệ theo thời gian thực khi người dùng đang gõ
-function checkPasswordStrength(pass) {
-  const missing = [];
-  if (pass.length < 8) missing.push("ít nhất 8 ký tự");
-  if (!/[A-Z]/.test(pass)) missing.push("1 chữ hoa");
-  if (!/[a-z]/.test(pass)) missing.push("1 chữ thường");
-  if (!/[0-9]/.test(pass)) missing.push("1 chữ số");
-  if (!/[^A-Za-z0-9]/.test(pass)) missing.push("1 ký tự đặc biệt");
-  return missing;
-}
-
-function validateAuthForm() {
-  const user = document.getElementById("authUsername").value.trim();
-  const pass = document.getElementById("authPassword").value.trim();
-  const userErr = document.getElementById("usernameError");
-  const passErr = document.getElementById("passwordError");
-  const emailErr = document.getElementById("emailError");
-  let valid = true;
-
-  if (user.length > 0 && user.length < 3) {
-    userErr.textContent = "Tên tài khoản cần ít nhất 3 ký tự";
-    valid = false;
-  } else {
-    userErr.textContent = "";
-  }
-
-  if (!isLoginMode) {
-    const emailInput = document.getElementById("authEmail");
-    const email = emailInput ? emailInput.value.trim() : "";
-    if (email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      emailErr.textContent = "Email không hợp lệ";
-      valid = false;
-    } else {
-      emailErr.textContent = "";
-    }
-
-    if (pass.length > 0) {
-      const missing = checkPasswordStrength(pass);
-      if (missing.length > 0) {
-        passErr.textContent = "Mật khẩu cần thêm: " + missing.join(", ");
-        valid = false;
-      } else {
-        passErr.textContent = "";
-      }
-    }
-  } else {
-    if (pass.length > 0 && pass.length < 4) {
-      passErr.textContent = "Mật khẩu cần ít nhất 4 ký tự";
-      valid = false;
-    } else {
-      passErr.textContent = "";
-    }
-  }
-  return valid;
-}
-
-function togglePasswordVisibility() {
-  const pwInput = document.getElementById("authPassword");
-  const icon = document.getElementById("pwToggleIcon");
-  if (pwInput.type === "password") {
-    pwInput.type = "text";
-    icon.textContent = "🙈";
-  } else {
-    pwInput.type = "password";
-    icon.textContent = "👁️";
-  }
-}
-
-// Hiệu ứng Ripple khi bấm nút đăng nhập/đăng ký
-function createRipple(event) {
-  const button = event.currentTarget;
-  const oldRipple = button.querySelector(".ripple");
-  if (oldRipple) oldRipple.remove();
-
-  const diameter = Math.max(button.clientWidth, button.clientHeight);
-  const rect = button.getBoundingClientRect();
-  const circle = document.createElement("span");
-  circle.className = "ripple";
-  circle.style.width = circle.style.height = diameter + "px";
-  circle.style.left = event.clientX - rect.left - diameter / 2 + "px";
-  circle.style.top = event.clientY - rect.top - diameter / 2 + "px";
-  button.appendChild(circle);
-}
-
-function setAuthLoading(isLoading) {
-  const btn = document.getElementById("authBtn");
-  const btnText = document.getElementById("authBtnText");
-  const spinner = document.getElementById("authBtnSpinner");
-  if (!btn) return;
-  btn.disabled = isLoading;
-  if (spinner) spinner.style.display = isLoading ? "inline-block" : "none";
-  if (btnText) {
-    btnText.style.opacity = isLoading ? "0.6" : "1";
-  }
-}
-
-// Quên mật khẩu: vì ứng dụng không có backend/email, cho phép đặt lại
-// mật khẩu trực tiếp ngay trên trình duyệt (dữ liệu vẫn chỉ lưu local).
-function handleForgotPassword() {
-  const user = prompt("Nhập tên tài khoản cần khôi phục mật khẩu:");
-  if (!user) return;
-
-  const userKey = "account_" + user.trim();
-  if (!localStorage.getItem(userKey)) {
-    alert("Không tìm thấy tài khoản này!");
-    return;
-  }
-
-  const newPass = prompt("Nhập mật khẩu mới cho tài khoản '" + user + "':");
-  if (!newPass || newPass.trim().length < 4) {
-    alert("Mật khẩu mới cần ít nhất 4 ký tự!");
-    return;
-  }
-
-  localStorage.setItem(userKey, newPass.trim());
-  alert("Đặt lại mật khẩu thành công! Hãy đăng nhập bằng mật khẩu mới.");
-}
-
-// ---- Mã hóa mật khẩu bằng SHA-256 thật (Web Crypto API, không phải giả lập) ----
-async function sha256Hash(text) {
-  const data = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-function looksLikeSha256(str) {
-  return /^[a-f0-9]{64}$/i.test(str || "");
-}
-
-// ---- Nhận diện thiết bị/trình duyệt cơ bản từ userAgent ----
+// ---- Nhận diện thiết bị/trình duyệt cơ bản từ userAgent (dùng ở tab Analytics) ----
 function getDeviceInfo() {
   const ua = navigator.userAgent;
   let os = "Không xác định";
@@ -740,197 +584,6 @@ function getDeviceInfo() {
   else if (/Safari\//i.test(ua)) browser = "Safari";
 
   return `${browser} trên ${os}`;
-}
-
-// ---- Lịch sử đăng nhập ----
-function recordLoginHistory(user) {
-  const key = "loginHistory_" + user;
-  let history = JSON.parse(localStorage.getItem(key)) || [];
-  history.unshift({ time: Date.now(), device: getDeviceInfo() });
-  history = history.slice(0, 10);
-  localStorage.setItem(key, JSON.stringify(history));
-}
-function getLoginHistory(user) {
-  return JSON.parse(localStorage.getItem("loginHistory_" + user)) || [];
-}
-
-// Hoàn tất phiên đăng nhập: dùng chung cho đăng nhập thường và sau khi xác thực OTP đăng ký
-function completeLoginSession(user, rememberMe) {
-  sessionStorage.setItem("itDashboardLogged", "true");
-  sessionStorage.setItem("currentUser", user);
-
-  const dataKey = "accountData_" + user;
-  if (!localStorage.getItem(dataKey)) {
-    localStorage.setItem(
-      dataKey,
-      JSON.stringify({ avatar: "", cover: "", bio: "" }),
-    );
-  }
-
-  // "Ghi nhớ đăng nhập 30 ngày" + tự động đăng nhập khi mở lại trình duyệt
-  if (rememberMe) {
-    const expiresAt = Date.now() + 30 * 24 * 60 * 60 * 1000;
-    localStorage.setItem(
-      "rememberedSession",
-      JSON.stringify({ user, expiresAt }),
-    );
-    localStorage.setItem("rememberedUsername", user);
-  } else {
-    localStorage.removeItem("rememberedSession");
-    localStorage.removeItem("rememberedUsername");
-  }
-
-  recordLoginHistory(user);
-
-  loginStartTime = Date.now();
-  sessionStorage.setItem("loginStartTime", loginStartTime);
-
-  const overlay = document.getElementById("loginOverlay");
-  overlay.classList.add("login-success-flash");
-  setTimeout(() => {
-    overlay.style.display = "none";
-    overlay.classList.remove("login-success-flash");
-  }, 400);
-
-  updateAccountHeaderUI();
-  startUsageTracking();
-  loadUserSettings();
-  loadUserHeaderProfile();
-  loadMessengerConversations();
-  renderTaskBoard();
-  renderYtLists();
-  renderSpotifyLists();
-  initDashboardAndQuiz();
-  initMuTab();
-  initAnalyticsTab();
-  initNewsHub();
-  initDevHub();
-  updateOnlineStatusDisplay();
-  showToast("Đăng nhập thành công! Chào mừng " + user, "success");
-}
-
-let pendingRegistration = null;
-
-function handleAuth() {
-  const user = document.getElementById("authUsername").value.trim();
-  const pass = document.getElementById("authPassword").value.trim();
-  const errorMsg = document.getElementById("authError");
-  const rememberMe = document.getElementById("rememberMeCheckbox").checked;
-
-  if (!user || !pass) {
-    errorMsg.textContent = "Vui lòng nhập đầy đủ tên tài khoản và mật khẩu!";
-    errorMsg.style.display = "block";
-    return;
-  }
-
-  if (!validateAuthForm()) {
-    errorMsg.textContent = "Vui lòng kiểm tra lại thông tin nhập!";
-    errorMsg.style.display = "block";
-    return;
-  }
-
-  const userKey = "account_" + user;
-  const dataKey = "accountData_" + user;
-  const totalTimeKey = "totalUsageTime_" + user;
-
-  setAuthLoading(true);
-
-  // Giả lập thời gian xử lý để hiệu ứng loading hiển thị mượt mà
-  setTimeout(async () => {
-    if (isLoginMode) {
-      const savedValue = localStorage.getItem(userKey);
-      let passwordOk = false;
-
-      if (savedValue) {
-        if (looksLikeSha256(savedValue)) {
-          const enteredHash = await sha256Hash(pass);
-          passwordOk = enteredHash === savedValue;
-        } else {
-          // Tài khoản cũ còn lưu mật khẩu dạng plain-text (trước khi có SHA-256) —
-          // vẫn cho đăng nhập được, đồng thời tự nâng cấp sang lưu hash ngay lập tức.
-          passwordOk = savedValue === pass;
-          if (passwordOk) {
-            localStorage.setItem(userKey, await sha256Hash(pass));
-          }
-        }
-      }
-
-      if (passwordOk) {
-        completeLoginSession(user, rememberMe);
-      } else {
-        errorMsg.textContent = "Tên tài khoản hoặc mật khẩu không chính xác!";
-        errorMsg.style.display = "block";
-      }
-      setAuthLoading(false);
-    } else {
-      const email = document.getElementById("authEmail").value.trim();
-      if (localStorage.getItem(userKey)) {
-        errorMsg.textContent =
-          "Tên tài khoản này đã được sử dụng bởi người khác. Vui lòng chọn tên khác!";
-        errorMsg.style.display = "block";
-        setAuthLoading(false);
-        return;
-      }
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errorMsg.textContent = "Vui lòng nhập email hợp lệ!";
-        errorMsg.style.display = "block";
-        setAuthLoading(false);
-        return;
-      }
-
-      // Lưu tạm thông tin đăng ký, chờ xác thực OTP giả lập trước khi tạo tài khoản thật
-      const otpCode = String(Math.floor(100000 + Math.random() * 900000));
-      pendingRegistration = {
-        user,
-        email,
-        pass,
-        otpCode,
-        totalTimeKey,
-        dataKey,
-      };
-
-      document.getElementById("otpDisplayHint").textContent = otpCode;
-      document.getElementById("otpInput").value = "";
-      document.getElementById("otpError").textContent = "";
-      document.getElementById("otpModalOverlay").classList.add("active");
-      setAuthLoading(false);
-    }
-  }, 600);
-}
-
-function closeOtpModal() {
-  document.getElementById("otpModalOverlay").classList.remove("active");
-  pendingRegistration = null;
-}
-
-async function verifyOtpAndRegister() {
-  if (!pendingRegistration) return;
-  const entered = document.getElementById("otpInput").value.trim();
-  const otpError = document.getElementById("otpError");
-
-  if (entered !== pendingRegistration.otpCode) {
-    otpError.textContent = "Mã OTP không đúng, vui lòng thử lại!";
-    return;
-  }
-
-  const { user, email, pass, totalTimeKey, dataKey } = pendingRegistration;
-  const userKey = "account_" + user;
-
-  const hashedPass = await sha256Hash(pass);
-  localStorage.setItem(userKey, hashedPass);
-  localStorage.setItem(totalTimeKey, 0);
-  localStorage.setItem(
-    dataKey,
-    JSON.stringify({ avatar: "", cover: "", bio: "", email }),
-  );
-
-  document.getElementById("otpModalOverlay").classList.remove("active");
-  showToast("Đăng ký thành công! Đang đăng nhập...", "success");
-
-  const rememberMe = document.getElementById("rememberMeCheckbox").checked;
-  pendingRegistration = null;
-  completeLoginSession(user, rememberMe);
-  toggleAuthMode();
 }
 
 // ---- Trạng thái Online/Offline thật (dùng navigator.onLine + sự kiện trình duyệt) ----
@@ -981,14 +634,22 @@ function startUsageTracking() {
   }, 30000);
 }
 
-function switchAccount() {
+// Thay cho "Đăng xuất" cũ — vì không còn tài khoản để đăng xuất, nút này cho
+// phép xóa sạch toàn bộ dữ liệu cục bộ (task, avatar, cài đặt, điểm số...) để
+// bắt đầu lại từ đầu, có xác nhận trước khi xóa để tránh bấm nhầm.
+function resetAllLocalData() {
+  if (
+    !confirm(
+      "Xóa TOÀN BỘ dữ liệu đã lưu trên trình duyệt này (task, avatar, cài đặt, điểm số...)? Hành động này không thể hoàn tác!",
+    )
+  ) {
+    return;
+  }
   saveCurrentSessionTime();
   if (usageTimerInterval) clearInterval(usageTimerInterval);
+  localStorage.clear();
   sessionStorage.clear();
-  // Đăng xuất chủ động luôn kết thúc phiên "Ghi nhớ đăng nhập", để tránh
-  // tự động đăng nhập lại ngay sau khi người dùng đã cố ý đăng xuất.
-  localStorage.removeItem("rememberedSession");
-  document.getElementById("loginOverlay").style.display = "flex";
+  location.reload();
 }
 
 // Điều hướng Tab & Viên thuốc trượt 5 tab
@@ -4726,21 +4387,6 @@ function loadProfileModalData() {
   }
 
   document.getElementById("profileDeviceInfo").textContent = getDeviceInfo();
-
-  const history = getLoginHistory(currentUser);
-  document.getElementById("profileLoginHistory").innerHTML = history.length
-    ? history
-        .map(
-          (h) => `
-      <div class="yt-video-row" style="cursor:default;">
-        <div class="yt-video-info">
-          <div class="yt-video-title">${new Date(h.time).toLocaleString("vi-VN")}</div>
-          <div class="yt-video-sub">${h.device}</div>
-        </div>
-      </div>`,
-        )
-        .join("")
-    : `<div class="yt-empty">Chưa có lịch sử đăng nhập.</div>`;
 }
 
 // ==========================================
