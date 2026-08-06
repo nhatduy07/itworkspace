@@ -652,11 +652,17 @@ function resetAllLocalData() {
   location.reload();
 }
 
-// Điều hướng Tab & Viên thuốc trượt 5 tab
+// Điều hướng Tab & Viên chỉ báo trượt theo chiều dọc (sidebar)
 const tabBtns = document.querySelectorAll(".tab-btn");
 const pillIndicator = document.querySelector(".pill-indicator");
 
-tabBtns.forEach((btn, index) => {
+function positionSidebarPill(btn) {
+  if (!pillIndicator || !btn) return;
+  pillIndicator.style.transform = `translateY(${btn.offsetTop}px)`;
+  pillIndicator.style.height = `${btn.offsetHeight}px`;
+}
+
+tabBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
     tabBtns.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
@@ -675,10 +681,14 @@ tabBtns.forEach((btn, index) => {
       initAnalyticsTab();
     }
 
-    if (pillIndicator) {
-      pillIndicator.style.transform = `translateX(${index * 100}%)`;
-    }
+    positionSidebarPill(btn);
   });
+});
+
+// Đặt vị trí viên chỉ báo đúng ngay khi tải trang (khớp với tab đang active)
+window.addEventListener("DOMContentLoaded", () => {
+  const activeBtn = document.querySelector(".tab-btn.active") || tabBtns[0];
+  positionSidebarPill(activeBtn);
 });
 
 // ==========================================
