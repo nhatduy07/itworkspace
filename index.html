@@ -7607,6 +7607,43 @@ mutex.unlock();</code></pre>
               </p>
             </div>
 
+            <div
+              style="
+                margin-bottom: 20px;
+                background: rgba(255, 255, 255, 0.03);
+                padding: 16px;
+                border-radius: 16px;
+                border: 1px solid var(--apple-glass-border);
+              "
+            >
+              <label class="field-label"
+                >⚡ TheSportsDB API Key (dùng cho Tỷ số trực tiếp MU, mặc định
+                dùng key dùng thử "3"):</label
+              >
+              <input
+                type="password"
+                id="settingSportsDbApiKey"
+                placeholder="Để trống để dùng key dùng thử mặc định..."
+                oninput="saveSportsDbApiKey()"
+              />
+              <p
+                style="
+                  font-size: 11px;
+                  color: var(--text-muted);
+                  margin-top: 8px;
+                "
+              >
+                Đăng ký key riêng miễn phí tại
+                <a
+                  href="https://www.thesportsdb.com/api.php"
+                  target="_blank"
+                  style="color: var(--accent)"
+                  >TheSportsDB</a
+                >
+                nếu key dùng thử bị giới hạn tốc độ.
+              </p>
+            </div>
+
             <div style="display: flex; gap: 10px; margin-top: 15px">
               <button
                 class="btn-primary"
@@ -8108,6 +8145,125 @@ mutex.unlock();</code></pre>
 
           <!-- ================= 🏠 TỔNG QUAN ================= -->
           <div id="mu-overview" class="mu-subpanel active">
+            <!-- ============================================================
+               MỤC MỚI 1: TỶ SỐ TRỰC TIẾP (dữ liệu thật qua TheSportsDB API,
+               miễn phí không cần đăng ký — tự động làm mới mỗi 60 giây)
+          ============================================================= -->
+            <div class="card">
+              <h2>⚡ Tỷ Số Trực Tiếp</h2>
+              <p
+                style="
+                  font-size: 11px;
+                  color: var(--text-muted);
+                  margin-bottom: 14px;
+                "
+              >
+                ⚠️ Dùng TheSportsDB (miễn phí, key dùng thử "3" mặc định — có
+                thể đổi trong ⚙️ Cài Đặt). Gói miễn phí không đảm bảo dữ liệu
+                phút-theo-phút khi trận đang diễn ra, trạng thái LIVE được suy
+                luận dựa trên thời điểm trận đấu gần đây nhất.
+              </p>
+              <div id="muLiveScoreBox">
+                <p style="font-size: 12px; color: var(--text-muted)">
+                  ⏳ Đang tải...
+                </p>
+              </div>
+            </div>
+
+            <!-- ============================================================
+               MỤC MỚI 2: WIDGET THỜI TIẾT (Open-Meteo, miễn phí không cần
+               key — xin vị trí người dùng nếu được cấp quyền)
+          ============================================================= -->
+            <div class="card">
+              <h2>🌦 Thời Tiết</h2>
+              <div
+                style="
+                  display: flex;
+                  gap: 8px;
+                  margin-bottom: 14px;
+                  flex-wrap: wrap;
+                "
+              >
+                <input
+                  type="text"
+                  id="muWeatherCityInput"
+                  placeholder="Nhập thành phố (hoặc để trống dùng vị trí của bạn)..."
+                  style="flex: 1; min-width: 180px"
+                  onkeydown="if (event.key === 'Enter') loadMuWeather();"
+                />
+                <button class="btn-primary" onclick="loadMuWeather()">
+                  Xem
+                </button>
+                <button
+                  class="btn-secondary"
+                  onclick="loadMuWeatherByLocation()"
+                >
+                  📍 Vị trí của tôi
+                </button>
+              </div>
+              <div id="muWeatherBox"></div>
+            </div>
+
+            <!-- ============================================================
+               MỤC MỚI 3: GIÁ XĂNG VIỆT NAM (không có API công khai đáng tin
+               cậy cho giá xăng thời gian thực → cập nhật thủ công mỗi lần
+               Nhà nước điều chỉnh giá, lưu LocalStorage, vẽ biểu đồ đường)
+          ============================================================= -->
+            <div class="card">
+              <h2>⛽ Giá Xăng Việt Nam</h2>
+              <p
+                style="
+                  font-size: 11px;
+                  color: var(--text-muted);
+                  margin-bottom: 14px;
+                "
+              >
+                ⚠️ Không có API công khai đáng tin cậy cho giá xăng Việt Nam
+                theo thời gian thực — tự thêm mỗi lần Liên Bộ Công Thương - Tài
+                chính điều chỉnh giá, hệ thống tự tính mức tăng/giảm và vẽ biểu
+                đồ.
+              </p>
+              <div class="grid-2">
+                <input type="date" id="gasPriceDate" />
+                <input
+                  type="number"
+                  id="gasPriceValue"
+                  placeholder="Giá (đồng/lít), VD: 20560"
+                  min="0"
+                />
+              </div>
+              <button
+                class="btn-primary"
+                style="margin-top: 10px"
+                onclick="addGasPriceEntry()"
+              >
+                + Thêm lần điều chỉnh
+              </button>
+
+              <div
+                class="task-stats-row"
+                id="gasPriceCurrentRow"
+                style="margin-top: 16px"
+              ></div>
+              <svg
+                id="gasPriceChart"
+                viewBox="0 0 400 160"
+                style="width: 100%; max-width: 500px; margin-top: 10px"
+              ></svg>
+
+              <h3 style="font-size: 14px; margin: 16px 0 8px">
+                📜 Lịch sử điều chỉnh gần đây
+              </h3>
+              <table class="bigo-table" id="gasPriceHistoryTable">
+                <tr>
+                  <th>Ngày</th>
+                  <th>Giá (đồng/lít)</th>
+                  <th>Thay đổi</th>
+                  <th></th>
+                </tr>
+              </table>
+            </div>
+
             <!-- TRẬN ĐẤU TIẾP THEO + COUNTDOWN -->
             <div class="card">
               <h2>⏭️ Trận Đấu Tiếp Theo</h2>

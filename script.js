@@ -34,6 +34,25 @@ function loadTmdbApiKey() {
   if (input) input.value = localStorage.getItem("userTmdbApiKey") || "";
 }
 
+// ==========================================
+// THESPORTSDB API KEY - CÙNG CƠ CHẾ VỚI YOUTUBE/TMDb (dùng cho mục ⚡ Tỷ số trực tiếp MU)
+// ==========================================
+function getSportsDbApiKey() {
+  // "3" là key dùng thử công khai chính thức của TheSportsDB, luôn miễn phí
+  // cho dữ liệu cơ bản — dùng làm mặc định để tính năng chạy được ngay mà
+  // không cần cấu hình, người dùng có thể đổi bằng key riêng nếu cần.
+  return localStorage.getItem("userSportsDbApiKey") || "3";
+}
+function saveSportsDbApiKey() {
+  const input = document.getElementById("settingSportsDbApiKey");
+  if (!input) return;
+  localStorage.setItem("userSportsDbApiKey", input.value.trim());
+}
+function loadSportsDbApiKey() {
+  const input = document.getElementById("settingSportsDbApiKey");
+  if (input) input.value = localStorage.getItem("userSportsDbApiKey") || "";
+}
+
 let currentChatFriend = null;
 
 // ==========================================
@@ -89,6 +108,7 @@ function loadUserSettings() {
 
   loadYtApiKey();
   loadTmdbApiKey();
+  loadSportsDbApiKey();
 }
 
 function applyUserSettings(settings) {
@@ -6247,6 +6267,14 @@ function initMuTab() {
   renderStandingsTable();
   loadSeasonStats();
   loadClubStats();
+
+  // --- 3 mục mới bổ sung: Tỷ số trực tiếp, Thời tiết, Giá xăng ---
+  fetchMuLiveScore();
+  if (!muLiveScoreInterval) {
+    muLiveScoreInterval = setInterval(fetchMuLiveScore, 60000);
+  }
+  loadMuWeather();
+  renderGasPriceChart();
 }
 
 // ==========================================
@@ -6736,4 +6764,353 @@ function renderRoadmapList() {
 function initDevHub() {
   if (!document.getElementById("panel-devhub")) return;
   renderRoadmapList();
+}
+
+// ==========================================
+// MỤC MỚI 1: TỶ SỐ TRỰC TIẾP MU (TheSportsDB API — Section chỉnh sửa Tab MU)
+// ==========================================
+const MU_TEAM_ID = "133612"; // ID Manchester United trên TheSportsDB
+let muLiveScoreInterval = null;
+
+// Ước lượng trạng thái trận đấu từ thời gian, vì gói miễn phí của
+// TheSportsDB không đảm bảo cờ "đang live" theo phút thực.
+function estimateMuMatchStatus(event) {
+  const eventTime = new Date(
+    `${event.dateEvent}T${event.strTime || "00:00:00"}`,
+  ).getTime();
+  const now = Date.now();
+  const hoursSince = (now - eventTime) / (1000 * 60 * 60);
+
+  if (hoursSince < 0) return "upcoming";
+  if (hoursSince >= 0 && hoursSince <= 2.5) return "live";
+  return "finished";
+}
+
+function renderMuMatchCard(event, statusOverride) {
+  const status = statusOverride || estimateMuMatchStatus(event);
+  const statusLabel =
+    status === "live"
+      ? "🔴 LIVE"
+      : status === "finished"
+        ? "✅ FT"
+        : "🕐 Upcoming";
+  const statusClass =
+    status === "live"
+      ? "cd-overdue blink"
+      : status === "finished"
+        ? "cd-green"
+        : "cd-yellow";
+
+  const homeScore =
+    event.intHomeScore !== null && event.intHomeScore !== undefined
+      ? event.intHomeScore
+      : "-";
+  const awayScore =
+    event.intAwayScore !== null && event.intAwayScore !== undefined
+      ? event.intAwayScore
+      : "-";
+  const homeBadge = event.strHomeTeamBadge || "";
+  const awayBadge = event.strAwayTeamBadge || "";
+
+  return `
+    <div class="quiz-question-block" style="text-align: center;">
+      <span class="countdown-badge ${statusClass}" style="margin-bottom: 10px; display: inline-block;">${statusLabel}</span>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin: 10px 0;">
+        <div style="flex: 1; text-align: center;">
+          ${homeBadge ? `<img src="${homeBadge}" alt="${event.strHomeTeam}" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">` : ""}
+          <div style="font-size: 12px; color: var(--text-main); font-weight: 600;">${event.strHomeTeam}</div>
+        </div>
+        <div style="font-size: 22px; font-weight: 800; color: var(--accent); min-width: 70px;">${homeScore} - ${awayScore}</div>
+        <div style="flex: 1; text-align: center;">
+          ${awayBadge ? `<img src="${awayBadge}" alt="${event.strAwayTeam}" style="width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px;">` : ""}
+          <div style="font-size: 12px; color: var(--text-main); font-weight: 600;">${event.strAwayTeam}</div>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted);">
+        ${event.strLeague || ""} • ${event.dateEvent || ""} ${event.strTime ? event.strTime.slice(0, 5) : ""}
+      </div>
+    </div>
+  `;
+}
+
+async function fetchMuLiveScore() {
+  const box = document.getElementById("muLiveScoreBox");
+  if (!box) return;
+  const apiKey = getSportsDbApiKey();
+
+  try {
+    const [lastRes, nextRes] = await Promise.all([
+      fetch(
+        `https://www.thesportsdb.com/api/v1/json/${apiKey}/eventslast.php?id=${MU_TEAM_ID}`,
+      ),
+      fetch(
+        `https://www.thesportsdb.com/api/v1/json/${apiKey}/eventsnext.php?id=${MU_TEAM_ID}`,
+      ),
+    ]);
+    const lastData = await lastRes.json();
+    const nextData = await nextRes.json();
+
+    const lastEvent = lastData.results && lastData.results[0];
+    const nextEvent =
+      (nextData.events && nextData.events[0]) ||
+      (nextData.results && nextData.results[0]);
+
+    if (lastEvent && estimateMuMatchStatus(lastEvent) === "live") {
+      // Chỉ có 1 trận đang diễn ra → chỉ hiển thị trận đó
+      box.innerHTML = renderMuMatchCard(lastEvent, "live");
+      return;
+    }
+
+    // Không có trận đang diễn ra → hiển thị trận gần nhất + trận sắp tới
+    let html = "";
+    if (lastEvent) html += renderMuMatchCard(lastEvent, "finished");
+    if (nextEvent) html += renderMuMatchCard(nextEvent, "upcoming");
+    box.innerHTML =
+      html ||
+      `<p style="font-size: 12px; color: var(--text-muted);">Không có dữ liệu trận đấu.</p>`;
+  } catch (err) {
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải dữ liệu tỷ số lúc này, thử lại sau.</p>`;
+  }
+}
+
+// ==========================================
+// MỤC MỚI 2: WIDGET THỜI TIẾT (Open-Meteo — Section chỉnh sửa Tab MU)
+// ==========================================
+// Bảng diễn giải mã thời tiết WMO sang mô tả + icon tiếng Việt
+function interpretWeatherCode(code) {
+  const map = {
+    0: ["Trời quang", "☀️"],
+    1: ["Ít mây", "🌤️"],
+    2: ["Có mây", "⛅"],
+    3: ["Nhiều mây", "☁️"],
+    45: ["Sương mù", "🌫️"],
+    48: ["Sương mù đóng băng", "🌫️"],
+    51: ["Mưa phùn nhẹ", "🌦️"],
+    53: ["Mưa phùn", "🌦️"],
+    55: ["Mưa phùn dày", "🌧️"],
+    61: ["Mưa nhẹ", "🌧️"],
+    63: ["Mưa vừa", "🌧️"],
+    65: ["Mưa to", "⛈️"],
+    71: ["Tuyết nhẹ", "🌨️"],
+    80: ["Mưa rào nhẹ", "🌦️"],
+    81: ["Mưa rào", "🌧️"],
+    82: ["Mưa rào lớn", "⛈️"],
+    95: ["Dông", "⛈️"],
+    96: ["Dông kèm mưa đá", "⛈️"],
+  };
+  return map[code] || ["Không xác định", "🌡️"];
+}
+
+async function renderMuWeatherResult(latitude, longitude, cityLabel) {
+  const box = document.getElementById("muWeatherBox");
+  box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">⏳ Đang tải thời tiết...</p>`;
+
+  try {
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`,
+    );
+    const data = await res.json();
+    const current = data.current;
+    const [condition, icon] = interpretWeatherCode(current.weather_code);
+
+    box.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+        <div style="font-size: 48px;">${icon}</div>
+        <div>
+          <div style="font-size: 28px; font-weight: 700; color: var(--text-main);">${Math.round(current.temperature_2m)}°C</div>
+          <div style="font-size: 13px; color: var(--text-muted);">${condition} • ${cityLabel}</div>
+        </div>
+      </div>
+      <div class="task-stats-row" style="margin-top: 16px;">
+        <div class="stat-chip"><div class="stat-value" style="font-size: 16px;">💧 ${current.relative_humidity_2m}%</div><div class="stat-label">Độ ẩm</div></div>
+        <div class="stat-chip"><div class="stat-value" style="font-size: 16px;">💨 ${current.wind_speed_10m} km/h</div><div class="stat-label">Tốc độ gió</div></div>
+      </div>
+    `;
+  } catch (err) {
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải dữ liệu thời tiết lúc này.</p>`;
+  }
+}
+
+async function loadMuWeather() {
+  const city = document.getElementById("muWeatherCityInput").value.trim();
+  const box = document.getElementById("muWeatherBox");
+
+  if (!city) {
+    // Không nhập thành phố → thử xin vị trí người dùng, nếu không được thì mặc định Hà Nội
+    if (navigator.geolocation) {
+      loadMuWeatherByLocation();
+    } else {
+      renderMuWeatherResult(21.0278, 105.8342, "Hà Nội (mặc định)");
+    }
+    return;
+  }
+
+  box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">⏳ Đang tìm thành phố...</p>`;
+  try {
+    const geoRes = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=vi`,
+    );
+    const geoData = await geoRes.json();
+    if (!geoData.results || geoData.results.length === 0) {
+      box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không tìm thấy thành phố "${city}".</p>`;
+      return;
+    }
+    const { latitude, longitude, name, country } = geoData.results[0];
+    renderMuWeatherResult(latitude, longitude, `${name}, ${country}`);
+  } catch (err) {
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Lỗi mạng, thử lại sau.</p>`;
+  }
+}
+
+function loadMuWeatherByLocation() {
+  const box = document.getElementById("muWeatherBox");
+  if (!navigator.geolocation) {
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Trình duyệt không hỗ trợ định vị.</p>`;
+    return;
+  }
+  box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">⏳ Đang xin quyền vị trí...</p>`;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      renderMuWeatherResult(
+        pos.coords.latitude,
+        pos.coords.longitude,
+        "Vị trí của bạn",
+      );
+    },
+    () => {
+      renderMuWeatherResult(
+        21.0278,
+        105.8342,
+        "Hà Nội (không có quyền vị trí)",
+      );
+    },
+  );
+}
+
+// ==========================================
+// MỤC MỚI 3: GIÁ XĂNG VIỆT NAM (cập nhật thủ công — Section chỉnh sửa Tab MU)
+// ==========================================
+function gasPriceKey() {
+  const currentUser = sessionStorage.getItem("currentUser") || "guest";
+  return "gasPriceHistory_" + currentUser;
+}
+function getGasPriceHistory() {
+  return JSON.parse(localStorage.getItem(gasPriceKey())) || [];
+}
+function saveGasPriceHistory(list) {
+  localStorage.setItem(gasPriceKey(), JSON.stringify(list));
+}
+
+function addGasPriceEntry() {
+  const date = document.getElementById("gasPriceDate").value;
+  const price = parseInt(document.getElementById("gasPriceValue").value);
+  if (!date || isNaN(price)) {
+    showToast("Vui lòng nhập đủ ngày và giá!", "error");
+    return;
+  }
+  const list = getGasPriceHistory();
+  list.push({ date, price });
+  list.sort((a, b) => new Date(a.date) - new Date(b.date));
+  saveGasPriceHistory(list);
+  document.getElementById("gasPriceValue").value = "";
+  renderGasPriceChart();
+  showToast("Đã thêm lần điều chỉnh giá xăng!", "success");
+}
+
+function removeGasPriceEntry(idx) {
+  const list = getGasPriceHistory();
+  list.splice(idx, 1);
+  saveGasPriceHistory(list);
+  renderGasPriceChart();
+}
+
+function renderGasPriceChart() {
+  const currentRow = document.getElementById("gasPriceCurrentRow");
+  const svg = document.getElementById("gasPriceChart");
+  const table = document.getElementById("gasPriceHistoryTable");
+  if (!currentRow || !svg || !table) return;
+
+  const list = getGasPriceHistory();
+
+  // --- Thẻ giá hiện tại + mức tăng/giảm ---
+  if (list.length === 0) {
+    currentRow.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Chưa có dữ liệu, hãy thêm lần điều chỉnh giá đầu tiên.</p>`;
+  } else {
+    const latest = list[list.length - 1];
+    const prev = list.length > 1 ? list[list.length - 2] : null;
+    const diff = prev ? latest.price - prev.price : 0;
+    const diffLabel = prev
+      ? diff > 0
+        ? `🔺 Tăng ${diff.toLocaleString()} đồng`
+        : diff < 0
+          ? `🔻 Giảm ${Math.abs(diff).toLocaleString()} đồng`
+          : "◾ Không đổi"
+      : "—";
+
+    currentRow.innerHTML = `
+      <div class="stat-chip"><div class="stat-value" style="font-size: 18px;">${latest.price.toLocaleString()}đ</div><div class="stat-label">Giá hiện tại (đồng/lít)</div></div>
+      <div class="stat-chip"><div class="stat-value" style="font-size: 15px;">${diffLabel}</div><div class="stat-label">So với lần trước</div></div>
+      <div class="stat-chip"><div class="stat-value" style="font-size: 15px;">${new Date(latest.date).toLocaleDateString("vi-VN")}</div><div class="stat-label">Ngày cập nhật</div></div>
+    `;
+  }
+
+  // --- Biểu đồ đường (vanilla SVG) ---
+  if (list.length < 2) {
+    svg.innerHTML = `<text x="200" y="80" text-anchor="middle" fill="var(--text-muted)" font-size="12">Cần ít nhất 2 lần điều chỉnh để vẽ biểu đồ</text>`;
+  } else {
+    const w = 400,
+      h = 160,
+      pad = 30;
+    const prices = list.map((l) => l.price);
+    const minP = Math.min(...prices);
+    const maxP = Math.max(...prices);
+    const range = maxP - minP || 1;
+
+    const points = list.map((l, i) => {
+      const x = pad + (i / (list.length - 1)) * (w - pad * 2);
+      const y = h - pad - ((l.price - minP) / range) * (h - pad * 2);
+      return `${x},${y}`;
+    });
+
+    const dots = list
+      .map((l, i) => {
+        const [x, y] = points[i].split(",");
+        return `<circle cx="${x}" cy="${y}" r="4" fill="var(--accent)" />`;
+      })
+      .join("");
+
+    svg.innerHTML = `
+      <polyline points="${points.join(" ")}" fill="none" style="stroke: var(--accent); stroke-width: 2.5;" />
+      ${dots}
+    `;
+  }
+
+  // --- Bảng lịch sử ---
+  Array.from(table.querySelectorAll("tr")).forEach((r, i) => {
+    if (i > 0) r.remove();
+  });
+  list
+    .slice()
+    .reverse()
+    .forEach((entry) => {
+      const idx = list.indexOf(entry);
+      const prevIdx = idx - 1;
+      const diff = prevIdx >= 0 ? entry.price - list[prevIdx].price : 0;
+      const diffText =
+        prevIdx < 0
+          ? "—"
+          : diff > 0
+            ? `🔺 +${diff.toLocaleString()}đ`
+            : diff < 0
+              ? `🔻 ${diff.toLocaleString()}đ`
+              : "◾ 0đ";
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${new Date(entry.date).toLocaleDateString("vi-VN")}</td>
+        <td>${entry.price.toLocaleString()}đ</td>
+        <td>${diffText}</td>
+        <td><span class="delete-btn" onclick="removeGasPriceEntry(${idx})">✕</span></td>
+      `;
+      table.appendChild(tr);
+    });
 }
