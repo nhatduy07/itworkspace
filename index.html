@@ -80,6 +80,14 @@
             <span class="tab-icon">💻</span
             ><span class="tab-label-text">Developer Hub</span>
           </button>
+          <button class="tab-btn" data-tab="weather">
+            <span class="tab-icon">🌦️</span
+            ><span class="tab-label-text">Thời Tiết</span>
+          </button>
+          <button class="tab-btn" data-tab="gasprice">
+            <span class="tab-icon">⛽</span
+            ><span class="tab-label-text">Giá Xăng</span>
+          </button>
 
           <div class="sidebar-group-label">Khác</div>
           <button class="tab-btn" data-tab="settings">
@@ -8146,11 +8154,28 @@ mutex.unlock();</code></pre>
           <!-- ================= 🏠 TỔNG QUAN ================= -->
           <div id="mu-overview" class="mu-subpanel active">
             <!-- ============================================================
-               MỤC MỚI 1: TỶ SỐ TRỰC TIẾP (dữ liệu thật qua TheSportsDB API,
-               miễn phí không cần đăng ký — tự động làm mới mỗi 60 giây)
+               A + B: TRẬN ĐẤU MU — HOÀN TOÀN TỰ ĐỘNG (TheSportsDB API)
+               - Nếu đang LIVE: chỉ hiện trận đó.
+               - Nếu không: hiện trận gần nhất + trận tiếp theo.
+               Không yêu cầu người dùng nhập bất kỳ thông tin gì.
           ============================================================= -->
             <div class="card">
-              <h2>⚡ Tỷ Số Trực Tiếp</h2>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                  margin-bottom: 4px;
+                "
+              >
+                <h2 style="margin: 0">⚡ Trận Đấu Manchester United</h2>
+                <span
+                  id="muLastUpdatedLabel"
+                  style="font-size: 11px; color: var(--text-muted)"
+                ></span>
+              </div>
               <p
                 style="
                   font-size: 11px;
@@ -8158,12 +8183,22 @@ mutex.unlock();</code></pre>
                   margin-bottom: 14px;
                 "
               >
-                ⚠️ Dùng TheSportsDB (miễn phí, key dùng thử "3" mặc định — có
-                thể đổi trong ⚙️ Cài Đặt). Gói miễn phí không đảm bảo dữ liệu
-                phút-theo-phút khi trận đang diễn ra, trạng thái LIVE được suy
-                luận dựa trên thời điểm trận đấu gần đây nhất.
+                Tự động lấy dữ liệu từ TheSportsDB, làm mới liên tục — không cần
+                nhập hay tìm kiếm gì cả.
               </p>
               <div id="muLiveScoreBox">
+                <p style="font-size: 12px; color: var(--text-muted)">
+                  ⏳ Đang tải dữ liệu...
+                </p>
+              </div>
+            </div>
+
+            <!-- ============================================================
+               C: LỊCH THI ĐẤU SẮP TỚI — tự động (TheSportsDB API)
+          ============================================================= -->
+            <div class="card">
+              <h2>📅 Lịch Thi Đấu Sắp Tới</h2>
+              <div id="muUpcomingFixturesBox">
                 <p style="font-size: 12px; color: var(--text-muted)">
                   ⏳ Đang tải...
                 </p>
@@ -8171,252 +8206,19 @@ mutex.unlock();</code></pre>
             </div>
 
             <!-- ============================================================
-               MỤC MỚI 2: WIDGET THỜI TIẾT (Open-Meteo, miễn phí không cần
-               key — xin vị trí người dùng nếu được cấp quyền)
+               D: KẾT QUẢ GẦN ĐÂY — tự động, có phân loại Thắng/Hòa/Thua
+               (TheSportsDB API)
           ============================================================= -->
-            <div class="card">
-              <h2>🌦 Thời Tiết</h2>
-              <div
-                style="
-                  display: flex;
-                  gap: 8px;
-                  margin-bottom: 14px;
-                  flex-wrap: wrap;
-                "
-              >
-                <input
-                  type="text"
-                  id="muWeatherCityInput"
-                  placeholder="Nhập thành phố (hoặc để trống dùng vị trí của bạn)..."
-                  style="flex: 1; min-width: 180px"
-                  onkeydown="if (event.key === 'Enter') loadMuWeather();"
-                />
-                <button class="btn-primary" onclick="loadMuWeather()">
-                  Xem
-                </button>
-                <button
-                  class="btn-secondary"
-                  onclick="loadMuWeatherByLocation()"
-                >
-                  📍 Vị trí của tôi
-                </button>
-              </div>
-              <div id="muWeatherBox"></div>
-            </div>
-
-            <!-- ============================================================
-               MỤC MỚI 3: GIÁ XĂNG VIỆT NAM (không có API công khai đáng tin
-               cậy cho giá xăng thời gian thực → cập nhật thủ công mỗi lần
-               Nhà nước điều chỉnh giá, lưu LocalStorage, vẽ biểu đồ đường)
-          ============================================================= -->
-            <div class="card">
-              <h2>⛽ Giá Xăng Việt Nam</h2>
-              <p
-                style="
-                  font-size: 11px;
-                  color: var(--text-muted);
-                  margin-bottom: 14px;
-                "
-              >
-                ⚠️ Không có API công khai đáng tin cậy cho giá xăng Việt Nam
-                theo thời gian thực — tự thêm mỗi lần Liên Bộ Công Thương - Tài
-                chính điều chỉnh giá, hệ thống tự tính mức tăng/giảm và vẽ biểu
-                đồ.
-              </p>
-              <div class="grid-2">
-                <input type="date" id="gasPriceDate" />
-                <input
-                  type="number"
-                  id="gasPriceValue"
-                  placeholder="Giá (đồng/lít), VD: 20560"
-                  min="0"
-                />
-              </div>
-              <button
-                class="btn-primary"
-                style="margin-top: 10px"
-                onclick="addGasPriceEntry()"
-              >
-                + Thêm lần điều chỉnh
-              </button>
-
-              <div
-                class="task-stats-row"
-                id="gasPriceCurrentRow"
-                style="margin-top: 16px"
-              ></div>
-              <svg
-                id="gasPriceChart"
-                viewBox="0 0 400 160"
-                style="width: 100%; max-width: 500px; margin-top: 10px"
-              ></svg>
-
-              <h3 style="font-size: 14px; margin: 16px 0 8px">
-                📜 Lịch sử điều chỉnh gần đây
-              </h3>
-              <table class="bigo-table" id="gasPriceHistoryTable">
-                <tr>
-                  <th>Ngày</th>
-                  <th>Giá (đồng/lít)</th>
-                  <th>Thay đổi</th>
-                  <th></th>
-                </tr>
-              </table>
-            </div>
-
-            <!-- TRẬN ĐẤU TIẾP THEO + COUNTDOWN -->
-            <div class="card">
-              <h2>⏭️ Trận Đấu Tiếp Theo</h2>
-              <p
-                style="
-                  font-size: 12px;
-                  color: var(--text-muted);
-                  margin-bottom: 14px;
-                "
-              >
-                ⚠️ Không có nguồn dữ liệu lịch thi đấu trực tiếp miễn phí đủ tin
-                cậy để nhúng không cần backend — bạn tự nhập thông tin trận đấu,
-                hệ thống sẽ tự đếm ngược thời gian thực.
-              </p>
-              <div class="grid-2">
-                <input
-                  type="text"
-                  id="muNextOpponent"
-                  placeholder="Đối thủ..."
-                />
-                <select id="muNextCompetition">
-                  <option value="Premier League">Premier League</option>
-                  <option value="FA Cup">FA Cup</option>
-                  <option value="League Cup">League Cup</option>
-                  <option value="Europa League">Europa League</option>
-                  <option value="Friendly">Giao hữu</option>
-                </select>
-              </div>
-              <div class="grid-2" style="margin-top: 14px">
-                <input type="datetime-local" id="muNextDateTime" />
-                <input
-                  type="text"
-                  id="muNextVenue"
-                  placeholder="Sân thi đấu..."
-                />
-              </div>
-              <button
-                class="btn-primary"
-                style="margin-top: 14px"
-                onclick="saveMuNextMatch()"
-              >
-                💾 Lưu trận đấu
-              </button>
-
-              <div id="muCountdownBox" class="mu-countdown-box"></div>
-            </div>
-
-            <!-- LIVE MATCH CENTER (theo dõi trực tiếp thủ công) -->
-            <div class="card">
-              <h2>📈 Live Match Center</h2>
-              <p
-                style="
-                  font-size: 12px;
-                  color: var(--text-muted);
-                  margin-bottom: 14px;
-                "
-              >
-                ⚠️ Không có feed dữ liệu trực tiếp thật (cần trả phí + backend)
-                — đây là bảng theo dõi trận đấu <b>thủ công</b>, giúp bạn tự ghi
-                lại diễn biến khi đang xem trận đấu thật.
-              </p>
-              <div class="grid-2">
-                <div>
-                  <label class="field-label">Tỷ số MU</label>
-                  <input
-                    type="number"
-                    id="muLiveScoreHome"
-                    value="0"
-                    min="0"
-                    onchange="saveMuLiveMatch()"
-                  />
-                </div>
-                <div>
-                  <label class="field-label">Tỷ số đối thủ</label>
-                  <input
-                    type="number"
-                    id="muLiveScoreAway"
-                    value="0"
-                    min="0"
-                    onchange="saveMuLiveMatch()"
-                  />
-                </div>
-              </div>
-              <div
-                class="task-stats-row"
-                id="muLiveStatsRow"
-                style="margin-top: 16px"
-              ></div>
-              <div class="grid-2" style="margin-top: 14px">
-                <div>
-                  <label class="field-label">Possession MU (%)</label>
-                  <input
-                    type="number"
-                    id="muLivePossession"
-                    value="50"
-                    min="0"
-                    max="100"
-                    onchange="saveMuLiveMatch()"
-                  />
-                </div>
-                <div>
-                  <label class="field-label">Shots (Tổng / Trúng đích)</label>
-                  <input
-                    type="text"
-                    id="muLiveShots"
-                    placeholder="VD: 12/5"
-                    onchange="saveMuLiveMatch()"
-                  />
-                </div>
-              </div>
-              <button
-                class="btn-secondary"
-                style="margin-top: 14px"
-                onclick="addMuMatchEvent()"
-              >
-                + Ghi sự kiện trận đấu
-              </button>
-              <input
-                type="text"
-                id="muMatchEventInput"
-                placeholder="VD: 45' Bàn thắng - Rashford"
-                style="margin-top: 8px"
-              />
-              <div
-                class="osi-log"
-                id="muMatchTimeline"
-                style="margin-top: 14px"
-              ></div>
-            </div>
-
-            <!-- KẾT QUẢ GẦN ĐÂY (giữ nguyên iframe fctables.com đã có sẵn) -->
             <div class="card">
               <h2>📋 Kết Quả Gần Đây</h2>
-              <div
-                style="
-                  border-radius: 14px;
-                  overflow: hidden;
-                  height: 500px;
-                  border: 1px solid var(--apple-glass-border);
-                  margin-top: 15px;
-                "
-              >
-                <iframe
-                  src="https://www.fctables.com/teams/manchester-united-195973/iframe/?type=team-recent-matches&lang=en&past=4&future=4&title=Manchester+United"
-                  width="100%"
-                  height="100%"
-                  frameborder="0"
-                  scrolling="yes"
-                ></iframe>
+              <div id="muRecentResultsBox">
+                <p style="font-size: 12px; color: var(--text-muted)">
+                  ⏳ Đang tải...
+                </p>
               </div>
             </div>
 
-            <!-- BXH PREMIER LEAGUE (cập nhật thủ công) -->
+            <!-- BXH PREMIER LEAGUE (mục có sẵn từ trước, giữ nguyên không đổi) -->
             <div class="card">
               <h2>🏆 Bảng Xếp Hạng Premier League</h2>
               <p
@@ -9464,6 +9266,105 @@ mutex.unlock();</code></pre>
               id="roadmapList"
               style="margin-top: 16px"
             ></ul>
+          </div>
+        </section>
+
+        <!-- TAB MỚI: THỜI TIẾT (tự động, ưu tiên Geolocation, Open-Meteo miễn phí) -->
+        <section class="panel" id="panel-weather">
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 4px;
+              "
+            >
+              <h2 style="margin: 0">🌦️ Thời Tiết</h2>
+              <span
+                id="weatherLastUpdatedLabel"
+                style="font-size: 11px; color: var(--text-muted)"
+              ></span>
+            </div>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-bottom: 16px;
+              "
+            >
+              Tự động xin vị trí của bạn (Geolocation) để lấy thời tiết chính
+              xác; nếu bạn từ chối quyền vị trí, hệ thống dùng Hà Nội làm mặc
+              định.
+            </p>
+            <div id="weatherTabBox">
+              <p style="font-size: 12px; color: var(--text-muted)">
+                ⏳ Đang lấy vị trí và tải dữ liệu thời tiết...
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB MỚI: GIÁ XĂNG (không có API công khai/CORS-friendly cho VN — xem ghi chú) -->
+        <section class="panel" id="panel-gasprice">
+          <div class="card">
+            <h2>⛽ Giá Xăng Việt Nam</h2>
+            <p
+              style="
+                font-size: 11px;
+                color: var(--text-muted);
+                margin-bottom: 14px;
+              "
+            >
+              ⚠️ <b>Ghi chú minh bạch:</b> hiện không tồn tại API công khai, hợp
+              pháp và ổn định để lấy giá xăng Việt Nam trực tiếp từ trình duyệt
+              (không có backend riêng) — Petrolimex không mở CORS cho web bên
+              ngoài, các dự án cộng đồng (vietfuel-api...) đều yêu cầu tự host
+              backend. Vì vậy mục này cập nhật thủ công mỗi lần Liên Bộ Công
+              Thương - Tài chính công bố điều chỉnh, hệ thống tự tính chênh lệch
+              và vẽ biểu đồ ngay khi có dữ liệu mới.
+            </p>
+            <div class="grid-2">
+              <input type="date" id="gasPriceDate" />
+              <input
+                type="number"
+                id="gasPriceValue"
+                placeholder="Giá (đồng/lít), VD: 20560"
+                min="0"
+              />
+            </div>
+            <button
+              class="btn-primary"
+              style="margin-top: 10px"
+              onclick="addGasPriceEntry()"
+            >
+              + Thêm lần điều chỉnh
+            </button>
+
+            <div
+              class="task-stats-row"
+              id="gasPriceCurrentRow"
+              style="margin-top: 16px"
+            ></div>
+            <svg
+              id="gasPriceChart"
+              viewBox="0 0 400 160"
+              style="width: 100%; max-width: 500px; margin-top: 10px"
+            ></svg>
+
+            <h3 style="font-size: 14px; margin: 16px 0 8px">
+              📜 Lịch sử điều chỉnh gần đây
+            </h3>
+            <table class="bigo-table" id="gasPriceHistoryTable">
+              <tr>
+                <th>Ngày</th>
+                <th>Giá (đồng/lít)</th>
+                <th>Thay đổi</th>
+                <th></th>
+              </tr>
+            </table>
           </div>
         </section>
 

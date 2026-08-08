@@ -585,6 +585,8 @@ window.addEventListener("DOMContentLoaded", () => {
   initAnalyticsTab();
   initNewsHub();
   initDevHub();
+  initWeatherTab();
+  renderGasPriceChart();
 });
 
 // ---- Nhận diện thiết bị/trình duyệt cơ bản từ userAgent (dùng ở tab Analytics) ----
@@ -5091,127 +5093,6 @@ function switchMuView(view) {
   }
 }
 
-// ---- Trận đấu tiếp theo + Countdown thời gian thực ----
-function saveMuNextMatch() {
-  const data = {
-    opponent: document.getElementById("muNextOpponent").value.trim(),
-    competition: document.getElementById("muNextCompetition").value,
-    datetime: document.getElementById("muNextDateTime").value,
-    venue: document.getElementById("muNextVenue").value.trim(),
-  };
-  localStorage.setItem(muKey("nextMatch"), JSON.stringify(data));
-  showToast("Đã lưu thông tin trận đấu tiếp theo!", "success");
-  renderMuCountdown();
-}
-
-function loadMuNextMatch() {
-  const data = JSON.parse(localStorage.getItem(muKey("nextMatch")));
-  if (!data) return;
-  if (document.getElementById("muNextOpponent")) {
-    document.getElementById("muNextOpponent").value = data.opponent || "";
-    document.getElementById("muNextCompetition").value =
-      data.competition || "Premier League";
-    document.getElementById("muNextDateTime").value = data.datetime || "";
-    document.getElementById("muNextVenue").value = data.venue || "";
-  }
-}
-
-function renderMuCountdown() {
-  const box = document.getElementById("muCountdownBox");
-  if (!box) return;
-  const data = JSON.parse(localStorage.getItem(muKey("nextMatch")));
-
-  if (!data || !data.datetime) {
-    box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Chưa có thông tin trận đấu tiếp theo.</p>`;
-    return;
-  }
-
-  const target = new Date(data.datetime).getTime();
-  const diff = target - Date.now();
-
-  if (diff <= 0) {
-    box.innerHTML = `<p style="font-size:13px;color:var(--text-main);">⚽ vs <b>${data.opponent || "?"}</b> (${data.competition}) — Trận đấu đã/đang diễn ra tại ${data.venue || "?"}!</p>`;
-    return;
-  }
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const mins = Math.floor((diff / (1000 * 60)) % 60);
-  const secs = Math.floor((diff / 1000) % 60);
-
-  box.innerHTML = `
-    <p style="width: 100%; text-align: center; font-size: 13px; color: var(--text-main); margin-bottom: 10px;">⚽ vs <b>${data.opponent || "?"}</b> — ${data.competition} tại ${data.venue || "?"}</p>
-    <div class="stat-chip"><div class="stat-value">${days}</div><div class="stat-label">Ngày</div></div>
-    <div class="stat-chip"><div class="stat-value">${hours}</div><div class="stat-label">Giờ</div></div>
-    <div class="stat-chip"><div class="stat-value">${mins}</div><div class="stat-label">Phút</div></div>
-    <div class="stat-chip"><div class="stat-value">${secs}</div><div class="stat-label">Giây</div></div>
-  `;
-}
-setInterval(renderMuCountdown, 1000);
-
-// ---- Live Match Center (theo dõi thủ công) ----
-function saveMuLiveMatch() {
-  const data = {
-    home: parseInt(document.getElementById("muLiveScoreHome").value) || 0,
-    away: parseInt(document.getElementById("muLiveScoreAway").value) || 0,
-    possession:
-      parseInt(document.getElementById("muLivePossession").value) || 50,
-    shots: document.getElementById("muLiveShots").value.trim(),
-  };
-  localStorage.setItem(muKey("liveMatch"), JSON.stringify(data));
-  renderMuLiveStats();
-}
-
-function loadMuLiveMatch() {
-  const data = JSON.parse(localStorage.getItem(muKey("liveMatch")));
-  if (!data) return;
-  if (document.getElementById("muLiveScoreHome")) {
-    document.getElementById("muLiveScoreHome").value = data.home || 0;
-    document.getElementById("muLiveScoreAway").value = data.away || 0;
-    document.getElementById("muLivePossession").value = data.possession || 50;
-    document.getElementById("muLiveShots").value = data.shots || "";
-  }
-  renderMuLiveStats();
-}
-
-function renderMuLiveStats() {
-  const box = document.getElementById("muLiveStatsRow");
-  if (!box) return;
-  const data = JSON.parse(localStorage.getItem(muKey("liveMatch"))) || {
-    home: 0,
-    away: 0,
-    possession: 50,
-    shots: "0/0",
-  };
-  box.innerHTML = `
-    <div class="stat-chip"><div class="stat-value">${data.home} - ${data.away}</div><div class="stat-label">Tỷ số</div></div>
-    <div class="stat-chip"><div class="stat-value">${data.possession}%</div><div class="stat-label">Possession MU</div></div>
-    <div class="stat-chip"><div class="stat-value">${data.shots || "—"}</div><div class="stat-label">Shots (Tổng/Trúng đích)</div></div>
-  `;
-}
-
-function addMuMatchEvent() {
-  const input = document.getElementById("muMatchEventInput");
-  const text = input.value.trim();
-  if (!text) return;
-  const key = muKey("matchTimeline");
-  let events = JSON.parse(localStorage.getItem(key)) || [];
-  events.unshift({ text, time: Date.now() });
-  events = events.slice(0, 30);
-  localStorage.setItem(key, JSON.stringify(events));
-  input.value = "";
-  renderMuMatchTimeline();
-}
-
-function renderMuMatchTimeline() {
-  const box = document.getElementById("muMatchTimeline");
-  if (!box) return;
-  const events = JSON.parse(localStorage.getItem(muKey("matchTimeline"))) || [];
-  box.innerHTML = events.length
-    ? events.map((e) => `<div>${e.text}</div>`).join("")
-    : `<div style="color: var(--text-muted);">Chưa có sự kiện nào được ghi lại.</div>`;
-}
-
 // ---- Bảng xếp hạng Premier League (thủ công) ----
 function getStandings() {
   return JSON.parse(localStorage.getItem(muKey("standings"))) || [];
@@ -6260,21 +6141,15 @@ function renderMuNotificationHistory() {
 // ---- Khởi tạo toàn bộ tab MU khi trang tải xong (nếu đã đăng nhập) ----
 function initMuTab() {
   if (!document.getElementById("panel-mu")) return;
-  loadMuNextMatch();
-  renderMuCountdown();
-  loadMuLiveMatch();
-  renderMuMatchTimeline();
   renderStandingsTable();
   loadSeasonStats();
   loadClubStats();
 
-  // --- 3 mục mới bổ sung: Tỷ số trực tiếp, Thời tiết, Giá xăng ---
+  // --- Dữ liệu MU hoàn toàn tự động (không cần người dùng nhập) ---
   fetchMuLiveScore();
-  if (!muLiveScoreInterval) {
-    muLiveScoreInterval = setInterval(fetchMuLiveScore, 60000);
-  }
-  loadMuWeather();
-  renderGasPriceChart();
+  fetchMuUpcomingFixtures();
+  fetchMuRecentResults();
+  startMuAutoRefresh();
 }
 
 // ==========================================
@@ -6767,10 +6642,11 @@ function initDevHub() {
 }
 
 // ==========================================
-// MỤC MỚI 1: TỶ SỐ TRỰC TIẾP MU (TheSportsDB API — Section chỉnh sửa Tab MU)
+// TAB MU — DỮ LIỆU HOÀN TOÀN TỰ ĐỘNG (TheSportsDB API, không cần nhập liệu)
 // ==========================================
 const MU_TEAM_ID = "133612"; // ID Manchester United trên TheSportsDB
-let muLiveScoreInterval = null;
+let muAutoRefreshTimeout = null;
+let muLastKnownStatus = "finished";
 
 // Ước lượng trạng thái trận đấu từ thời gian, vì gói miễn phí của
 // TheSportsDB không đảm bảo cờ "đang live" theo phút thực.
@@ -6833,6 +6709,13 @@ function renderMuMatchCard(event, statusOverride) {
   `;
 }
 
+function markMuLastUpdated() {
+  const label = document.getElementById("muLastUpdatedLabel");
+  if (label)
+    label.textContent =
+      "Cập nhật lần cuối: " + new Date().toLocaleTimeString("vi-VN");
+}
+
 async function fetchMuLiveScore() {
   const box = document.getElementById("muLiveScoreBox");
   if (!box) return;
@@ -6858,24 +6741,137 @@ async function fetchMuLiveScore() {
     if (lastEvent && estimateMuMatchStatus(lastEvent) === "live") {
       // Chỉ có 1 trận đang diễn ra → chỉ hiển thị trận đó
       box.innerHTML = renderMuMatchCard(lastEvent, "live");
-      return;
+      muLastKnownStatus = "live";
+    } else {
+      // Không có trận đang diễn ra → hiển thị trận gần nhất + trận sắp tới
+      let html = "";
+      if (lastEvent) html += renderMuMatchCard(lastEvent, "finished");
+      if (nextEvent) html += renderMuMatchCard(nextEvent, "upcoming");
+      box.innerHTML =
+        html ||
+        `<p style="font-size: 12px; color: var(--text-muted);">Không có dữ liệu trận đấu.</p>`;
+      muLastKnownStatus = "finished";
     }
-
-    // Không có trận đang diễn ra → hiển thị trận gần nhất + trận sắp tới
-    let html = "";
-    if (lastEvent) html += renderMuMatchCard(lastEvent, "finished");
-    if (nextEvent) html += renderMuMatchCard(nextEvent, "upcoming");
-    box.innerHTML =
-      html ||
-      `<p style="font-size: 12px; color: var(--text-muted);">Không có dữ liệu trận đấu.</p>`;
+    markMuLastUpdated();
   } catch (err) {
-    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải dữ liệu tỷ số lúc này, thử lại sau.</p>`;
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải dữ liệu tỷ số lúc này (lỗi mạng hoặc API tạm thời không phản hồi). Sẽ tự thử lại.</p>`;
   }
 }
 
+// ---- C. Lịch thi đấu sắp tới — tự động ----
+async function fetchMuUpcomingFixtures() {
+  const box = document.getElementById("muUpcomingFixturesBox");
+  if (!box) return;
+  const apiKey = getSportsDbApiKey();
+
+  try {
+    const res = await fetch(
+      `https://www.thesportsdb.com/api/v1/json/${apiKey}/eventsnext.php?id=${MU_TEAM_ID}`,
+    );
+    const data = await res.json();
+    const events = data.events || data.results || [];
+
+    if (events.length === 0) {
+      box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Chưa có lịch thi đấu sắp tới.</p>`;
+      return;
+    }
+
+    box.innerHTML = events
+      .map((e) => {
+        const isHome = e.idHomeTeam === MU_TEAM_ID;
+        const opponent = isHome ? e.strAwayTeam : e.strHomeTeam;
+        return `
+        <div class="upcoming-task-row">
+          <span>📅 ${e.dateEvent || "?"} ${e.strTime ? e.strTime.slice(0, 5) : ""} — vs <b>${opponent}</b> (${isHome ? "Sân nhà" : "Sân khách"})</span>
+          <span style="font-size: 11px; color: var(--text-muted);">${e.strLeague || ""}</span>
+        </div>`;
+      })
+      .join("");
+  } catch (err) {
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải lịch thi đấu lúc này.</p>`;
+  }
+}
+
+// ---- D. Kết quả gần đây — tự động, kèm phân loại Thắng/Hòa/Thua ----
+async function fetchMuRecentResults() {
+  const box = document.getElementById("muRecentResultsBox");
+  if (!box) return;
+  const apiKey = getSportsDbApiKey();
+
+  try {
+    const res = await fetch(
+      `https://www.thesportsdb.com/api/v1/json/${apiKey}/eventslast.php?id=${MU_TEAM_ID}`,
+    );
+    const data = await res.json();
+    const events = data.results || data.events || [];
+
+    if (events.length === 0) {
+      box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">Chưa có dữ liệu kết quả gần đây.</p>`;
+      return;
+    }
+
+    box.innerHTML = events
+      .map((e) => {
+        const isHome = e.idHomeTeam === MU_TEAM_ID;
+        const opponent = isHome ? e.strAwayTeam : e.strHomeTeam;
+        const muScore = parseInt(isHome ? e.intHomeScore : e.intAwayScore);
+        const oppScore = parseInt(isHome ? e.intAwayScore : e.intHomeScore);
+
+        let resultLabel = "—";
+        let resultClass = "cd-none";
+        if (!isNaN(muScore) && !isNaN(oppScore)) {
+          if (muScore > oppScore) {
+            resultLabel = "🟢 Thắng";
+            resultClass = "cd-green";
+          } else if (muScore < oppScore) {
+            resultLabel = "🔴 Thua";
+            resultClass = "cd-red";
+          } else {
+            resultLabel = "🟡 Hòa";
+            resultClass = "cd-yellow";
+          }
+        }
+
+        return `
+        <div class="upcoming-task-row">
+          <span>vs <b>${opponent}</b> — ${e.intHomeScore ?? "-"} : ${e.intAwayScore ?? "-"} (${e.dateEvent || "?"})</span>
+          <span class="countdown-badge ${resultClass}">${resultLabel}</span>
+        </div>`;
+      })
+      .join("");
+  } catch (err) {
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải kết quả gần đây lúc này.</p>`;
+  }
+}
+
+// ---- Tự động làm mới: nhanh hơn khi đang LIVE, chậm hơn khi không có trận ----
+function startMuAutoRefresh() {
+  if (muAutoRefreshTimeout) clearTimeout(muAutoRefreshTimeout);
+
+  const scheduleNext = () => {
+    const interval = muLastKnownStatus === "live" ? 20000 : 5 * 60 * 1000; // 20s khi LIVE, 5 phút khi không
+    muAutoRefreshTimeout = setTimeout(async () => {
+      await fetchMuLiveScore();
+      fetchMuUpcomingFixtures();
+      fetchMuRecentResults();
+      scheduleNext();
+    }, interval);
+  };
+  scheduleNext();
+}
+
 // ==========================================
-// MỤC MỚI 2: WIDGET THỜI TIẾT (Open-Meteo — Section chỉnh sửa Tab MU)
+// TAB THỜI TIẾT — HOÀN TOÀN TỰ ĐỘNG (Open-Meteo, miễn phí không cần key)
+// Ưu tiên Geolocation trình duyệt → nếu từ chối, dùng Hà Nội làm mặc định.
+// Không yêu cầu người dùng nhập thành phố hay tra cứu gì cả.
 // ==========================================
+const WEATHER_DEFAULT_CITY = {
+  lat: 21.0278,
+  lon: 105.8342,
+  label: "Hà Nội (vị trí mặc định)",
+};
+let weatherAutoRefreshInterval = null;
+
 // Bảng diễn giải mã thời tiết WMO sang mô tả + icon tiếng Việt
 function interpretWeatherCode(code) {
   const map = {
@@ -6901,13 +6897,13 @@ function interpretWeatherCode(code) {
   return map[code] || ["Không xác định", "🌡️"];
 }
 
-async function renderMuWeatherResult(latitude, longitude, cityLabel) {
-  const box = document.getElementById("muWeatherBox");
-  box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">⏳ Đang tải thời tiết...</p>`;
+async function renderWeatherTabResult(latitude, longitude, cityLabel) {
+  const box = document.getElementById("weatherTabBox");
+  if (!box) return;
 
   try {
     const res = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code`,
     );
     const data = await res.json();
     const current = data.current;
@@ -6915,80 +6911,65 @@ async function renderMuWeatherResult(latitude, longitude, cityLabel) {
 
     box.innerHTML = `
       <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-        <div style="font-size: 48px;">${icon}</div>
+        <div style="font-size: 56px;">${icon}</div>
         <div>
-          <div style="font-size: 28px; font-weight: 700; color: var(--text-main);">${Math.round(current.temperature_2m)}°C</div>
+          <div style="font-size: 32px; font-weight: 700; color: var(--text-main);">${Math.round(current.temperature_2m)}°C</div>
           <div style="font-size: 13px; color: var(--text-muted);">${condition} • ${cityLabel}</div>
         </div>
       </div>
-      <div class="task-stats-row" style="margin-top: 16px;">
+      <div class="task-stats-row" style="margin-top: 18px;">
+        <div class="stat-chip"><div class="stat-value" style="font-size: 16px;">🌡️ ${Math.round(current.apparent_temperature)}°C</div><div class="stat-label">Cảm giác như</div></div>
         <div class="stat-chip"><div class="stat-value" style="font-size: 16px;">💧 ${current.relative_humidity_2m}%</div><div class="stat-label">Độ ẩm</div></div>
         <div class="stat-chip"><div class="stat-value" style="font-size: 16px;">💨 ${current.wind_speed_10m} km/h</div><div class="stat-label">Tốc độ gió</div></div>
       </div>
     `;
+    const label = document.getElementById("weatherLastUpdatedLabel");
+    if (label)
+      label.textContent =
+        "Cập nhật lần cuối: " + new Date().toLocaleTimeString("vi-VN");
   } catch (err) {
-    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải dữ liệu thời tiết lúc này.</p>`;
+    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không thể tải dữ liệu thời tiết lúc này (lỗi mạng hoặc API tạm thời không phản hồi).</p>`;
   }
 }
 
-async function loadMuWeather() {
-  const city = document.getElementById("muWeatherCityInput").value.trim();
-  const box = document.getElementById("muWeatherBox");
+function initWeatherTab() {
+  const box = document.getElementById("weatherTabBox");
+  if (!box) return;
 
-  if (!city) {
-    // Không nhập thành phố → thử xin vị trí người dùng, nếu không được thì mặc định Hà Nội
+  const runFetch = () => {
     if (navigator.geolocation) {
-      loadMuWeatherByLocation();
+      navigator.geolocation.getCurrentPosition(
+        (pos) =>
+          renderWeatherTabResult(
+            pos.coords.latitude,
+            pos.coords.longitude,
+            "Vị trí của bạn",
+          ),
+        () =>
+          renderWeatherTabResult(
+            WEATHER_DEFAULT_CITY.lat,
+            WEATHER_DEFAULT_CITY.lon,
+            WEATHER_DEFAULT_CITY.label,
+          ),
+      );
     } else {
-      renderMuWeatherResult(21.0278, 105.8342, "Hà Nội (mặc định)");
-    }
-    return;
-  }
-
-  box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">⏳ Đang tìm thành phố...</p>`;
-  try {
-    const geoRes = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=vi`,
-    );
-    const geoData = await geoRes.json();
-    if (!geoData.results || geoData.results.length === 0) {
-      box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Không tìm thấy thành phố "${city}".</p>`;
-      return;
-    }
-    const { latitude, longitude, name, country } = geoData.results[0];
-    renderMuWeatherResult(latitude, longitude, `${name}, ${country}`);
-  } catch (err) {
-    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Lỗi mạng, thử lại sau.</p>`;
-  }
-}
-
-function loadMuWeatherByLocation() {
-  const box = document.getElementById("muWeatherBox");
-  if (!navigator.geolocation) {
-    box.innerHTML = `<p style="font-size: 12px; color: #ff453a;">⚠ Trình duyệt không hỗ trợ định vị.</p>`;
-    return;
-  }
-  box.innerHTML = `<p style="font-size: 12px; color: var(--text-muted);">⏳ Đang xin quyền vị trí...</p>`;
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      renderMuWeatherResult(
-        pos.coords.latitude,
-        pos.coords.longitude,
-        "Vị trí của bạn",
+      renderWeatherTabResult(
+        WEATHER_DEFAULT_CITY.lat,
+        WEATHER_DEFAULT_CITY.lon,
+        WEATHER_DEFAULT_CITY.label,
       );
-    },
-    () => {
-      renderMuWeatherResult(
-        21.0278,
-        105.8342,
-        "Hà Nội (không có quyền vị trí)",
-      );
-    },
-  );
+    }
+  };
+
+  runFetch();
+  if (!weatherAutoRefreshInterval) {
+    weatherAutoRefreshInterval = setInterval(runFetch, 10 * 60 * 1000); // làm mới mỗi 10 phút
+  }
 }
 
 // ==========================================
-// MỤC MỚI 3: GIÁ XĂNG VIỆT NAM (cập nhật thủ công — Section chỉnh sửa Tab MU)
+// TAB GIÁ XĂNG (cập nhật thủ công — không có API công khai đáng tin cậy,
+// xem ghi chú minh bạch trong giao diện)
 // ==========================================
 function gasPriceKey() {
   const currentUser = sessionStorage.getItem("currentUser") || "guest";
